@@ -1,61 +1,1005 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Power Guard 2.0</title>
+
 <style>
-:root{--bg:#061014;--card:#0d1b20;--line:#203940;--txt:#eef7f8;--muted:#8da5aa;--green:#45d6a8;--red:#ff6269;--amber:#ffc45c}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#050e12,#0a171b);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}.hidden{display:none!important}
-.login{max-width:410px;margin:7vh auto;padding:28px 24px;background:var(--card);border:1px solid var(--line);border-radius:22px}.brand{font-size:25px;font-weight:900;letter-spacing:2px}.muted{color:var(--muted);font-size:13px}
-h1,h2,h3{margin:0 0 8px}.field{margin-top:17px}label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}
-input,select{width:100%;height:48px;border-radius:12px;border:1px solid var(--line);background:#071216;color:#fff;padding:0 13px;font-size:16px}
-.pass{position:relative}.pass input{padding-right:50px}.eye{position:absolute;right:5px;top:4px;height:40px;width:40px;border:0;background:transparent;color:#b8c8ca;font-size:19px;cursor:pointer}
-.btn{width:100%;height:48px;border:0;border-radius:12px;background:var(--green);color:#03110c;font-weight:900;margin-top:20px;font-size:15px}.error{display:none;margin-top:13px;padding:11px;border-radius:10px;background:#36171a;border:1px solid #7b3339;color:#ff9ba0;font-size:13px}
-.wrap{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.pill{border:1px solid #235345;color:var(--green);border-radius:99px;padding:7px 10px;font-size:12px}.out{background:#14272c;color:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:10px}
-.status{background:#0b2821;color:var(--green);border:1px solid #18503f;border-radius:13px;padding:13px;margin-bottom:13px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px}.label{color:var(--muted);font-size:12px}.value{font-size:28px;font-weight:900;margin-top:7px}.unit{font-size:12px;color:var(--muted)}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}.row:last-child{border:0}.notice{margin:10px 0;padding:11px;border-radius:10px;background:#2b2211;border:1px solid #5c491f;color:#ffd27a;font-size:13px}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted)}.danger{background:var(--red);color:#fff;border:0;border-radius:9px;padding:9px 12px;font-weight:800}.small{background:#14272c;color:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 12px}
-@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.wrap{padding:13px}.login{margin:5vh 13px}.value{font-size:24px}}
-</style></head><body>
+:root{
+  --bg:#061014;
+  --card:#0d1b20;
+  --line:#203940;
+  --txt:#eef7f8;
+  --muted:#8da5aa;
+  --green:#45d6a8;
+  --red:#ff6269;
+  --amber:#ffc45c
+}
+
+*{
+  box-sizing:border-box
+}
+
+body{
+  margin:0;
+  background:linear-gradient(145deg,#050e12,#0a171b);
+  color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif
+}
+
+.hidden{
+  display:none!important
+}
+
+/* LOGIN */
+
+.login{
+  max-width:410px;
+  margin:7vh auto;
+  padding:28px 24px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px
+}
+
+.brand{
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:2px
+}
+
+.muted{
+  color:var(--muted);
+  font-size:13px
+}
+
+h1,h2,h3{
+  margin:0 0 8px
+}
+
+.field{
+  margin-top:17px
+}
+
+label{
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:7px
+}
+
+input,select{
+  width:100%;
+  height:48px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#071216;
+  color:#fff;
+  padding:0 13px;
+  font-size:16px
+}
+
+.pass{
+  position:relative
+}
+
+.pass input{
+  padding-right:50px
+}
+
+.eye{
+  position:absolute;
+  right:5px;
+  top:4px;
+  height:40px;
+  width:40px;
+  border:0;
+  background:transparent;
+  color:#b8c8ca;
+  font-size:19px;
+  cursor:pointer
+}
+
+.btn{
+  width:100%;
+  height:48px;
+  border:0;
+  border-radius:12px;
+  background:var(--green);
+  color:#03110c;
+  font-weight:900;
+  margin-top:20px;
+  font-size:15px
+}
+
+.error{
+  display:none;
+  margin-top:13px;
+  padding:11px;
+  border-radius:10px;
+  background:#36171a;
+  border:1px solid #7b3339;
+  color:#ff9ba0;
+  font-size:13px
+}
+
+/* DASHBOARD */
+
+.wrap{
+  max-width:1100px;
+  margin:auto;
+  padding:18px
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px
+}
+
+.pill{
+  border:1px solid #235345;
+  color:var(--green);
+  border-radius:99px;
+  padding:7px 10px;
+  font-size:12px
+}
+
+.out{
+  background:#14272c;
+  color:#fff;
+  border:1px solid var(--line);
+  padding:10px 13px;
+  border-radius:10px
+}
+
+.status{
+  background:#0b2821;
+  color:var(--green);
+  border:1px solid #18503f;
+  border-radius:13px;
+  padding:13px;
+  margin-bottom:13px
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:17px
+}
+
+.label{
+  color:var(--muted);
+  font-size:12px
+}
+
+.value{
+  font-size:28px;
+  font-weight:900;
+  margin-top:7px
+}
+
+.unit{
+  font-size:12px;
+  color:var(--muted)
+}
+
+.two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:12px
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+  font-size:14px
+}
+
+.row:last-child{
+  border:0
+}
+
+.notice{
+  margin:10px 0;
+  padding:11px;
+  border-radius:10px;
+  background:#2b2211;
+  border:1px solid #5c491f;
+  color:#ffd27a;
+  font-size:13px
+}
+
+/* KSEB TABLE */
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed
+}
+
+th,
+td{
+  text-align:left;
+  padding:11px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+  overflow-wrap:anywhere
+}
+
+th{
+  color:var(--muted)
+}
+
+/* POWER CUT BUTTON */
+
+.danger{
+  width:100%;
+  max-width:140px;
+  background:var(--red);
+  color:#fff;
+  border:0;
+  border-radius:9px;
+  padding:9px 8px;
+  font-weight:800;
+  font-size:12px;
+  line-height:1.25;
+  white-space:normal;
+  box-sizing:border-box;
+  cursor:pointer
+}
+
+.small{
+  background:#14272c;
+  color:#fff;
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:9px 12px;
+  cursor:pointer
+}
+
+/* KSEB CARD */
+
+#admin{
+  overflow:hidden
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .grid{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .two{
+    grid-template-columns:1fr
+  }
+
+  .wrap{
+    padding:13px
+  }
+
+  .login{
+    margin:5vh 13px
+  }
+
+  .value{
+    font-size:24px
+  }
+
+  #admin table{
+    width:100%;
+    table-layout:fixed
+  }
+
+  #admin th,
+  #admin td{
+    padding:9px 5px;
+    font-size:11px
+  }
+
+  #admin th:nth-child(1),
+  #admin td:nth-child(1){
+    width:24%
+  }
+
+  #admin th:nth-child(2),
+  #admin td:nth-child(2){
+    width:16%
+  }
+
+  #admin th:nth-child(3),
+  #admin td:nth-child(3){
+    width:15%
+  }
+
+  #admin th:nth-child(4),
+  #admin td:nth-child(4){
+    width:18%
+  }
+
+  #admin th:nth-child(5),
+  #admin td:nth-child(5){
+    width:27%
+  }
+
+  #admin .danger{
+    max-width:100%;
+    padding:9px 4px;
+    font-size:11px
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
 <section id="login" class="login">
-<div class="brand">POWER GUARD</div><div class="muted">Smart Electricity Monitoring • Demo</div>
-<h2 style="margin-top:27px">Secure Login</h2>
-<div class="field"><label>Account</label><select id="role"><option value="home">Home User</option><option value="kseb">KSEB Admin</option></select></div>
-<div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Enter username"></div>
-<div class="field"><label>Password</label><div class="pass"><input id="password" type="password" autocomplete="current-password" placeholder="Enter password"><button class="eye" onclick="eye()">◉</button></div></div>
-<button class="btn" onclick="login()">LOGIN</button><div id="error" class="error">Incorrect username or password.</div>
-<div class="muted" style="margin-top:17px;line-height:1.7">Demo Home: <b>CONSUMER1001</b> / <b>home123</b><br>Demo KSEB: <b>KSEB_ADMIN</b> / <b>kseb123</b></div>
+
+  <div class="brand">POWER GUARD</div>
+
+  <div class="muted">
+    Smart Electricity Monitoring • Demo
+  </div>
+
+  <h2 style="margin-top:27px">
+    Secure Login
+  </h2>
+
+  <div class="field">
+    <label>Account</label>
+
+    <select id="role">
+      <option value="home">Home User</option>
+      <option value="kseb">KSEB Admin</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Username</label>
+
+    <input
+      id="username"
+      autocomplete="username"
+      placeholder="Enter username">
+  </div>
+
+  <div class="field">
+
+    <label>Password</label>
+
+    <div class="pass">
+
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Enter password">
+
+      <button
+        class="eye"
+        onclick="eye()">
+        ◉
+      </button>
+
+    </div>
+
+  </div>
+
+  <button
+    class="btn"
+    onclick="login()">
+    LOGIN
+  </button>
+
+  <div
+    id="error"
+    class="error">
+    Incorrect username or password.
+  </div>
+
+  <div
+    class="muted"
+    style="margin-top:17px;line-height:1.7">
+
+    Demo Home:
+    <b>CONSUMER1001</b> /
+    <b>home123</b>
+
+    <br>
+
+    Demo KSEB:
+    <b>KSEB_ADMIN</b> /
+    <b>kseb123</b>
+
+  </div>
+
 </section>
 
-<section id="app" class="hidden"><div class="wrap">
-<div class="top"><div><div class="brand">POWER GUARD 2.0</div><div id="who" class="muted"></div></div><div style="display:flex;gap:7px;align-items:center"><span class="pill">● ONLINE</span><button class="out" onclick="logout()">Logout</button></div></div>
-<div class="status">● <b id="state">NORMAL</b> <span class="muted">• Dashboard connected</span></div>
-<div class="grid">
-<div class="card"><div class="label">VOLTAGE</div><div class="value" id="v">230.0</div><div class="unit">V AC</div></div>
-<div class="card"><div class="label">CURRENT</div><div class="value" id="a">0.00</div><div class="unit">A</div></div>
-<div class="card"><div class="label">POWER</div><div class="value" id="w">0</div><div class="unit">W</div></div>
-<div class="card"><div class="label">ENERGY</div><div class="value" id="kwh">0.000</div><div class="unit">kWh</div></div>
+
+<!-- DASHBOARD -->
+
+<section id="app" class="hidden">
+
+<div class="wrap">
+
+  <!-- TOP -->
+
+  <div class="top">
+
+    <div>
+
+      <div class="brand">
+        POWER GUARD 2.0
+      </div>
+
+      <div
+        id="who"
+        class="muted">
+      </div>
+
+    </div>
+
+    <div
+      style="display:flex;gap:7px;align-items:center">
+
+      <span class="pill">
+        ● ONLINE
+      </span>
+
+      <button
+        class="out"
+        onclick="logout()">
+        Logout
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- STATUS -->
+
+  <div class="status">
+
+    ●
+
+    <b id="state">
+      NORMAL
+    </b>
+
+    <span class="muted">
+      • Dashboard connected
+    </span>
+
+  </div>
+
+
+  <!-- MAIN READINGS -->
+
+  <div class="grid">
+
+    <div class="card">
+
+      <div class="label">
+        VOLTAGE
+      </div>
+
+      <div
+        class="value"
+        id="v">
+        230.0
+      </div>
+
+      <div class="unit">
+        V AC
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="label">
+        CURRENT
+      </div>
+
+      <div
+        class="value"
+        id="a">
+        0.00
+      </div>
+
+      <div class="unit">
+        A
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="label">
+        POWER
+      </div>
+
+      <div
+        class="value"
+        id="w">
+        0
+      </div>
+
+      <div class="unit">
+        W
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="label">
+        ENERGY
+      </div>
+
+      <div
+        class="value"
+        id="kwh">
+        0.000
+      </div>
+
+      <div class="unit">
+        kWh
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- CONSUMPTION + SYSTEM -->
+
+  <div class="two">
+
+    <div class="card">
+
+      <h3>
+        Consumption
+      </h3>
+
+      <div class="row">
+
+        <span class="muted">
+          Estimated bill
+        </span>
+
+        <b id="bill">
+          ₹0.00
+        </b>
+
+      </div>
+
+      <div class="row">
+
+        <span class="muted">
+          Frequency
+        </span>
+
+        <b>
+          50 Hz
+        </b>
+
+      </div>
+
+      <div class="row">
+
+        <span class="muted">
+          Power factor
+        </span>
+
+        <b>
+          0.98
+        </b>
+
+      </div>
+
+      <div class="row">
+
+        <span class="muted">
+          Supply
+        </span>
+
+        <b id="supply">
+          ON
+        </b>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>
+        System
+      </h3>
+
+      <div class="row">
+
+        <span class="muted">
+          ESP32
+        </span>
+
+        <b>
+          READY
+        </b>
+
+      </div>
+
+      <div class="row">
+
+        <span class="muted">
+          Meter
+        </span>
+
+        <b>
+          PZEM / DEMO
+        </b>
+
+      </div>
+
+      <div class="row">
+
+        <span class="muted">
+          Internet
+        </span>
+
+        <b>
+          CONNECTED
+        </b>
+
+      </div>
+
+      <div class="row">
+
+        <span class="muted">
+          Protection
+        </span>
+
+        <b>
+          ARMED
+        </b>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- KSEB ADMIN -->
+
+  <div
+    id="admin"
+    class="card hidden"
+    style="margin-top:12px">
+
+    <h3>
+      KSEB Administration — DEMO
+    </h3>
+
+    <div class="notice">
+
+      Simulation only.
+      This button does not disconnect
+      real mains power.
+
+    </div>
+
+
+    <table>
+
+      <tr>
+
+        <th>
+          Consumer
+        </th>
+
+        <th>
+          Voltage
+        </th>
+
+        <th>
+          Power
+        </th>
+
+        <th>
+          Energy
+        </th>
+
+        <th>
+          Action
+        </th>
+
+      </tr>
+
+
+      <tr>
+
+        <td>
+          CONSUMER1001
+        </td>
+
+        <td id="tv">
+          230 V
+        </td>
+
+        <td id="tw">
+          0 W
+        </td>
+
+        <td id="tk">
+          0.000 kWh
+        </td>
+
+        <td>
+
+          <button
+            class="danger"
+            onclick="cut()">
+
+            Simulate
+            Power Cut
+
+          </button>
+
+        </td>
+
+      </tr>
+
+    </table>
+
+
+    <button
+      class="small"
+      style="margin-top:12px"
+      onclick="reset()">
+
+      Reset Demo Cost
+
+    </button>
+
+  </div>
+
 </div>
-<div class="two">
-<div class="card"><h3>Consumption</h3><div class="row"><span class="muted">Estimated bill</span><b id="bill">₹0.00</b></div><div class="row"><span class="muted">Frequency</span><b>50 Hz</b></div><div class="row"><span class="muted">Power factor</span><b>0.98</b></div><div class="row"><span class="muted">Supply</span><b id="supply">ON</b></div></div>
-<div class="card"><h3>System</h3><div class="row"><span class="muted">ESP32</span><b>READY</b></div><div class="row"><span class="muted">Meter</span><b>PZEM / DEMO</b></div><div class="row"><span class="muted">Internet</span><b>CONNECTED</b></div><div class="row"><span class="muted">Protection</span><b>ARMED</b></div></div>
-</div>
-<div id="admin" class="card hidden" style="margin-top:12px"><h3>KSEB Administration — DEMO</h3><div class="notice">Simulation only. This button does not disconnect real mains power.</div>
-<table><tr><th>Consumer</th><th>Voltage</th><th>Power</th><th>Energy</th><th>Action</th></tr><tr><td>CONSUMER1001</td><td id="tv">230 V</td><td id="tw">0 W</td><td id="tk">0.000 kWh</td><td><button class="danger" onclick="cut()">Simulate Power Cut</button></td></tr></table>
-<button class="small" style="margin-top:12px" onclick="reset()">Reset Demo Cost</button></div>
-</div></section>
+
+</section>
+
+
 <script>
-let E=0,OFF=false;
-function eye(){const x=document.getElementById('password');x.type=x.type==='password'?'text':'password'}
-function login(){
- const r=document.getElementById('role').value,u=document.getElementById('username').value.trim(),p=document.getElementById('password').value;
- const ok=(r==='home'&&u==='CONSUMER1001'&&p==='home123')||(r==='kseb'&&u==='KSEB_ADMIN'&&p==='kseb123');
- document.getElementById('error').style.display=ok?'none':'block';if(!ok)return;
- document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');
- document.getElementById('who').textContent=r==='home'?'Home Dashboard • CONSUMER1001':'KSEB Dashboard • KSEB_ADMIN';
- document.getElementById('admin').classList.toggle('hidden',r!=='kseb');
+
+let E = 0;
+let OFF = false;
+
+
+/* PASSWORD EYE */
+
+function eye(){
+
+  const x =
+    document.getElementById('password');
+
+  x.type =
+    x.type === 'password'
+      ? 'text'
+      : 'password';
+
 }
-function logout(){location.reload()}function cut(){OFF=!OFF;document.getElementById('state').textContent=OFF?'SUPPLY DISCONNECTED (DEMO)':'NORMAL';document.getElementById('supply').textContent=OFF?'OFF':'ON'}
-function reset(){E=0;draw()}function draw(){let v=OFF?0:230,a=OFF?0:(.35+Math.random()*.15),w=Math.round(v*a);if(!OFF)E+=w/3600000;
-document.getElementById('v').textContent=v.toFixed(1);document.getElementById('a').textContent=a.toFixed(2);document.getElementById('w').textContent=w;document.getElementById('kwh').textContent=E.toFixed(3);document.getElementById('bill').textContent='₹'+(E*7.5).toFixed(2);document.getElementById('tv').textContent=v.toFixed(1)+' V';document.getElementById('tw').textContent=w+' W';document.getElementById('tk').textContent=E.toFixed(3)+' kWh'}
-setInterval(()=>{if(!document.getElementById('app').classList.contains('hidden'))draw()},1000);
-</script></body></html>
+
+
+/* LOGIN */
+
+function login(){
+
+  const r =
+    document.getElementById('role').value;
+
+  const u =
+    document.getElementById('username')
+      .value
+      .trim();
+
+  const p =
+    document.getElementById('password')
+      .value;
+
+
+  const ok =
+    (r === 'home' &&
+     u === 'CONSUMER1001' &&
+     p === 'home123')
+
+    ||
+
+    (r === 'kseb' &&
+     u === 'KSEB_ADMIN' &&
+     p === 'kseb123');
+
+
+  document.getElementById('error')
+    .style.display =
+      ok ? 'none' : 'block';
+
+
+  if(!ok)
+    return;
+
+
+  document.getElementById('login')
+    .classList.add('hidden');
+
+  document.getElementById('app')
+    .classList.remove('hidden');
+
+
+  document.getElementById('who')
+    .textContent =
+      r === 'home'
+        ? 'Home Dashboard • CONSUMER1001'
+        : 'KSEB Dashboard • KSEB_ADMIN';
+
+
+  document.getElementById('admin')
+    .classList.toggle(
+      'hidden',
+      r !== 'kseb'
+    );
+
+}
+
+
+/* LOGOUT */
+
+function logout(){
+
+  location.reload();
+
+}
+
+
+/* DEMO POWER CUT */
+
+function cut(){
+
+  OFF = !OFF;
+
+
+  document.getElementById('state')
+    .textContent =
+      OFF
+        ? 'SUPPLY DISCONNECTED (DEMO)'
+        : 'NORMAL';
+
+
+  document.getElementById('supply')
+    .textContent =
+      OFF ? 'OFF' : 'ON';
+
+}
+
+
+/* RESET DEMO COST */
+
+function reset(){
+
+  E = 0;
+
+  draw();
+
+}
+
+
+/* UPDATE VALUES */
+
+function draw(){
+
+  let v =
+    OFF ? 0 : 230;
+
+  let a =
+    OFF
+      ? 0
+      : (0.35 + Math.random() * 0.15);
+
+  let w =
+    Math.round(v * a);
+
+
+  if(!OFF){
+
+    E += w / 3600000;
+
+  }
+
+
+  document.getElementById('v')
+    .textContent =
+      v.toFixed(1);
+
+
+  document.getElementById('a')
+    .textContent =
+      a.toFixed(2);
+
+
+  document.getElementById('w')
+    .textContent =
+      w;
+
+
+  document.getElementById('kwh')
+    .textContent =
+      E.toFixed(3);
+
+
+  document.getElementById('bill')
+    .textContent =
+      '₹' + (E * 7.5).toFixed(2);
+
+
+  document.getElementById('tv')
+    .textContent =
+      v.toFixed(1) + ' V';
+
+
+  document.getElementById('tw')
+    .textContent =
+      w + ' W';
+
+
+  document.getElementById('tk')
+    .textContent =
+      E.toFixed(3) + ' kWh';
+
+}
+
+
+/* REFRESH EVERY SECOND */
+
+setInterval(() => {
+
+  if(
+    !document
+      .getElementById('app')
+      .classList
+      .contains('hidden')
+  ){
+
+    draw();
+
+  }
+
+},1000);
+
+</script>
+
+</body>
+</html>
