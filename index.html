@@ -1,119 +1,88 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Power Guard 2.0</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Power Guard | Online Dashboard</title>
+<meta name="theme-color" content="#0b1220">
 <style>
-:root{--bg:#061014;--card:#0d1b20;--line:#203940;--txt:#eef7f8;--muted:#8da5aa;--green:#45d6a8;--red:#ff6269;--amber:#ffc45c}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#050e12,#0a171b);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}.hidden{display:none!important}
-.login{max-width:410px;margin:7vh auto;padding:28px 24px;background:var(--card);border:1px solid var(--line);border-radius:22px}.brand{font-size:25px;font-weight:900;letter-spacing:2px}.muted{color:var(--muted);font-size:13px}
-h1,h2,h3{margin:0 0 8px}.field{margin-top:17px}label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}
-input,select{width:100%;height:48px;border-radius:12px;border:1px solid var(--line);background:#071216;color:#fff;padding:0 13px;font-size:16px}
-.pass{position:relative}.pass input{padding-right:50px}.eye{position:absolute;right:5px;top:4px;height:40px;width:40px;border:0;background:transparent;color:#b8c8ca;font-size:19px;cursor:pointer}
-.btn{width:100%;height:48px;border:0;border-radius:12px;background:var(--green);color:#03110c;font-weight:900;margin-top:20px;font-size:15px}.error{display:none;margin-top:13px;padding:11px;border-radius:10px;background:#36171a;border:1px solid #7b3339;color:#ff9ba0;font-size:13px}
-.wrap{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.pill{border:1px solid #235345;color:var(--green);border-radius:99px;padding:7px 10px;font-size:12px}.out{background:#14272c;color:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:10px}
-.status{background:#0b2821;color:var(--green);border:1px solid #18503f;border-radius:13px;padding:13px;margin-bottom:13px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px}.label{color:var(--muted);font-size:12px}.value{font-size:28px;font-weight:900;margin-top:7px}.unit{font-size:12px;color:var(--muted)}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}.row:last-child{border:0}.notice{margin:10px 0;padding:11px;border-radius:10px;background:#2b2211;border:1px solid #5c491f;color:#ffd27a;font-size:13px}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted)}.danger{background:var(--red);color:#fff;border:0;border-radius:9px;padding:9px 12px;font-weight:800}.small{background:#14272c;color:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 12px}
-@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.wrap{padding:13px}.login{margin:5vh 13px}.value{font-size:24px}}
-</style></head><body>
-<section id="login" class="login">
-<div class="brand">POWER GUARD</div><div class="muted">Smart Electricity Monitoring</div>
-<h2 style="margin-top:27px">Secure Login</h2>
-<div class="field"><label>Account</label><select id="role"><option value="home">Home User</option><option value="kseb">KSEB Admin</option></select></div>
-<div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Enter username"></div>
-<div class="field"><label>Password</label><div class="pass"><input id="password" type="password" autocomplete="current-password" placeholder="Enter password"><button class="eye" onclick="eye()">◉</button></div></div>
-<button class="btn" onclick="login()">LOGIN</button><div id="error" class="error">Incorrect username or password.</div>
-<div class="muted" style="margin-top:17px;line-height:1.7">Demo Home: <b>CONSUMER1001</b> / <b>home123</b><br>Demo KSEB: <b>KSEB_ADMIN</b> / <b>kseb123</b></div>
+:root{color-scheme:dark;--bg:#09111f;--panel:#121e30;--line:#2a3b52;--muted:#a8b7ca;--text:#f1f6ff;--blue:#55adff;--green:#36d6a0;--red:#ff6578;--amber:#ffcc66}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#172c49 0,var(--bg) 60%);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);min-height:100vh}
+main{max-width:980px;margin:auto;padding:24px 15px 40px}.head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}.brand{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:850}.title{font-size:clamp(27px,5vw,39px);font-weight:850;margin:6px 0 3px}.sub{color:var(--muted);font-size:14px}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:8px}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}
+.panel{background:rgba(18,30,48,.96);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 12px 30px #0002}h2{font-size:14px;letter-spacing:.09em;margin:0 0 14px;color:#d0e0f5}
+input{width:100%;background:#0b1524;border:1px solid #30445d;border-radius:10px;padding:12px;color:var(--text);margin:6px 0 12px;font-size:15px}label{font-size:13px;color:var(--muted)}button{background:var(--blue);color:#06111f;border:0;border-radius:11px;padding:12px 16px;font-weight:850;cursor:pointer}button:disabled{opacity:.6}.secondary{background:#22344a;color:var(--text);border:1px solid #344b66}.tabs{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.tabs button{flex:1;min-width:135px}.tabs button.active{background:var(--blue);color:#06111f}.hidden{display:none!important}.notice{font-size:13px;color:var(--muted);line-height:1.55}.error{color:var(--red);white-space:pre-wrap;font-size:13px;margin-top:10px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.metric{background:#0d1726;border:1px solid #24364b;border-radius:14px;padding:15px;min-height:100px}.label{font-size:12px;color:var(--muted);letter-spacing:.09em}.value{font-size:clamp(26px,5vw,34px);font-weight:800;margin-top:8px;overflow-wrap:anywhere}.unit{font-size:13px;color:var(--muted);font-weight:500}.status{font-size:21px;font-weight:850;margin:3px 0 8px}.normal{color:var(--green)}.warn{color:var(--amber)}.fault{color:var(--red)}.meta{display:flex;gap:9px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:14px}.meta span{border:1px solid var(--line);padding:6px 9px;border-radius:8px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row .grow{flex:1}
+@media(min-width:680px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.metric.wide{grid-column:span 2}}@media(max-width:380px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<header class="head">
+ <div><div class="brand">hassaneeeyy • POWER MONITOR</div><div class="title">POWER GUARD</div><div class="sub">Online monitoring dashboard</div></div>
+ <div class="pill"><span class="dot" id="dot"></span><span id="connection">Not connected</span></div>
+</header>
+
+<section class="panel" id="loginPanel">
+ <h2>FIREBASE SIGN IN</h2>
+ <p class="notice">Sign in with an authorized Firebase Email/Password account. After signing in, choose Home Dashboard or KSEB Dashboard.</p>
+ <form id="loginForm">
+  <label for="email">Email</label><input id="email" type="email" autocomplete="username" required>
+  <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required>
+  <div class="row"><button id="loginBtn" type="submit">Sign in</button></div><div class="error" id="loginError"></div>
+ </form>
 </section>
 
-<section id="app" class="hidden"><div class="wrap">
-<div class="top"><div><div class="brand">POWER GUARD 2.0</div><div id="who" class="muted"></div></div><div style="display:flex;gap:7px;align-items:center"><span class="pill">● ONLINE</span><button class="out" onclick="logout()">Logout</button></div></div>
-<div class="status">● <b id="state">NORMAL</b> <span class="muted">• Dashboard connected</span></div>
- <div class="card" style="margin-bottom:12px">
-   <h3>Connect live Power Guard data</h3>
-   <div class="muted" style="line-height:1.5;margin-bottom:10px">Sign in with a Firebase Authentication account to read the ESP32's live readings. These credentials are entered here and are not stored in this page.</div>
-   <div class="field"><label>Firebase email</label><input id="fbEmail" type="email" autocomplete="username" placeholder="Firebase account email"></div>
-   <div class="field"><label>Firebase password</label><input id="fbPassword" type="password" autocomplete="current-password" placeholder="Firebase account password"></div>
-   <button class="small" id="connectBtn" onclick="connectFirebase()">Connect live data</button>
-   <span id="fbStatus" class="muted" style="margin-left:8px">Not connected to Firebase</span>
+<section id="app" class="hidden">
+ <div class="tabs">
+  <button id="homeTab" class="active" type="button">Home Dashboard</button>
+  <button id="ksebTab" class="secondary" type="button">KSEB Dashboard</button>
  </div>
-<div class="grid">
-<div class="card"><div class="label">VOLTAGE</div><div class="value" id="v">230.0</div><div class="unit">V AC</div></div>
-<div class="card"><div class="label">CURRENT</div><div class="value" id="a">0.00</div><div class="unit">A</div></div>
-<div class="card"><div class="label">POWER</div><div class="value" id="w">0</div><div class="unit">W</div></div>
-<div class="card"><div class="label">ENERGY</div><div class="value" id="kwh">0.000</div><div class="unit">kWh</div></div>
-</div>
-<div class="two">
-<div class="card"><h3>Consumption</h3><div class="row"><span class="muted">Estimated bill</span><b id="bill">₹0.00</b></div><div class="row"><span class="muted">Frequency</span><b>50 Hz</b></div><div class="row"><span class="muted">Power factor</span><b>0.98</b></div><div class="row"><span class="muted">Supply</span><b id="supply">ON</b></div></div>
-<div class="card"><h3>System</h3><div class="row"><span class="muted">ESP32</span><b>READY</b></div><div class="row"><span class="muted">Sensors</span><b id="sensorStatus">Waiting for data</b></div><div class="row"><span class="muted">Internet</span><b>CONNECTED</b></div><div class="row"><span class="muted">Protection</span><b>ARMED</b></div></div>
-</div>
-<div id="admin" class="card hidden" style="margin-top:12px"><h3>KSEB Administration — DEMO</h3><div class="notice">Simulation only. This button does not disconnect real mains power.</div>
-<table><tr><th>Consumer</th><th>Voltage</th><th>Power</th><th>Energy</th><th>Action</th></tr><tr><td>CONSUMER1001</td><td id="tv">230 V</td><td id="tw">0 W</td><td id="tk">0.000 kWh</td><td><button class="danger" onclick="cut()">Simulate Power Cut</button></td></tr></table>
-<button class="small" style="margin-top:12px" onclick="reset()">Reset Demo Cost</button></div>
-</div></section>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDFWE5aJRr8xcsoP6T9O3xLOiBCAmxaQwY",
-  authDomain: "power-guard32.firebaseapp.com",
-  databaseURL: "https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "power-guard32",
-  storageBucket: "power-guard32.firebasestorage.app",
-  messagingSenderId: "439894450296",
-  appId: "1:439894450296:web:2ca9ff01527071b1428d8d",
-  measurementId: "G-VFJZSHZMST"
+ <section class="panel">
+  <div class="row"><div class="grow"><h2 id="viewTitle">HOME DASHBOARD</h2><div class="notice" id="viewDesc">Consumer view • Live Power Guard readings</div></div><button class="secondary" id="logout" type="button">Sign out</button></div>
+  <div class="status warn" id="status">Waiting for ESP32 data…</div><div class="notice" id="statusNote">Waiting for the first Firebase update.</div>
+  <div class="meta"><span>Supply: <b id="supply">—</b></span><span>Load: <b id="load">—</b></span><span>OLED: <b id="oled">—</b></span><span>Voltage sensor: <b id="vsensor">—</b></span><span>Current sensor: <b id="isensor">—</b></span></div>
+ </section>
+ <section class="panel">
+  <h2 id="readingTitle">LIVE READINGS</h2>
+  <div class="grid">
+   <div class="metric"><div class="label">VOLTAGE</div><div class="value"><span id="voltage">—</span> <span class="unit">V</span></div></div>
+   <div class="metric"><div class="label">CURRENT</div><div class="value"><span id="current">—</span> <span class="unit">A</span></div></div>
+   <div class="metric"><div class="label">POWER</div><div class="value"><span id="power">—</span> <span class="unit">W</span></div></div>
+   <div class="metric"><div class="label">ENERGY</div><div class="value"><span id="energy">—</span> <span class="unit">Wh</span></div></div>
+   <div class="metric"><div class="label">EST. COST</div><div class="value"><span class="unit">₹</span> <span id="cost">—</span></div></div>
+   <div class="metric"><div class="label">LAST UPDATE</div><div class="value" style="font-size:18px" id="updated">—</div></div>
+  </div>
+ </section>
+ <section class="panel" id="ksebInfo">
+  <h2>KSEB MONITORING VIEW</h2>
+  <p class="notice">This view shows the same live telemetry and protection status for monitoring. It does not represent an official KSEB connection or grant utility control. A separate authorized KSEB account/role and role-based Firebase rules would be needed for restricted utility access.</p>
+  <div class="meta"><span>Protection alert: <b id="alertState">Waiting for data</b></span><span>Data path: <b>powerGuard/live</b></span></div>
+ </section>
+</section>
+</main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+const firebaseConfig={
+ apiKey:"AIzaSyA0IFRa2NwnV38ynd2alYAhIMzUrnKSbHs",
+ authDomain:"power-guard32.firebaseapp.com",
+ databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"power-guard32",storageBucket:"power-guard32.firebasestorage.app",
+ messagingSenderId:"439894450296",appId:"1:439894450296:web:2ca9ff01527071b1428d8d",measurementId:"G-VFJZSHZMST"
 };
-let E=0, OFF=false, liveConnected=false, liveRef=null;
-firebase.initializeApp(firebaseConfig);
-const fbAuth = firebase.auth();
-const fbDb = firebase.database();
-
-function eye(){const x=document.getElementById('password');x.type=x.type==='password'?'text':'password'}
-function login(){
- const r=document.getElementById('role').value,u=document.getElementById('username').value.trim(),p=document.getElementById('password').value;
- const ok=(r==='home'&&u==='CONSUMER1001'&&p==='home123')||(r==='kseb'&&u==='KSEB_ADMIN'&&p==='kseb123');
- document.getElementById('error').style.display=ok?'none':'block';if(!ok)return;
- document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');
- document.getElementById('who').textContent=r==='home'?'Home Dashboard • CONSUMER1001':'KSEB Dashboard • KSEB_ADMIN';
- document.getElementById('admin').classList.toggle('hidden',r!=='kseb');
-}
-function logout(){if(liveRef){liveRef.off();liveRef=null;}fbAuth.signOut().catch(()=>{});location.reload()}
-function setText(id,value){const el=document.getElementById(id);if(el)el.textContent=value}
-function setFirebaseStatus(msg,isOk=false){setText('fbStatus',msg);const el=document.getElementById('fbStatus');if(el)el.style.color=isOk?'var(--green)':'var(--amber)'}
-async function connectFirebase(){
- const email=document.getElementById('fbEmail').value.trim();
- const password=document.getElementById('fbPassword').value;
- if(!email||!password){setFirebaseStatus('Enter your Firebase email and password');return}
- const btn=document.getElementById('connectBtn');btn.disabled=true;btn.textContent='Connecting…';
- setFirebaseStatus('Signing in…');
- try{
-   await fbAuth.signInWithEmailAndPassword(email,password);
-   if(liveRef){liveRef.off();liveRef=null;}
-   liveRef=fbDb.ref('powerGuard/live');
-   liveRef.on('value',snap=>{
-     const d=snap.val();
-     if(!d){setFirebaseStatus('Signed in, but powerGuard/live has no data');return}
-     liveConnected=true;
-     renderLive(d);
-     setFirebaseStatus('Live Firebase data connected',true);
-   },err=>{setFirebaseStatus('Database read failed: '+err.message);});
- }catch(err){
-   setFirebaseStatus('Firebase sign-in failed: '+(err.code||err.message));
- }finally{btn.disabled=false;btn.textContent='Connect live data';}
-}
-function renderLive(d){
- const v=Number(d.voltage)||0, a=Number(d.current)||0, w=Number(d.power)||0, wh=Number(d.energyWh)||0;
- const supply=!!d.supplyOn, overload=!!d.overload;
- setText('v',v.toFixed(2));setText('a',a.toFixed(3));setText('w',w.toFixed(2));
- setText('kwh',(wh/1000).toFixed(6));
- setText('bill','₹'+(Number(d.cost)||0).toFixed(2));
- setText('supply',supply?'ON':'OFF');
- setText('state',overload?'OVERLOAD':(supply?'NORMAL':'SUPPLY OFF'));
- setText('sensorStatus',(d.voltageSensor?'Voltage OK':'Voltage N/A')+' / '+(d.currentSensor?'Current OK':'Current N/A'));
- setText('tv',v.toFixed(2)+' V');setText('tw',w.toFixed(2)+' W');setText('tk',(wh/1000).toFixed(6)+' kWh');
- const stateEl=document.getElementById('state');
- if(stateEl)stateEl.style.color=overload?'var(--red)':'var(--green)';
-}
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
+const $=id=>document.getElementById(id);let stop=null,currentView="home";
+function connection(t,c=""){$("connection").textContent=t;$("dot").className="dot "+c}
+function fmt(v,d=2){const n=Number(v);return v!==null&&v!==undefined&&Number.isFinite(n)?n.toFixed(d):"—"}
+function bool(v){return v===true?"ON":v===false?"OFF":"—"}
+function chooseView(v){currentView=v;$("homeTab").className=v==="home"?"active":"secondary";$("ksebTab").className=v==="kseb"?"active":"secondary";$("viewTitle").textContent=v==="home"?"HOME DASHBOARD":"KSEB DASHBOARD";$("viewDesc").textContent=v==="home"?"Consumer view • Live Power Guard readings":"Utility monitoring view • Live readings and protection alerts";$("readingTitle").textContent=v==="home"?"LIVE READINGS":"LIVE SYSTEM TELEMETRY";$("ksebInfo").classList.toggle("hidden",v!=="kseb")}
+$("homeTab").addEventListener("click",()=>chooseView("home"));$("ksebTab").addEventListener("click",()=>chooseView("kseb"));
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginError").textContent="";$("loginBtn").disabled=true;$("loginBtn").textContent="Signing in…";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(err){$("loginError").textContent="Sign-in failed: "+(err?.message||"Check your account and try again.")}finally{$("loginBtn").disabled=false;$("loginBtn").textContent="Sign in"}});
+$("logout").addEventListener("click",()=>signOut(auth));
+function render(d){if(!d){$("status").textContent="WAITING FOR ESP32";$("status").className="status warn";$("statusNote").textContent="No data found at powerGuard/live yet.";return}
+$("voltage").textContent=fmt(d.voltage);$("current").textContent=fmt(d.current,3);$("power").textContent=fmt(d.power);$("energy").textContent=fmt(d.energyWh);$("cost").textContent=fmt(d.cost);
+$("supply").textContent=bool(d.supplyOn);$("load").textContent=bool(d.loadOn);$("oled").textContent=bool(d.oled);$("vsensor").textContent=bool(d.voltageSensor);$("isensor").textContent=bool(d.currentSensor);
+let s=d.status||"";if(d.overVoltage===true||/over.?voltage/i.test(s))s="OVER VOLTAGE";else if(d.overload===true||/overload/i.test(s))s="OVERLOAD";else if(d.diagFault===true)s="SYSTEM FAULT";else if(!s)s=d.supplyOn===false?"SUPPLY OFF":"NORMAL";
+$("status").textContent=String(s).toUpperCase();let f=/OVER VOLTAGE|OVERLOAD|FAULT|ERROR/i.test(s),w=/WAIT|OFFLINE|SUPPLY OFF|CHECK/i.test(s);$("status").className="status "+(f?"fault":w?"warn":"normal");$("statusNote").textContent=f?"Protection alert reported by ESP32. Check the physical system safely.":d.supplyOn===false?"Supply is reported off.":"Latest status received from Power Guard.";
+$("alertState").textContent=f?"ALERT: "+String(s).toUpperCase():"No active fault reported";let ts=Number(d.updatedMillis);$("updated").textContent=ts>0?new Date(ts).toLocaleTimeString():"Just received";connection("Firebase live","ok")}
+onAuthStateChanged(auth,user=>{if(stop){stop();stop=null}if(!user){$("loginPanel").classList.remove("hidden");$("app").classList.add("hidden");connection("Signed out");return}$("loginPanel").classList.add("hidden");$("app").classList.remove("hidden");connection("Connecting…");chooseView("home");stop=onValue(ref(db,"powerGuard/live"),s=>render(s.val()),e=>{connection("Database error","bad");$("status").textContent="FIREBASE ERROR";$("status").className="status fault";$("statusNote").textContent=e.message||"Check Firebase Database Rules."})});
 </script></body></html>
