@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Guard | Consumer & KSEB</title><meta name="theme-color" content="#09111f">
+<style>
+:root{color-scheme:dark;--bg:#09111f;--panel:#121e30;--line:#2a3b52;--muted:#a8b7ca;--text:#f1f6ff;--blue:#55adff;--green:#36d6a0;--red:#ff6578;--amber:#ffcc66}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#172c49 0,var(--bg) 60%);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);min-height:100vh}main{max-width:960px;margin:auto;padding:22px 15px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.brand{font-size:12px;letter-spacing:.17em;color:var(--blue);font-weight:850}.title{font-size:clamp(27px,5vw,38px);font-weight:850;margin:5px 0}.sub,.muted{color:var(--muted);font-size:14px}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}
+.panel{background:rgba(18,30,48,.96);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 12px 30px #0002}h2{font-size:14px;letter-spacing:.09em;margin:0 0 14px;color:#d0e0f5}
+label{display:block;font-size:13px;color:var(--muted);margin-top:8px}input{width:100%;background:#0b1524;border:1px solid #30445d;border-radius:10px;padding:12px;color:var(--text);margin:6px 0 10px;font-size:15px}
+button{background:var(--blue);color:#06111f;border:0;border-radius:11px;padding:12px 16px;font-weight:850;cursor:pointer}button:disabled{opacity:.55}.secondary{background:#22344a;color:var(--text);border:1px solid #344b66}.danger{background:#ff6578;color:#24040a}.hidden{display:none!important}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.grow{flex:1}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.choice{min-height:125px;text-align:left;background:#172940;color:var(--text);border:1px solid #344b66;padding:18px}.choice strong{display:block;font-size:19px;margin-bottom:7px}.notice{font-size:13px;color:var(--muted);line-height:1.55}.error{color:var(--red);font-size:13px;white-space:pre-wrap;margin-top:8px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.metric{background:#0d1726;border:1px solid #24364b;border-radius:14px;padding:15px;min-height:95px}.label{font-size:12px;color:var(--muted);letter-spacing:.08em}.value{font-size:clamp(25px,5vw,33px);font-weight:800;margin-top:7px;overflow-wrap:anywhere}.unit{font-size:13px;color:var(--muted);font-weight:500}.status{font-size:21px;font-weight:850;margin:3px 0 8px}.normal{color:var(--green)}.warn{color:var(--amber)}.fault{color:var(--red)}.meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:13px}.meta span{border:1px solid var(--line);padding:6px 9px;border-radius:8px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{flex:1;min-width:130px}.tabs .active{background:var(--blue);color:#06111f}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:440px){.choices{grid-template-columns:1fr}}
+</style></head><body><main>
+<header><div><div class="brand">hassaneeeyy • POWER MONITOR</div><div class="title">POWER GUARD</div><div class="sub">Secure online monitoring</div></div><div class="pill"><span class="dot" id="dot"></span><span id="connection">Not connected</span></div></header>
+
+<section class="panel" id="emailStep"><h2>1 · FIREBASE EMAIL LOGIN</h2><p class="notice">Sign in with the Firebase account registered for Power Guard.</p><form id="emailForm"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required><label for="emailPassword">Password</label><input id="emailPassword" type="password" autocomplete="current-password" required><button id="emailBtn">Continue</button><div class="error" id="emailError"></div></form></section>
+
+<section class="panel hidden" id="roleStep"><h2>2 · SELECT LOGIN TYPE</h2><p class="notice">Choose the account type to continue.</p><div class="choices"><button class="choice" id="consumerChoice"><strong>CONSUMER</strong><span class="muted">Consumer number and account password</span></button><button class="choice" id="adminChoice"><strong>KSEB ADMIN</strong><span class="muted">Authorized administrator credentials</span></button></div><div class="row" style="margin-top:14px"><button class="secondary" id="backToEmail">Sign out</button></div></section>
+
+<section class="panel hidden" id="accountStep"><h2 id="accountHeading">ACCOUNT LOGIN</h2><p class="notice" id="accountHint"></p><form id="accountForm"><label id="accountIdLabel" for="accountId">Account ID</label><input id="accountId" autocomplete="username" required><label for="accountPassword">Password</label><input id="accountPassword" type="password" autocomplete="current-password" required><div class="row"><button id="accountBtn">Sign in</button><button type="button" class="secondary" id="backToRole">Back</button></div><div class="error" id="accountError"></div></form></section>
+
+<section id="dashboard" class="hidden">
+ <section class="panel"><div class="row"><div class="grow"><h2 id="dashTitle">HOME DASHBOARD</h2><div class="notice" id="dashSubtitle">Consumer monitoring</div></div><button class="secondary" id="signOut">Sign out</button></div>
+ <div class="status warn" id="status">Waiting for ESP32 data…</div><div class="notice" id="statusNote">Waiting for Firebase data.</div>
+ <div class="meta"><span>Supply: <b id="supply">—</b></span><span>Load: <b id="load">—</b></span><span>OLED: <b id="oled">—</b></span><span>Voltage sensor: <b id="vsensor">—</b></span><span>Current sensor: <b id="isensor">—</b></span></div></section>
+ <section class="panel"><h2>LIVE READINGS</h2><div class="grid">
+ <div class="metric"><div class="label">VOLTAGE</div><div class="value"><span id="voltage">—</span> <span class="unit">V</span></div></div>
+ <div class="metric"><div class="label">CURRENT</div><div class="value"><span id="current">—</span> <span class="unit">A</span></div></div>
+ <div class="metric"><div class="label">POWER</div><div class="value"><span id="power">—</span> <span class="unit">W</span></div></div>
+ <div class="metric"><div class="label">ENERGY</div><div class="value"><span id="energy">—</span> <span class="unit">Wh</span></div></div>
+ <div class="metric"><div class="label">EST. COST</div><div class="value"><span class="unit">₹</span> <span id="cost">—</span></div></div>
+ <div class="metric"><div class="label">LAST UPDATE</div><div class="value" style="font-size:18px" id="updated">—</div></div></div></section>
+ <section class="panel hidden" id="adminControls"><h2>KSEB ADMIN CONTROL</h2><p class="notice">This requests a load cut from the ESP32. The ESP32 firmware must listen for this Firebase command and operate a suitably rated relay locally. Keep physical overload/overvoltage protection independent of this website.</p><div class="row"><button class="danger" id="cutPower">CUT POWER / DISCONNECT LOAD</button><button class="secondary" id="restorePower">RESTORE LOAD</button></div><div class="notice" id="commandResult" style="margin-top:10px">No command sent.</div><div class="error" id="commandError"></div></section>
+ <section class="panel"><div class="row"><div class="grow"><h2>ACCOUNT</h2><div class="notice" id="accountSummary"></div></div></div></section>
+</section>
+</main>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import{getDatabase,ref,onValue,get,set}from"https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+const firebaseConfig={apiKey:"AIzaSyA0IFRa2NwnV38ynd2alYAhIMzUrnKSbHs",authDomain:"power-guard32.firebaseapp.com",databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"power-guard32",storageBucket:"power-guard32.firebasestorage.app",messagingSenderId:"439894450296",appId:"1:439894450296:web:2ca9ff01527071b1428d8d",measurementId:"G-VFJZSHZMST"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app),$=id=>document.getElementById(id);
+let stopLive=null,chosenRole="",sessionUser=null;
+function conn(t,c=""){$("connection").textContent=t;$("dot").className="dot "+c}
+function show(id){$(id).classList.remove("hidden")}function hide(id){$(id).classList.add("hidden")}
+function resetSteps(){["emailStep","roleStep","accountStep","dashboard"].forEach(hide);show("emailStep");chosenRole="";$("emailError").textContent="";$("accountError").textContent=""}
+$("emailForm").addEventListener("submit",async e=>{e.preventDefault();$("emailBtn").disabled=true;$("emailError").textContent="";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("emailPassword").value);sessionUser=auth.currentUser;hide("emailStep");show("roleStep");conn("Email verified","ok")}catch(err){$("emailError").textContent="Email sign-in failed: "+(err.message||"Check your details.")}finally{$("emailBtn").disabled=false}});
+$("backToEmail").addEventListener("click",async()=>{await signOut(auth);sessionUser=null;resetSteps();conn("Signed out")});
+$("consumerChoice").addEventListener("click",()=>openAccount("consumer"));$("adminChoice").addEventListener("click",()=>openAccount("admin"));
+$("backToRole").addEventListener("click",()=>{hide("accountStep");show("roleStep")});
+function openAccount(role){chosenRole=role;$("accountHeading").textContent=role==="consumer"?"CONSUMER LOGIN":"KSEB ADMIN LOGIN";$("accountIdLabel").textContent=role==="consumer"?"Consumer number":"Admin ID";$("accountId").placeholder=role==="consumer"?"Enter consumer number":"Enter admin ID";$("accountHint").textContent=role==="consumer"?"Enter the consumer number and password assigned to your account.":"Enter credentials assigned to an authorized KSEB administrator."; $("accountId").value="";$("accountPassword").value="";$("accountError").textContent="";hide("roleStep");show("accountStep")}
+$("accountForm").addEventListener("submit",async e=>{e.preventDefault();$("accountError").textContent="";$("accountBtn").disabled=true;try{
+ // Account IDs/passwords are checked against records maintained by an authenticated administrator in Realtime Database.
+ const id=$("accountId").value.trim(),pass=$("accountPassword").value;
+ if(!sessionUser)throw new Error("Please complete Firebase email login again.");
+ const snap=await get(ref(db,"powerGuard/accounts/"+encodeURIComponent(id)));
+ const rec=snap.val();
+ if(!rec||rec.role!==chosenRole||rec.password!==pass)throw new Error("Account ID or password is incorrect, or this account has not been configured.");
+ // This simple client-side check is only suitable for a prototype. Do not store plaintext passwords in production.
+ if(chosenRole==="admin"&&rec.enabled!==true)throw new Error("This admin account is not enabled.");
+ hide("accountStep");show("dashboard");$("dashTitle").textContent=chosenRole==="admin"?"KSEB ADMIN DASHBOARD":"CONSUMER HOME DASHBOARD";$("dashSubtitle").textContent=chosenRole==="admin"?"Administrator monitoring and load control":"Consumer account • Live Power Guard readings";$("adminControls").classList.toggle("hidden",chosenRole!=="admin");$("accountSummary").textContent=(chosenRole==="admin"?"KSEB ADMIN: ":"CONSUMER: ")+id+" • Firebase: "+(sessionUser.email||"signed in");conn("Connecting…");startLive();
+ }catch(err){$("accountError").textContent=err.message||"Login failed."}finally{$("accountBtn").disabled=false}});
+$("signOut").addEventListener("click",async()=>{if(stopLive){stopLive();stopLive=null}await signOut(auth);sessionUser=null;resetSteps();conn("Signed out")});
+function fmt(v,d=2){let n=Number(v);return v!==null&&v!==undefined&&Number.isFinite(n)?n.toFixed(d):"—"}
+function bool(v){return v===true?"ON":v===false?"OFF":"—"}
+function render(d){if(!d){$("status").textContent="WAITING FOR ESP32";$("status").className="status warn";$("statusNote").textContent="No data found at powerGuard/live.";return}
+$("voltage").textContent=fmt(d.voltage);$("current").textContent=fmt(d.current,3);$("power").textContent=fmt(d.power);$("energy").textContent=fmt(d.energyWh);$("cost").textContent=fmt(d.cost);$("supply").textContent=bool(d.supplyOn);$("load").textContent=bool(d.loadOn);$("oled").textContent=bool(d.oled);$("vsensor").textContent=bool(d.voltageSensor);$("isensor").textContent=bool(d.currentSensor);
+let s=d.status||"";if(d.overVoltage===true||/over.?voltage/i.test(s))s="OVER VOLTAGE";else if(d.overload===true||/overload/i.test(s))s="OVERLOAD";else if(d.diagFault===true)s="SYSTEM FAULT";else if(!s)s=d.supplyOn===false?"SUPPLY OFF":"NORMAL";$("status").textContent=String(s).toUpperCase();const fault=/OVER VOLTAGE|OVERLOAD|FAULT|ERROR/i.test(s),warn=/WAIT|OFFLINE|SUPPLY OFF|CHECK/i.test(s);$("status").className="status "+(fault?"fault":warn?"warn":"normal");$("statusNote").textContent=fault?"Protection alert reported by ESP32.":"Latest status received from Power Guard.";let ts=Number(d.updatedMillis);$("updated").textContent=ts>0?new Date(ts).toLocaleTimeString():"Just received";conn("Firebase live","ok")}
+function startLive(){if(stopLive)stopLive();stopLive=onValue(ref(db,"powerGuard/live"),s=>render(s.val()),err=>{conn("Database error","bad");$("status").textContent="FIREBASE ERROR";$("status").className="status fault";$("statusNote").textContent=err.message})}
+async function sendCommand(cut){$("commandError").textContent="";$("commandResult").textContent="Sending command…";$("cutPower").disabled=true;$("restorePower").disabled=true;try{if(chosenRole!=="admin")throw new Error("KSEB admin login required.");await set(ref(db,"powerGuard/commands"),{cutPower:cut,requestedBy:sessionUser.uid,requestedAt:Date.now()});$("commandResult").textContent=cut?"Cut-power command sent. Confirm the ESP32 reports load OFF.":"Restore-load command sent. Confirm the ESP32 reports load ON.");}catch(e){$("commandError").textContent="Command failed: "+(e.message||"Check Firebase permissions.")}finally{$("cutPower").disabled=false;$("restorePower").disabled=false}}
+$("cutPower").addEventListener("click",()=>{if(confirm("Send a command to disconnect the low-voltage load?"))sendCommand(true)});$("restorePower").addEventListener("click",()=>{if(confirm("Send a command to restore the low-voltage load?"))sendCommand(false)});
+onAuthStateChanged(auth,user=>{if(!user){if(stopLive){stopLive();stopLive=null}sessionUser=null;resetSteps();conn("Not connected")}else{sessionUser=user}});
+</script></body></html>
