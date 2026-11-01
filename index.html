@@ -3,73 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>POWER GUARD 2.0</title>
+<title>POWER GUARD</title>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <style>
+:root{--bg:#061426;--panel:#0c2340;--panel2:#102d50;--line:#24517c;--blue:#39a8ff;--cyan:#69d8ff;--text:#eaf5ff;--muted:#9bb8d4;--green:#55d6a0;--red:#ff667d;--gold:#e4c19d}
 *{box-sizing:border-box}
-body{margin:0;padding:20px;min-height:100vh;background:#071b20;color:#eaf5f5;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center}
-.container{width:100%;max-width:900px}
-.card{background:#102a30;border:1px solid #28515a;border-radius:16px;padding:24px;margin-bottom:18px}
-.logo{text-align:center;color:#e4c19d;font-size:27px;font-weight:bold;letter-spacing:2px}
-.subtitle{text-align:center;color:#9bb8bd;margin:12px 0 25px}
-h2{text-align:center;color:#e4c19d}
-label{display:block;margin:15px 0 7px;color:#b8d0d3}
-input{width:100%;padding:14px;border-radius:9px;border:1px solid #42656b;background:#071b20;color:white;font-size:15px}
+body{margin:0;min-height:100vh;padding:22px;background:radial-gradient(ellipse at top,#123b68 0%,var(--bg) 62%);color:var(--text);font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center}
+.container{width:100%;max-width:960px}
+.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:23px;margin-bottom:17px;box-shadow:0 12px 35px #0005}
+.brand{text-align:center;color:var(--cyan);font-size:28px;font-weight:800;letter-spacing:2px}
+.byline{text-align:center;color:var(--muted);font-size:13px;letter-spacing:1px;margin-top:7px}
+.subtitle{text-align:center;color:var(--muted);margin:12px 0 24px}
+h2{text-align:center;color:var(--cyan);font-size:20px}
+label{display:block;margin:15px 0 7px;color:#c4dcf3}
+input{width:100%;padding:14px;border-radius:10px;border:1px solid #37648d;background:#06172b;color:white;font-size:15px;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #39a8ff22}
 .password{position:relative}
-.password input{padding-right:48px}
-.eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#e4c19d;font-size:20px}
-button{border:0;border-radius:9px;padding:14px;font-size:14px;font-weight:bold;cursor:pointer;width:100%;margin-top:13px}
-.primary{background:#e4c19d;color:#102a30}
-.secondary{background:#24434a;color:white}
-.danger{background:#a93232;color:white}
-.success{background:#187c5b;color:white}
+.password input{padding-right:50px}
+.eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--cyan);font-size:19px;user-select:none}
+button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;width:100%;margin-top:13px}
+.primary{background:linear-gradient(90deg,#1688e8,#42baff);color:#03172b}
+.secondary{background:#193b5d;color:var(--text);border:1px solid #35648c}
+.danger{background:#b8324b;color:white}
+.success{background:#167c67;color:white}
 .hidden{display:none!important}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.metric{background:#071b20;border:1px solid #28515a;padding:17px;border-radius:12px;min-width:0}
-.metric small{color:#9bb8bd}
-.metric strong{display:block;font-size:23px;margin-top:9px;overflow-wrap:anywhere}
-.role{padding:22px;text-align:center;background:#071b20;border:1px solid #42656b;border-radius:12px;cursor:pointer}
-.role:hover{border-color:#e4c19d}
-.status{text-align:center;color:#6ed5a5;font-weight:bold}
-.error{color:#ff8787;text-align:center}
-.note{font-size:12px;color:#9bb8bd;line-height:1.6}
+.metric{background:#071a30;border:1px solid #214c75;padding:17px;border-radius:13px;min-width:0}
+.metric small{color:var(--muted)}
+.metric strong{display:block;font-size:25px;margin-top:9px;overflow-wrap:anywhere;color:#f2f9ff}
+.role{padding:22px;text-align:center;background:#071a30;border:1px solid #35648c;border-radius:13px;cursor:pointer}
+.role:hover{border-color:var(--cyan);background:#0c2948}
+.status{text-align:center;color:var(--green);font-weight:bold;overflow-wrap:anywhere}
+.error{color:#ff8998;text-align:center;line-height:1.5}
+.note{font-size:12px;color:var(--muted);line-height:1.6}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .top button{width:auto;margin:0}
-@media(max-width:550px){
+.pill{display:inline-block;border:1px solid #35648c;border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px}
+.footer{text-align:center;color:var(--muted);font-size:12px;padding:8px}
+.connection{padding:11px;border-radius:10px;background:#071a30;border:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.5;margin-top:12px}
+@media(max-width:560px){
+body{padding:12px}
 .grid{grid-template-columns:1fr}
 .card{padding:17px}
-.logo{font-size:23px}
+.brand{font-size:23px}
+.top{align-items:flex-start}
 }
 </style>
 </head>
-<body>
-<div class="container">
 
-<!-- FIRST LOGIN -->
+<body>
+<main class="container">
+
 <section id="login" class="card">
-<div class="logo">POWER GUARD</div>
+<div class="brand">POWER GUARD</div>
+<div class="byline">by hassaneeeyy</div>
 <div class="subtitle">SMART ELECTRICAL MONITORING SYSTEM</div>
-<h2>Sign In</h2>
+
+<h2>SECURE SIGN IN</h2>
 
 <label>Email Address</label>
-<input id="email" type="email" autocomplete="username" placeholder="Enter your email">
+<input id="email" type="email" autocomplete="username" placeholder="Enter authorized email">
 
 <label>Password</label>
 <div class="password">
-<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password">
+<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter Firebase password">
 <span class="eye" onclick="togglePassword('loginPassword',this)">◉</span>
 </div>
 
-<button class="primary" onclick="signIn()">SIGN IN</button>
-<p id="loginError" class="error"></p>
+<button id="loginBtn" class="primary" onclick="signIn()">SIGN IN</button>
+<p id="loginError" class="error" role="alert"></p>
+
+<div class="note">
+Only the registered email is accepted. The password is verified by Firebase Authentication.
+</div>
 </section>
 
-<!-- ACCOUNT SELECTION -->
 <section id="roleScreen" class="card hidden">
-<div class="logo">POWER GUARD</div>
-<h2>Select Account</h2>
+<div class="brand">POWER GUARD</div>
+<div class="byline">by hassaneeeyy</div>
+
+<h2>SELECT ACCOUNT</h2>
 
 <div class="grid">
 <div class="role" onclick="selectRole('consumer')">
@@ -85,11 +102,10 @@ button{border:0;border-radius:9px;padding:14px;font-size:14px;font-weight:bold;c
 
 <div id="rolePasswordArea" class="hidden">
 <h2 id="selectedRole"></h2>
-<p class="note">Prototype role passwords are checked in this page and are not secure for public deployment.</p>
 
 <label>Account Password</label>
 <div class="password">
-<input id="rolePassword" type="password" autocomplete="current-password" placeholder="Verify your password">
+<input id="rolePassword" type="password" placeholder="Enter account password">
 <span class="eye" onclick="togglePassword('rolePassword',this)">◉</span>
 </div>
 
@@ -100,79 +116,91 @@ button{border:0;border-radius:9px;padding:14px;font-size:14px;font-weight:bold;c
 <button class="secondary" onclick="logout()">LOG OUT</button>
 </section>
 
-<!-- CONSUMER DASHBOARD -->
 <section id="consumerDashboard" class="hidden">
 
 <div class="card">
 <div class="top">
-<div class="logo">POWER GUARD</div>
-<button class="secondary" onclick="logout()">LOG OUT</button>
+<div>
+<div class="brand">POWER GUARD</div>
+<div class="byline">by hassaneeeyy</div>
 </div>
-<p class="subtitle">CONSUMER DASHBOARD</p>
-<div class="status" id="consumerStatus">Connecting...</div>
+<span class="pill">CONSUMER</span>
+</div>
+
+<p class="subtitle">LIVE ELECTRICAL MONITORING</p>
+<div class="status" id="consumerStatus">Connecting to Firebase…</div>
+<div class="connection" id="consumerConnection">Waiting for live data at powerGuard/live.</div>
 </div>
 
 <div class="card">
-<h2>Electrical Monitoring</h2>
+<h2>LIVE READINGS</h2>
 <div class="grid">
 
-<div class="metric"><small>Voltage</small><strong id="cVoltage">-- V</strong></div>
-<div class="metric"><small>Current</small><strong id="cCurrent">-- A</strong></div>
-<div class="metric"><small>Active Power</small><strong id="cPower">-- W</strong></div>
-<div class="metric"><small>Apparent Power</small><strong id="cApparent">-- VA</strong></div>
-<div class="metric"><small>Power Factor</small><strong id="cPF">--</strong></div>
-<div class="metric"><small>Frequency</small><strong id="cFrequency">-- Hz</strong></div>
-<div class="metric"><small>Energy</small><strong id="cEnergy">-- Wh</strong></div>
-<div class="metric"><small>Running Cost</small><strong id="cCost">₹ --</strong></div>
+<div class="metric"><small>VOLTAGE</small><strong id="cVoltage">— V</strong></div>
+<div class="metric"><small>CURRENT</small><strong id="cCurrent">— A</strong></div>
+<div class="metric"><small>ACTIVE POWER</small><strong id="cPower">— W</strong></div>
+<div class="metric"><small>APPARENT POWER</small><strong id="cApparent">— VA</strong></div>
+<div class="metric"><small>POWER FACTOR</small><strong id="cPF">—</strong></div>
+<div class="metric"><small>FREQUENCY</small><strong id="cFrequency">— Hz</strong></div>
+<div class="metric"><small>ENERGY</small><strong id="cEnergy">— Wh</strong></div>
+<div class="metric"><small>RUNNING COST</small><strong id="cCost">₹ —</strong></div>
 
 </div>
 </div>
 
 <div class="card">
-<h2>System Status</h2>
-<p id="cLoad">Load: --</p>
-<p id="cProtection">Protection: --</p>
-<p id="cUpdated">Last updated: --</p>
+<h2>SYSTEM STATUS</h2>
+<p id="cSupply">Supply: —</p>
+<p id="cLoad">Load: —</p>
+<p id="cProtection">Protection: —</p>
+<p id="cUpdated">Last updated: —</p>
 </div>
+
+<button class="secondary" onclick="logout()">LOG OUT</button>
 </section>
 
-<!-- KSEB ADMIN DASHBOARD -->
 <section id="adminDashboard" class="hidden">
 
 <div class="card">
 <div class="top">
-<div class="logo">POWER GUARD</div>
-<button class="secondary" onclick="logout()">LOG OUT</button>
+<div>
+<div class="brand">POWER GUARD</div>
+<div class="byline">by hassaneeeyy</div>
 </div>
-<p class="subtitle">KSEB ADMIN DASHBOARD</p>
-<div class="status" id="adminStatus">Connecting...</div>
+<span class="pill">KSEB ADMIN</span>
+</div>
+
+<p class="subtitle">ADMIN MONITORING DASHBOARD</p>
+<div class="status" id="adminStatus">Connecting to Firebase…</div>
+<div class="connection" id="adminConnection">Waiting for live data at powerGuard/live.</div>
 </div>
 
 <div class="card">
-<h2>Live Monitoring</h2>
+<h2>LIVE READINGS</h2>
 <div class="grid">
 
-<div class="metric"><small>Voltage</small><strong id="aVoltage">-- V</strong></div>
-<div class="metric"><small>Current</small><strong id="aCurrent">-- A</strong></div>
-<div class="metric"><small>Active Power</small><strong id="aPower">-- W</strong></div>
-<div class="metric"><small>Apparent Power</small><strong id="aApparent">-- VA</strong></div>
-<div class="metric"><small>Power Factor</small><strong id="aPF">--</strong></div>
-<div class="metric"><small>Frequency</small><strong id="aFrequency">-- Hz</strong></div>
-<div class="metric"><small>Energy</small><strong id="aEnergy">-- Wh</strong></div>
-<div class="metric"><small>Running Cost</small><strong id="aCost">₹ --</strong></div>
+<div class="metric"><small>VOLTAGE</small><strong id="aVoltage">— V</strong></div>
+<div class="metric"><small>CURRENT</small><strong id="aCurrent">— A</strong></div>
+<div class="metric"><small>ACTIVE POWER</small><strong id="aPower">— W</strong></div>
+<div class="metric"><small>APPARENT POWER</small><strong id="aApparent">— VA</strong></div>
+<div class="metric"><small>POWER FACTOR</small><strong id="aPF">—</strong></div>
+<div class="metric"><small>FREQUENCY</small><strong id="aFrequency">— Hz</strong></div>
+<div class="metric"><small>ENERGY</small><strong id="aEnergy">— Wh</strong></div>
+<div class="metric"><small>RUNNING COST</small><strong id="aCost">₹ —</strong></div>
 
 </div>
 </div>
 
 <div class="card">
-<h2>System Information</h2>
-<p id="aLoad">Load: --</p>
-<p id="aProtection">Protection: --</p>
-<p id="aUpdated">Last updated: --</p>
+<h2>SYSTEM STATUS</h2>
+<p id="aSupply">Supply: —</p>
+<p id="aLoad">Load: —</p>
+<p id="aProtection">Protection: —</p>
+<p id="aUpdated">Last updated: —</p>
 </div>
 
 <div class="card">
-<h2>Power Control</h2>
+<h2>POWER CONTROL</h2>
 <button class="danger" onclick="demoPower('CUT POWER')">CUT POWER</button>
 <button class="success" onclick="demoPower('RESTORE POWER')">RESTORE POWER</button>
 <p class="note">Demonstration controls only. These buttons do not operate the 220V relay.</p>
@@ -180,23 +208,27 @@ button{border:0;border-radius:9px;padding:14px;font-size:14px;font-weight:bold;c
 </div>
 
 <div class="card">
-<h2>Cost Management</h2>
+<h2>COST MANAGEMENT</h2>
 <button class="primary" onclick="resetCost()">RESET COST</button>
 <p id="adminMessage" class="status"></p>
 </div>
 
+<button class="secondary" onclick="logout()">LOG OUT</button>
 </section>
-</div>
+
+<div class="footer">POWER GUARD · by hassaneeeyy</div>
+</main>
 
 <script>
+// Firebase configuration
 const firebaseConfig={
-apiKey:"AIzaSyDFWE5aJRr8xcsoP6T9O3xLOiBCAmxaQwY",
+apiKey:"AIzaSyA0IFRa2NwnV38ynd2alYAhIMzUrnKSbHs",
 authDomain:"power-guard32.firebaseapp.com",
 databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
 projectId:"power-guard32",
 storageBucket:"power-guard32.firebasestorage.app",
-messagingSenderId:"ADD_YOUR_MESSAGING_SENDER_ID",
-appId:"ADD_YOUR_WEB_APP_ID"
+messagingSenderId:"439894450296",
+appId:"1:439894450296:web:2ca9ff01527071b1428d8d"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -204,171 +236,241 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.database();
 
+const ALLOWED_EMAIL="schoolprojectesp@gmail.com";
+
 let currentRole="";
-let monitoringStarted=false;
+let liveRef=null;
+
+const $=id=>document.getElementById(id);
 
 function togglePassword(id,icon){
-const f=document.getElementById(id);
+const f=$(id);
 f.type=f.type==="password"?"text":"password";
 icon.textContent=f.type==="password"?"◉":"◎";
 }
 
-async function signIn(){
-const email=document.getElementById("email").value.trim();
-const password=document.getElementById("loginPassword").value;
-const error=document.getElementById("loginError");
+function showOnly(id){
+["login","roleScreen","consumerDashboard","adminDashboard"].forEach(x=>{
+$(x).classList.toggle("hidden",x!==id);
+});
+}
 
-error.textContent="";
+async function signIn(){
+
+const email=$("email").value.trim().toLowerCase();
+const password=$("loginPassword").value;
+
+$("loginError").textContent="";
+
+if(email!==ALLOWED_EMAIL){
+$("loginError").textContent="Access denied. Only the authorized email can sign in.";
+return;
+}
+
+if(!password){
+$("loginError").textContent="Enter your password.";
+return;
+}
+
+$("loginBtn").disabled=true;
+$("loginBtn").textContent="SIGNING IN…";
 
 try{
 await auth.signInWithEmailAndPassword(email,password);
-document.getElementById("login").classList.add("hidden");
-document.getElementById("roleScreen").classList.remove("hidden");
+showOnly("roleScreen");
 }
 catch(e){
-error.textContent="Login failed: "+e.message;
+$("loginError").textContent="Firebase sign-in failed: "+(e.code||e.message)+". Check that this email account exists and its password is correct.";
+}
+finally{
+$("loginBtn").disabled=false;
+$("loginBtn").textContent="SIGN IN";
 }
 }
 
 function selectRole(role){
+
 currentRole=role;
 
-document.getElementById("selectedRole").textContent=
-role==="admin"?"KSEB ADMIN":"CONSUMER";
+$("selectedRole").textContent=role==="admin"?"KSEB ADMIN LOGIN":"CONSUMER LOGIN";
 
-document.getElementById("rolePasswordArea").classList.remove("hidden");
-document.getElementById("rolePassword").value="";
-document.getElementById("roleError").textContent="";
+$("rolePasswordArea").classList.remove("hidden");
+$("rolePassword").value="";
+$("roleError").textContent="";
 }
 
-async function enterDashboard(){
-const password=document.getElementById("rolePassword").value;
-const error=document.getElementById("roleError");
-const user=auth.currentUser;
+function enterDashboard(){
 
-error.textContent="";
+const pass=$("rolePassword").value;
+const expected=currentRole==="consumer"?"CONSUMER123":"KSEB123";
 
-if(!user){
-error.textContent="Please complete the email sign-in first.";
+if(!auth.currentUser){
+$("roleError").textContent="Please sign in again.";
 return;
 }
 
-const expectedPassword=
-currentRole==="consumer"?"CONSUMER123":"KSEB123";
-
-if(password!==expectedPassword){
-error.textContent="Incorrect account password.";
+if(pass!==expected){
+$("roleError").textContent="Incorrect account password.";
 return;
 }
 
-document.getElementById("roleScreen").classList.add("hidden");
-
-if(currentRole==="consumer"){
-document.getElementById("consumerDashboard").classList.remove("hidden");
-}
-else{
-document.getElementById("adminDashboard").classList.remove("hidden");
-}
+showOnly(currentRole==="consumer"?"consumerDashboard":"adminDashboard");
 
 startMonitoring();
 }
 
-function startMonitoring(){
+function fmt(v,d=2){
 
-if(monitoringStarted)return;
-monitoringStarted=true;
+const n=Number(v);
 
-db.ref("/powerGuard").on("value",snapshot=>{
-
-const d=snapshot.val()||{};
-
-const fields={
-Voltage:[d.voltage," V"],
-Current:[d.current," A"],
-Power:[d.power," W"],
-Apparent:[d.apparentPower," VA"],
-PF:[d.powerFactor,""],
-Frequency:[d.frequency," Hz"],
-Energy:[d.energyWh," Wh"],
-Cost:[d.cost,""]
-};
-
-for(const [k,v] of Object.entries(fields)){
-
-const shown=v[0]??"--";
-const c=document.getElementById("c"+k);
-const a=document.getElementById("a"+k);
-
-if(c)c.textContent=k==="Cost"?"₹ "+shown:shown+v[1];
-if(a)a.textContent=k==="Cost"?"₹ "+shown:shown+v[1];
-
+return v!==null&&v!==undefined&&Number.isFinite(n)?n.toFixed(d):"—";
 }
 
-const load=
-d.loadOn===true?"ON":
-d.loadOn===false?"OFF":"UNKNOWN";
+function bool(v){
 
-const protection=d.status??"UNKNOWN";
+return v===true?"ON":v===false?"OFF":"—";
+}
 
-const updated=d.updatedMillis?
-new Date(d.updatedMillis).toLocaleString():"--";
+function updateDashboard(prefix,d){
 
-["c","a"].forEach(p=>{
+$(prefix+"Voltage").textContent=fmt(d.voltage)+" V";
+$(prefix+"Current").textContent=fmt(d.current,3)+" A";
+$(prefix+"Power").textContent=fmt(d.power)+" W";
+$(prefix+"Apparent").textContent=fmt(d.apparentPower)+" VA";
+$(prefix+"PF").textContent=fmt(d.powerFactor,3);
+$(prefix+"Frequency").textContent=fmt(d.frequency)+" Hz";
+$(prefix+"Energy").textContent=fmt(d.energyWh)+" Wh";
+$(prefix+"Cost").textContent="₹ "+fmt(d.cost);
 
-document.getElementById(p+"Load").textContent="Load: "+load;
-document.getElementById(p+"Protection").textContent="Protection: "+protection;
-document.getElementById(p+"Updated").textContent="Last updated: "+updated;
+$(prefix+"Supply").textContent="Supply: "+bool(d.supplyOn);
+$(prefix+"Load").textContent="Load: "+bool(d.loadOn);
+
+let status=d.status||"NORMAL";
+
+if(d.overload===true){
+status="OVERLOAD";
+}else if(d.overVoltage===true){
+status="OVER VOLTAGE";
+}
+
+$(prefix+"Protection").textContent="Protection: "+String(status).toUpperCase();
+
+const ts=Number(d.updatedMillis);
+
+$(prefix+"Updated").textContent="Last updated: "+
+(ts>0?new Date(ts).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"}):"Timestamp not supplied");
+}
+
+function startMonitoring(){
+
+if(liveRef)liveRef.off();
+
+const path="powerGuard/live";
+
+liveRef=db.ref(path);
+
+liveRef.on("value",snap=>{
+
+const d=snap.val();
+
+if(!d){
+setLiveMessage("No data found at "+path+". Check that the ESP32 writes its readings to this exact path.",false);
+return;
+}
+
+updateDashboard("c",d);
+updateDashboard("a",d);
+
+setLiveMessage("Connected · Live data received from Firebase.",true);
+
+},err=>{
+
+setLiveMessage("Database read error: "+err.message+". Check Realtime Database rules and sign-in permissions.",false);
 
 });
+}
 
-document.getElementById("consumerStatus").textContent="LIVE DATABASE";
-document.getElementById("adminStatus").textContent="LIVE DATABASE";
+function setLiveMessage(msg,ok){
 
-},error=>{
+["consumerConnection","adminConnection"].forEach(id=>{
+if($(id))$(id).textContent=msg;
+});
 
-document.getElementById("consumerStatus").textContent="DATABASE ERROR";
-document.getElementById("adminStatus").textContent="DATABASE ERROR";
+["consumerStatus","adminStatus"].forEach(id=>{
+
+if($(id)){
+$(id).textContent=ok?"LIVE DATA CONNECTED":"WAITING / CONNECTION ISSUE";
+$(id).style.color=ok?"var(--green)":"var(--red)";
+}
 
 });
 }
 
 function demoPower(action){
 
-if(!confirm("Show "+action+" demonstration?"))return;
-
-document.getElementById("powerMessage").textContent=
-action+" selected — demonstration only; no relay command sent.";
+$("powerMessage").textContent=action+" selected — demo only; no relay command was sent.";
 
 }
 
 async function resetCost(){
 
-if(!confirm("Send cost reset request to Power Guard?"))return;
+if(!confirm("Send cost reset request?"))return;
 
 try{
 
-await db.ref("/powerGuard/commands/resetCost").set(true);
+await db.ref("powerGuard/commands/resetCost").set(true);
 
-document.getElementById("adminMessage").textContent=
-"Cost reset request sent.";
+$("adminMessage").textContent="Cost reset request sent.";
 
-}
-catch(e){
+}catch(e){
 
-document.getElementById("adminMessage").textContent=
-"Database error: "+e.message;
+$("adminMessage").textContent="Database error: "+e.message;
 
 }
-
 }
 
 async function logout(){
 
-if(auth.currentUser)await auth.signOut();
+if(liveRef){
+liveRef.off();
+liveRef=null;
+}
 
-location.reload();
+await auth.signOut();
+
+currentRole="";
+
+showOnly("login");
+
+$("loginPassword").value="";
+$("rolePassword").value="";
 
 }
+
+auth.onAuthStateChanged(user=>{
+
+if(!user){
+
+if(liveRef){
+liveRef.off();
+liveRef=null;
+}
+
+showOnly("login");
+
+return;
+}
+
+if((user.email||"").toLowerCase()!==ALLOWED_EMAIL){
+
+auth.signOut();
+
+$("loginError").textContent="Access denied for this email.";
+
+}
+
+});
+
 </script>
 </body>
 </html>
