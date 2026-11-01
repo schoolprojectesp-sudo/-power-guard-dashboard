@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POWER GUARD 2.0</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;padding:20px;min-height:100vh;
+ background:#071b20;color:#eaf5f5;
+ font-family:Arial,sans-serif;
+ display:flex;justify-content:center;align-items:center
+}
+.container{width:100%;max-width:900px}
+.card{
+ background:#102a30;border:1px solid #28515a;
+ border-radius:16px;padding:24px;margin-bottom:18px
+}
+.logo{
+ text-align:center;color:#e4c19d;
+ font-size:27px;font-weight:bold;letter-spacing:2px
+}
+.subtitle{text-align:center;color:#9bb8bd;margin:12px 0 25px}
+h2{text-align:center;color:#e4c19d}
+label{display:block;margin:15px 0 7px;color:#b8d0d3}
+input{
+ width:100%;padding:14px;border-radius:9px;
+ border:1px solid #42656b;background:#071b20;
+ color:white;font-size:15px
+}
+.password{position:relative}
+.password input{padding-right:48px}
+.eye{
+ position:absolute;right:14px;top:50%;
+ transform:translateY(-50%);cursor:pointer;
+ color:#e4c19d;font-size:20px
+}
+button{
+ border:0;border-radius:9px;padding:14px;
+ font-size:14px;font-weight:bold;cursor:pointer;
+ width:100%;margin-top:13px
+}
+.primary{background:#e4c19d;color:#102a30}
+.secondary{background:#24434a;color:white}
+.danger{background:#a93232;color:white}
+.success{background:#187c5b;color:white}
+.hidden{display:none!important}
+.grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:13px
+}
+.metric{
+ background:#071b20;border:1px solid #28515a;
+ padding:17px;border-radius:12px;min-width:0
+}
+.metric small{color:#9bb8bd}
+.metric strong{
+ display:block;font-size:23px;margin-top:9px;
+ overflow-wrap:anywhere
+}
+.role{
+ padding:22px;text-align:center;background:#071b20;
+ border:1px solid #42656b;border-radius:12px;cursor:pointer
+}
+.role:hover{border-color:#e4c19d}
+.status{text-align:center;color:#6ed5a5;font-weight:bold}
+.error{color:#ff8787;text-align:center}
+.note{font-size:12px;color:#9bb8bd;line-height:1.6}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.top button{width:auto;margin:0}
+@media(max-width:550px){
+ .grid{grid-template-columns:1fr}
+ .card{padding:17px}
+ .logo{font-size:23px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- LOGIN SCREEN -->
+<section id="login" class="card">
+ <div class="logo">POWER GUARD</div>
+ <div class="subtitle">SMART ELECTRICAL MONITORING SYSTEM</div>
+
+ <h2>Sign In</h2>
+
+ <label>Email Address</label>
+ <input id="email" type="email" placeholder="Enter your email">
+
+ <label>Password</label>
+ <div class="password">
+  <input id="loginPassword" type="password" placeholder="Enter password">
+  <span class="eye" onclick="togglePassword('loginPassword',this)">◉</span>
+ </div>
+
+ <button class="primary" onclick="signIn()">SIGN IN</button>
+ <p id="loginError" class="error"></p>
+</section>
+
+<!-- ACCOUNT SELECTION -->
+<section id="roleScreen" class="card hidden">
+ <div class="logo">POWER GUARD</div>
+ <h2>Select Account</h2>
+
+ <div class="grid">
+  <div class="role" onclick="selectRole('consumer')">
+   <h3>CONSUMER</h3>
+   <p class="note">Electrical monitoring and energy usage</p>
+  </div>
+
+  <div class="role" onclick="selectRole('admin')">
+   <h3>KSEB ADMIN</h3>
+   <p class="note">Monitoring and administration</p>
+  </div>
+ </div>
+
+ <div id="rolePasswordArea" class="hidden">
+  <h2 id="selectedRole"></h2>
+
+  <label>Account Password</label>
+  <div class="password">
+   <input id="rolePassword" type="password" placeholder="Enter password">
+   <span class="eye" onclick="togglePassword('rolePassword',this)">◉</span>
+  </div>
+
+  <button class="primary" onclick="enterDashboard()">CONTINUE</button>
+  <p id="roleError" class="error"></p>
+ </div>
+
+ <button class="secondary" onclick="logout()">LOG OUT</button>
+</section>
+
+<!-- CONSUMER DASHBOARD -->
+<section id="consumerDashboard" class="hidden">
+
+ <div class="card">
+  <div class="top">
+   <div class="logo">POWER GUARD</div>
+   <button class="secondary" onclick="logout()">LOG OUT</button>
+  </div>
+  <p class="subtitle">CONSUMER DASHBOARD</p>
+  <div class="status" id="consumerStatus">Connecting...</div>
+ </div>
+
+ <div class="card">
+  <h2>Electrical Monitoring</h2>
+
+  <div class="grid">
+   <div class="metric"><small>Voltage</small><strong id="cVoltage">-- V</strong></div>
+   <div class="metric"><small>Current</small><strong id="cCurrent">-- A</strong></div>
+   <div class="metric"><small>Active Power</small><strong id="cPower">-- W</strong></div>
+   <div class="metric"><small>Apparent Power</small><strong id="cApparent">-- VA</strong></div>
+   <div class="metric"><small>Power Factor</small><strong id="cPF">--</strong></div>
+   <div class="metric"><small>Frequency</small><strong id="cFrequency">-- Hz</strong></div>
+   <div class="metric"><small>Energy</small><strong id="cEnergy">-- Wh</strong></div>
+   <div class="metric"><small>Running Cost</small><strong id="cCost">₹ --</strong></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>System Status</h2>
+  <p id="cLoad">Load: --</p>
+  <p id="cProtection">Protection: --</p>
+  <p id="cUpdated">Last updated: --</p>
+ </div>
+</section>
+
+<!-- KSEB ADMIN DASHBOARD -->
+<section id="adminDashboard" class="hidden">
+
+ <div class="card">
+  <div class="top">
+   <div class="logo">POWER GUARD</div>
+   <button class="secondary" onclick="logout()">LOG OUT</button>
+  </div>
+  <p class="subtitle">KSEB ADMIN DASHBOARD</p>
+  <div class="status" id="adminStatus">Connecting...</div>
+ </div>
+
+ <div class="card">
+  <h2>Live Monitoring</h2>
+
+  <div class="grid">
+   <div class="metric"><small>Voltage</small><strong id="aVoltage">-- V</strong></div>
+   <div class="metric"><small>Current</small><strong id="aCurrent">-- A</strong></div>
+   <div class="metric"><small>Active Power</small><strong id="aPower">-- W</strong></div>
+   <div class="metric"><small>Apparent Power</small><strong id="aApparent">-- VA</strong></div>
+   <div class="metric"><small>Power Factor</small><strong id="aPF">--</strong></div>
+   <div class="metric"><small>Frequency</small><strong id="aFrequency">-- Hz</strong></div>
+   <div class="metric"><small>Energy</small><strong id="aEnergy">-- Wh</strong></div>
+   <div class="metric"><small>Running Cost</small><strong id="aCost">₹ --</strong></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>System Information</h2>
+  <p id="aLoad">Load: --</p>
+  <p id="aProtection">Protection: --</p>
+  <p id="aUpdated">Last updated: --</p>
+ </div>
+
+ <div class="card">
+  <h2>Power Control</h2>
+
+  <button class="danger" onclick="demoPower('CUT POWER')">
+   CUT POWER
+  </button>
+
+  <button class="success" onclick="demoPower('RESTORE POWER')">
+   RESTORE POWER
+  </button>
+
+  <p class="note">
+   Demonstration controls only. These buttons do not operate the 220V relay.
+  </p>
+  <p id="powerMessage" class="status"></p>
+ </div>
+
+ <div class="card">
+  <h2>Cost Management</h2>
+  <button class="primary" onclick="resetCost()">RESET COST</button>
+  <p id="adminMessage" class="status"></p>
+ </div>
+</section>
+
+</div>
+
+<script>
+// FIREBASE CONFIGURATION
+const firebaseConfig = {
+ apiKey:"AIzaSyDFWE5aJRr8xcsoP6T9O3xLOiBCAmxaQwY",
+ authDomain:"power-guard32.firebaseapp.com",
+ databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"power-guard32",
+ storageBucket:"power-guard32.firebasestorage.app",
+ messagingSenderId:"ADD_YOUR_MESSAGING_SENDER_ID",
+ appId:"ADD_YOUR_WEB_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth=firebase.auth();
+const db=firebase.database();
+
+let currentRole="";
+let monitoringStarted=false;
+
+// PASSWORD VISIBILITY
+function togglePassword(id,icon){
+ const field=document.getElementById(id);
+ field.type=field.type==="password"?"text":"password";
+ icon.textContent=field.type==="password"?"◉":"◎";
+}
+
+// FIREBASE LOGIN
+async function signIn(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("loginPassword").value;
+ const error=document.getElementById("loginError");
+
+ error.textContent="";
+
+ try{
+  await auth.signInWithEmailAndPassword(email,password);
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("roleScreen").classList.remove("hidden");
+ }catch(e){
+  error.textContent="Login failed: "+e.message;
+ }
+}
+
+// ACCOUNT SELECTION
+function selectRole(role){
+ currentRole=role;
+
+ document.getElementById("selectedRole").textContent=
+  role==="admin"?"KSEB ADMIN":"CONSUMER";
+
+ document.getElementById("rolePasswordArea").classList.remove("hidden");
+ document.getElementById("rolePassword").value="";
+ document.getElementById("roleError").textContent="";
+}
+
+// PASSWORD VERIFICATION
+async function enterDashboard(){
+ const password=document.getElementById("rolePassword").value;
+ const error=document.getElementById("roleError");
+ const user=auth.currentUser;
+
+ error.textContent="";
+
+ if(!user){
+  error.textContent="Please sign in again.";
+  return;
+ }
+
+ try{
+  const credential=firebase.auth.EmailAuthProvider.credential(
+   user.email,password
+  );
+
+  await user.reauthenticateWithCredential(credential);
+
+  // Actual account roles must be enforced by Firebase security rules.
+  document.getElementById("roleScreen").classList.add("hidden");
+
+  if(currentRole==="consumer"){
+   document.getElementById("consumerDashboard").classList.remove("hidden");
+  }else{
+   document.getElementById("adminDashboard").classList.remove("hidden");
+  }
+
+  startMonitoring();
+
+ }catch(e){
+  error.textContent="Password verification failed.";
+ }
+}
+
+// FIREBASE LIVE MONITORING
+function startMonitoring(){
+ if(monitoringStarted)return;
+ monitoringStarted=true;
+
+ db.ref("/powerGuard").on("value",snapshot=>{
+  const data=snapshot.val()||{};
+
+  const fields={
+   Voltage:[data.voltage," V"],
+   Current:[data.current," A"],
+   Power:[data.power," W"],
+   Apparent:[data.apparentPower," VA"],
+   PF:[data.powerFactor,""],
+   Frequency:[data.frequency," Hz"],
+   Energy:[data.energyWh," Wh"],
+   Cost:[data.cost,""]
+  };
+
+  for(const [key,value] of Object.entries(fields)){
+   const shown=value[0]??"--";
+   const suffix=value[1];
+
+   const c=document.getElementById("c"+key);
+   const a=document.getElementById("a"+key);
+
+   if(c)c.textContent=key==="Cost"?"₹ "+shown:shown+suffix;
+   if(a)a.textContent=key==="Cost"?"₹ "+shown:shown+suffix;
+  }
+
+  const load=data.loadOn===true?"ON":
+   data.loadOn===false?"OFF":"UNKNOWN";
+
+  const protection=data.status??"UNKNOWN";
+
+  const updated=data.updatedMillis?
+   new Date(data.updatedMillis).toLocaleString():"--";
+
+  ["c","a"].forEach(prefix=>{
+   document.getElementById(prefix+"Load").textContent="Load: "+load;
+   document.getElementById(prefix+"Protection").textContent=
+    "Protection: "+protection;
+   document.getElementById(prefix+"Updated").textContent=
+    "Last updated: "+updated;
+  });
+
+  document.getElementById("consumerStatus").textContent="LIVE DATABASE";
+  document.getElementById("adminStatus").textContent="LIVE DATABASE";
+
+ },error=>{
+  document.getElementById("consumerStatus").textContent="DATABASE ERROR";
+  document.getElementById("adminStatus").textContent="DATABASE ERROR";
+ });
+}
+
+// POWER CONTROL DEMONSTRATION ONLY
+function demoPower(action){
+ if(!confirm("Show "+action+" demonstration?"))return;
+
+ document.getElementById("powerMessage").textContent=
+  action+" selected — demonstration only; no relay command sent.";
+}
+
+// RESET COST REQUEST
+async function resetCost(){
+ if(!confirm("Send cost reset request to Power Guard?"))return;
+
+ try{
+  await db.ref("/powerGuard/commands/resetCost").set(true);
+
+  document.getElementById("adminMessage").textContent=
+   "Cost reset request sent.";
+
+ }catch(e){
+  document.getElementById("adminMessage").textContent=
+   "Database error: "+e.message;
+ }
+}
+
+// LOGOUT
+async function logout(){
+ if(auth.currentUser)await auth.signOut();
+ location.reload();
+}
+</script>
+</body>
+</html>
