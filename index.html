@@ -32,6 +32,7 @@ button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;c
 .success{background:#167c67;color:white}
 .hidden{display:none!important}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
 .metric{background:#071a30;border:1px solid #214c75;padding:17px;border-radius:13px;min-width:0}
 .metric small{color:var(--muted)}
 .metric strong{display:block;font-size:25px;margin-top:9px;overflow-wrap:anywhere;color:#f2f9ff}
@@ -45,6 +46,21 @@ button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;c
 .pill{display:inline-block;border:1px solid #35648c;border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:8px}
 .connection{padding:11px;border-radius:10px;background:#071a30;border:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.5;margin-top:12px}
+.bigstatus{text-align:center;font-size:30px;font-weight:800;padding:14px;border-radius:12px;background:#071a30;border:1px solid #214c75;margin-bottom:12px;letter-spacing:1px}
+.bigstatus.ok{color:var(--green)}
+.bigstatus.bad{color:var(--red);border-color:var(--red)}
+.switchrow{display:flex;justify-content:space-between;align-items:center;gap:14px;background:#071a30;border:1px solid #214c75;border-radius:13px;padding:14px 16px}
+.switchrow strong{display:block;font-size:16px}
+.sw{position:relative;width:64px;height:34px;flex:none;display:inline-block;margin:0}
+.sw input{opacity:0;width:0;height:0;padding:0;border:0}
+.slider{position:absolute;top:0;left:0;right:0;bottom:0;background:#7a2d3d;border-radius:34px;transition:.2s;cursor:pointer}
+.slider:before{content:"";position:absolute;height:26px;width:26px;left:4px;top:4px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+.slider{background:#167c67}
+.sw input:checked+.slider:before{transform:translateX(30px)}
+.sw input:disabled+.slider{opacity:.5;cursor:not-allowed}
+@media(max-width:700px){
+.grid3{grid-template-columns:1fr}
+}
 @media(max-width:560px){
 body{padding:12px}
 .grid{grid-template-columns:1fr}
@@ -58,6 +74,7 @@ body{padding:12px}
 <body>
 <main class="container">
 
+<!-- SIGN-IN SCREEN 1: Firebase email and password -->
 <section id="login" class="card">
 <div class="brand">POWER GUARD</div>
 <div class="byline">by hassaneeeyy</div>
@@ -82,6 +99,7 @@ Only the registered email is accepted. The password is verified by Firebase Auth
 </div>
 </section>
 
+<!-- SIGN-IN SCREEN 2: CONSUMER or KSEB ADMIN -->
 <section id="roleScreen" class="card hidden">
 <div class="brand">POWER GUARD</div>
 <div class="byline">by hassaneeeyy</div>
@@ -91,12 +109,12 @@ Only the registered email is accepted. The password is verified by Firebase Auth
 <div class="grid">
 <div class="role" onclick="selectRole('consumer')">
 <h3>CONSUMER</h3>
-<p class="note">Electrical monitoring and energy usage</p>
+<p class="note">View electrical readings and energy usage</p>
 </div>
 
 <div class="role" onclick="selectRole('admin')">
 <h3>KSEB ADMIN</h3>
-<p class="note">Monitoring and administration</p>
+<p class="note">Monitoring, power control and reset</p>
 </div>
 </div>
 
@@ -116,6 +134,7 @@ Only the registered email is accepted. The password is verified by Firebase Auth
 <button class="secondary" onclick="logout()">LOG OUT</button>
 </section>
 
+<!-- CONSUMER DASHBOARD: view only -->
 <section id="consumerDashboard" class="hidden">
 
 <div class="card">
@@ -132,33 +151,12 @@ Only the registered email is accepted. The password is verified by Firebase Auth
 <div class="connection" id="consumerConnection">Waiting for live data at powerGuard/live.</div>
 </div>
 
-<div class="card">
-<h2>LIVE READINGS</h2>
-<div class="grid">
-
-<div class="metric"><small>VOLTAGE</small><strong id="cVoltage">— V</strong></div>
-<div class="metric"><small>CURRENT</small><strong id="cCurrent">— A</strong></div>
-<div class="metric"><small>ACTIVE POWER</small><strong id="cPower">— W</strong></div>
-<div class="metric"><small>APPARENT POWER</small><strong id="cApparent">— VA</strong></div>
-<div class="metric"><small>POWER FACTOR</small><strong id="cPF">—</strong></div>
-<div class="metric"><small>FREQUENCY</small><strong id="cFrequency">— Hz</strong></div>
-<div class="metric"><small>ENERGY</small><strong id="cEnergy">— Wh</strong></div>
-<div class="metric"><small>RUNNING COST</small><strong id="cCost">₹ —</strong></div>
-
-</div>
-</div>
-
-<div class="card">
-<h2>SYSTEM STATUS</h2>
-<p id="cSupply">Supply: —</p>
-<p id="cLoad">Load: —</p>
-<p id="cProtection">Protection: —</p>
-<p id="cUpdated">Last updated: —</p>
-</div>
+<div id="consumerReadings"></div>
 
 <button class="secondary" onclick="logout()">LOG OUT</button>
 </section>
 
+<!-- KSEB ADMIN DASHBOARD: monitoring + power control + reset -->
 <section id="adminDashboard" class="hidden">
 
 <div class="card">
@@ -175,42 +173,26 @@ Only the registered email is accepted. The password is verified by Firebase Auth
 <div class="connection" id="adminConnection">Waiting for live data at powerGuard/live.</div>
 </div>
 
-<div class="card">
-<h2>LIVE READINGS</h2>
-<div class="grid">
-
-<div class="metric"><small>VOLTAGE</small><strong id="aVoltage">— V</strong></div>
-<div class="metric"><small>CURRENT</small><strong id="aCurrent">— A</strong></div>
-<div class="metric"><small>ACTIVE POWER</small><strong id="aPower">— W</strong></div>
-<div class="metric"><small>APPARENT POWER</small><strong id="aApparent">— VA</strong></div>
-<div class="metric"><small>POWER FACTOR</small><strong id="aPF">—</strong></div>
-<div class="metric"><small>FREQUENCY</small><strong id="aFrequency">— Hz</strong></div>
-<div class="metric"><small>ENERGY</small><strong id="aEnergy">— Wh</strong></div>
-<div class="metric"><small>RUNNING COST</small><strong id="aCost">₹ —</strong></div>
-
-</div>
-</div>
-
-<div class="card">
-<h2>SYSTEM STATUS</h2>
-<p id="aSupply">Supply: —</p>
-<p id="aLoad">Load: —</p>
-<p id="aProtection">Protection: —</p>
-<p id="aUpdated">Last updated: —</p>
-</div>
+<div id="adminReadings"></div>
 
 <div class="card">
 <h2>POWER CONTROL</h2>
-<button class="danger" onclick="demoPower('CUT POWER')">CUT POWER</button>
-<button class="success" onclick="demoPower('RESTORE POWER')">RESTORE POWER</button>
-<p class="note">Demonstration controls only. These buttons do not operate the 220V relay.</p>
+<div class="switchrow">
+<div>
+<strong>LOAD POWER</strong>
+<div class="note" id="powerState">Output: —</div>
+</div>
+<label class="sw"><input type="checkbox" id="powerSwitch" onchange="onPowerSwitch(this)" disabled><span class="slider"></span></label>
+</div>
 <p id="powerMessage" class="status"></p>
+<p class="note">Switch OFF sends CUT POWER. Switch ON sends RESTORE POWER. The switch shows the relay state confirmed by the ESP32, not just the button you pressed.</p>
 </div>
 
 <div class="card">
-<h2>COST MANAGEMENT</h2>
-<button class="primary" onclick="resetCost()">RESET COST</button>
+<h2>ENERGY AND COST</h2>
+<button class="primary" onclick="resetEnergyCost()">RESET ENERGY AND COST</button>
 <p id="adminMessage" class="status"></p>
+<p class="note">Energy and cost only reset when you press this button. They are kept in the ESP32 when it restarts.</p>
 </div>
 
 <button class="secondary" onclick="logout()">LOG OUT</button>
@@ -237,11 +219,58 @@ const auth=firebase.auth();
 const db=firebase.database();
 
 const ALLOWED_EMAIL="schoolprojectesp@gmail.com";
+const LIVE_PATH="powerGuard/live";
+const CMD_PATH="powerGuard/commands";
 
 let currentRole="";
 let liveRef=null;
+let lastRx=0;
+let staleTimer=null;
+let pendingPower=null;      // true = RESTORE requested, false = CUT requested, null = nothing pending
+let pendingPowerTimer=null;
+let pendingReset=false;
+let pendingResetTimer=null;
 
 const $=id=>document.getElementById(id);
+
+/* ---------- screens mirror the OLED: electrical, power quality, energy and load, system status ---------- */
+function readingsMarkup(p){
+return `
+<div class="card">
+<h2>ELECTRICAL</h2>
+<div class="grid3">
+<div class="metric"><small>VOLTAGE</small><strong id="${p}Voltage">— V</strong></div>
+<div class="metric"><small>CURRENT</small><strong id="${p}Current">— A</strong></div>
+<div class="metric"><small>ACTIVE POWER</small><strong id="${p}Power">— W</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h2>POWER QUALITY</h2>
+<div class="grid3">
+<div class="metric"><small>APPARENT POWER</small><strong id="${p}Apparent">— VA</strong></div>
+<div class="metric"><small>POWER FACTOR</small><strong id="${p}PF">—</strong></div>
+<div class="metric"><small>FREQUENCY</small><strong id="${p}Frequency">— Hz</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h2>ENERGY AND LOAD</h2>
+<div class="grid3">
+<div class="metric"><small>ENERGY</small><strong id="${p}Energy">— Wh</strong></div>
+<div class="metric"><small>RUNNING COST</small><strong id="${p}Cost">— Rs</strong></div>
+<div class="metric"><small>LOAD</small><strong id="${p}Load">—</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h2>SYSTEM STATUS</h2>
+<div class="bigstatus ok" id="${p}Protection">—</div>
+<p id="${p}Supply">Supply: —</p>
+<p id="${p}Output">Power output: —</p>
+<p id="${p}Updated">Last updated: —</p>
+</div>`;
+}
 
 function togglePassword(id,icon){
 const f=$(id);
@@ -255,6 +284,7 @@ $(x).classList.toggle("hidden",x!==id);
 });
 }
 
+/* ---------- sign-in screen 1: Firebase ---------- */
 async function signIn(){
 
 const email=$("email").value.trim().toLowerCase();
@@ -288,6 +318,7 @@ $("loginBtn").textContent="SIGN IN";
 }
 }
 
+/* ---------- sign-in screen 2: CONSUMER or KSEB ADMIN ---------- */
 function selectRole(role){
 
 currentRole=role;
@@ -319,11 +350,17 @@ showOnly(currentRole==="consumer"?"consumerDashboard":"adminDashboard");
 startMonitoring();
 }
 
+/* ---------- formatting like the OLED ---------- */
 function fmt(v,d=2){
 
 const n=Number(v);
 
 return v!==null&&v!==undefined&&Number.isFinite(n)?n.toFixed(d):"—";
+}
+
+function fmtBig(v){
+const n=Number(v);
+return Number.isFinite(n)&&n>=100?fmt(v,0):fmt(v,1);
 }
 
 function bool(v){
@@ -333,61 +370,75 @@ return v===true?"ON":v===false?"OFF":"—";
 
 function updateDashboard(prefix,d){
 
-$(prefix+"Voltage").textContent=fmt(d.voltage)+" V";
-$(prefix+"Current").textContent=fmt(d.current,3)+" A";
-$(prefix+"Power").textContent=fmt(d.power)+" W";
-$(prefix+"Apparent").textContent=fmt(d.apparentPower)+" VA";
-$(prefix+"PF").textContent=fmt(d.powerFactor,3);
-$(prefix+"Frequency").textContent=fmt(d.frequency)+" Hz";
-$(prefix+"Energy").textContent=fmt(d.energyWh)+" Wh";
-$(prefix+"Cost").textContent="₹ "+fmt(d.cost);
+$(prefix+"Voltage").textContent=fmt(d.voltage,1)+" V";
+$(prefix+"Current").textContent=fmt(d.current,2)+" A";
+$(prefix+"Power").textContent=fmtBig(d.power)+" W";
+$(prefix+"Apparent").textContent=fmtBig(d.apparentPower)+" VA";
+$(prefix+"PF").textContent=fmt(d.powerFactor,2);
+$(prefix+"Frequency").textContent=fmt(d.frequency,2)+" Hz";
+$(prefix+"Energy").textContent=fmt(d.energyWh,3)+" Wh";
+$(prefix+"Cost").textContent=fmt(d.cost,2)+" Rs";
+$(prefix+"Load").textContent=bool(d.loadOn);
 
-$(prefix+"Supply").textContent="Supply: "+bool(d.supplyOn);
-$(prefix+"Load").textContent="Load: "+bool(d.loadOn);
-
-let status=d.status||"NORMAL";
-
-if(d.overload===true){
-status="OVERLOAD";
-}else if(d.overVoltage===true){
+// protection status: OVER VOLTAGE has priority over OVERLOAD
+let status=String(d.status||"NORMAL").toUpperCase();
+if(d.overVoltage===true){
 status="OVER VOLTAGE";
+}else if(d.overload===true){
+status="OVERLOAD";
 }
 
-$(prefix+"Protection").textContent="Protection: "+String(status).toUpperCase();
+const box=$(prefix+"Protection");
+box.textContent=status;
+box.className="bigstatus "+(status==="NORMAL"?"ok":"bad");
 
-const ts=Number(d.updatedMillis);
+$(prefix+"Supply").textContent="Supply: "+bool(d.supplyOn);
+$(prefix+"Output").textContent="Power output: "+bool(d.relayOn);
 
+const ts=Number(d.updatedAt);
 $(prefix+"Updated").textContent="Last updated: "+
 (ts>0?new Date(ts).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"}):"Timestamp not supplied");
 }
 
+/* ---------- live data ---------- */
 function startMonitoring(){
 
 if(liveRef)liveRef.off();
 
-const path="powerGuard/live";
-
-liveRef=db.ref(path);
+liveRef=db.ref(LIVE_PATH);
 
 liveRef.on("value",snap=>{
 
 const d=snap.val();
 
 if(!d){
-setLiveMessage("No data found at "+path+". Check that the ESP32 writes its readings to this exact path.",false);
+setLiveMessage("No data found at "+LIVE_PATH+". Check that the ESP32 writes its readings to this exact path.",false);
 return;
 }
+
+lastRx=Date.now();
 
 updateDashboard("c",d);
 updateDashboard("a",d);
 
-setLiveMessage("Connected · Live data received from Firebase.",true);
+syncPower(d);
+checkReset(d);
+
+setLiveMessage("Connected · Live data received from the ESP32.",true);
 
 },err=>{
 
 setLiveMessage("Database read error: "+err.message+". Check Realtime Database rules and sign-in permissions.",false);
 
 });
+
+// if no update arrives for 10 s the ESP32 is probably offline
+if(staleTimer)clearInterval(staleTimer);
+staleTimer=setInterval(()=>{
+if(lastRx&&Date.now()-lastRx>10000){
+setLiveMessage("No new data for "+Math.round((Date.now()-lastRx)/1000)+" s. The ESP32 may be offline.",false);
+}
+},3000);
 }
 
 function setLiveMessage(msg,ok){
@@ -406,21 +457,84 @@ $(id).style.color=ok?"var(--green)":"var(--red)";
 });
 }
 
-function demoPower(action){
+/* ---------- KSEB admin: working power switch ---------- */
+function syncPower(d){
 
-$("powerMessage").textContent=action+" selected — demo only; no relay command was sent.";
+const sw=$("powerSwitch");
+if(!sw)return;
 
+const on=d.relayOn;   // real relay state reported by the ESP32
+
+if(on===true||on===false){
+sw.disabled=false;
 }
 
-async function resetCost(){
+if(pendingPower!==null&&on===pendingPower){
+pendingPower=null;
+clearTimeout(pendingPowerTimer);
+$("powerMessage").textContent="Confirmed by the ESP32: power is "+(on?"ON":"OFF")+".";
+}
 
-if(!confirm("Send cost reset request?"))return;
+if(pendingPower===null){
+sw.checked=(on===true);
+}
+
+let text="Output: "+(on===true?"ON (relay closed)":on===false?"OFF (relay open)":"—");
+if(d.overload===true){
+text+=" · Overload protection active: the load is cut and tested every 3 s";
+}
+$("powerState").textContent=text;
+}
+
+async function onPowerSwitch(el){
+
+const wantOn=el.checked;   // true = RESTORE POWER, false = CUT POWER
+
+if(!confirm(wantOn?"Restore power to the load?":"Cut power to the load?")){
+el.checked=!wantOn;
+return;
+}
+
+pendingPower=wantOn;
+$("powerMessage").textContent=(wantOn?"RESTORE POWER":"CUT POWER")+" sent. Waiting for the ESP32 to confirm…";
+
+try{
+await db.ref(CMD_PATH).update(wantOn?{restorePower:true,cutPower:false}:{cutPower:true,restorePower:false});
+}catch(e){
+pendingPower=null;
+el.checked=!wantOn;
+$("powerMessage").textContent="Database error: "+e.message;
+return;
+}
+
+clearTimeout(pendingPowerTimer);
+pendingPowerTimer=setTimeout(()=>{
+if(pendingPower!==null){
+pendingPower=null;
+$("powerMessage").textContent="No confirmation from the ESP32. The switch shows the real relay state.";
+}
+},10000);
+}
+
+/* ---------- KSEB admin: reset energy and cost ---------- */
+async function resetEnergyCost(){
+
+if(!confirm("Reset energy and cost to zero? This cannot be undone."))return;
 
 try{
 
-await db.ref("powerGuard/commands/resetCost").set(true);
+await db.ref(CMD_PATH).update({resetEnergy:true,resetCost:true});
 
-$("adminMessage").textContent="Cost reset request sent.";
+pendingReset=true;
+$("adminMessage").textContent="Reset sent. Waiting for the ESP32 to confirm…";
+
+clearTimeout(pendingResetTimer);
+pendingResetTimer=setTimeout(()=>{
+if(pendingReset){
+pendingReset=false;
+$("adminMessage").textContent="No confirmation from the ESP32 yet. Check that the device is online.";
+}
+},10000);
 
 }catch(e){
 
@@ -429,12 +543,30 @@ $("adminMessage").textContent="Database error: "+e.message;
 }
 }
 
+function checkReset(d){
+if(pendingReset&&Number(d.energyWh)<0.05){
+pendingReset=false;
+clearTimeout(pendingResetTimer);
+$("adminMessage").textContent="Confirmed by the ESP32: energy and cost reset.";
+}
+}
+
+/* ---------- log out ---------- */
 async function logout(){
 
 if(liveRef){
 liveRef.off();
 liveRef=null;
 }
+
+if(staleTimer){
+clearInterval(staleTimer);
+staleTimer=null;
+}
+
+pendingPower=null;
+pendingReset=false;
+lastRx=0;
 
 await auth.signOut();
 
@@ -470,6 +602,10 @@ $("loginError").textContent="Access denied for this email.";
 }
 
 });
+
+// build the reading cards for both dashboards
+$("consumerReadings").innerHTML=readingsMarkup("c");
+$("adminReadings").innerHTML=readingsMarkup("a");
 
 </script>
 </body>
