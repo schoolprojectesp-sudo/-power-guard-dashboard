@@ -24,7 +24,8 @@ input{width:100%;padding:14px;border-radius:10px;border:1px solid #37648d;backgr
 input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #39a8ff22}
 .password{position:relative}
 .password input{padding-right:50px}
-.eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--cyan);font-size:19px;user-select:none}
+.eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--cyan);user-select:none;display:flex;align-items:center}
+.eye svg{display:block}
 button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;width:100%;margin-top:13px}
 .primary{background:linear-gradient(90deg,#1688e8,#42baff);color:#03172b}
 .secondary{background:#193b5d;color:var(--text);border:1px solid #35648c}
@@ -88,7 +89,7 @@ body{padding:12px}
 <label>Password</label>
 <div class="password">
 <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter Firebase password">
-<span class="eye" onclick="togglePassword('loginPassword',this)">◉</span>
+<span class="eye" onclick="togglePassword('loginPassword',this)"></span>
 </div>
 
 <button id="loginBtn" class="primary" onclick="signIn()">SIGN IN</button>
@@ -124,7 +125,7 @@ Only the registered email is accepted. The password is verified by Firebase Auth
 <label>Account Password</label>
 <div class="password">
 <input id="rolePassword" type="password" placeholder="Enter account password">
-<span class="eye" onclick="togglePassword('rolePassword',this)">◉</span>
+<span class="eye" onclick="togglePassword('rolePassword',this)"></span>
 </div>
 
 <button class="primary" onclick="enterDashboard()">CONTINUE</button>
@@ -153,7 +154,7 @@ Only the registered email is accepted. The password is verified by Firebase Auth
 
 <div id="consumerReadings"></div>
 
-<button class="secondary" onclick="logout()">LOG OUT</button>
+<button class="secondary" onclick="backToRoleScreen()">LOG OUT</button>
 </section>
 
 <!-- KSEB ADMIN DASHBOARD: monitoring + power control + reset -->
@@ -185,17 +186,15 @@ Only the registered email is accepted. The password is verified by Firebase Auth
 <label class="sw"><input type="checkbox" id="powerSwitch" onchange="onPowerSwitch(this)" disabled><span class="slider"></span></label>
 </div>
 <p id="powerMessage" class="status"></p>
-<p class="note">Switch OFF sends CUT POWER. Switch ON sends RESTORE POWER. The switch shows the relay state confirmed by the ESP32, not just the button you pressed.</p>
 </div>
 
 <div class="card">
 <h2>ENERGY AND COST</h2>
 <button class="primary" onclick="resetEnergyCost()">RESET ENERGY AND COST</button>
 <p id="adminMessage" class="status"></p>
-<p class="note">Energy and cost only reset when you press this button. They are kept in the ESP32 when it restarts.</p>
 </div>
 
-<button class="secondary" onclick="logout()">LOG OUT</button>
+<button class="secondary" onclick="backToRoleScreen()">LOG OUT</button>
 </section>
 
 <div class="footer">POWER GUARD · by hassaneeeyy</div>
@@ -237,6 +236,14 @@ const $=id=>document.getElementById(id);
 function readingsMarkup(p){
 return `
 <div class="card">
+<h2>SYSTEM STATUS</h2>
+<div class="bigstatus ok" id="${p}Protection">—</div>
+<p id="${p}Supply">Supply: —</p>
+<p id="${p}Output">Power output: —</p>
+<p id="${p}Updated">Last updated: —</p>
+</div>
+
+<div class="card">
 <h2>ELECTRICAL</h2>
 <div class="grid3">
 <div class="metric"><small>VOLTAGE</small><strong id="${p}Voltage">— V</strong></div>
@@ -261,21 +268,16 @@ return `
 <div class="metric"><small>RUNNING COST</small><strong id="${p}Cost">— Rs</strong></div>
 <div class="metric"><small>LOAD</small><strong id="${p}Load">—</strong></div>
 </div>
-</div>
-
-<div class="card">
-<h2>SYSTEM STATUS</h2>
-<div class="bigstatus ok" id="${p}Protection">—</div>
-<p id="${p}Supply">Supply: —</p>
-<p id="${p}Output">Power output: —</p>
-<p id="${p}Updated">Last updated: —</p>
 </div>`;
 }
+
+const EYE_OPEN='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 
 function togglePassword(id,icon){
 const f=$(id);
 f.type=f.type==="password"?"text":"password";
-icon.textContent=f.type==="password"?"◉":"◎";
+icon.innerHTML=f.type==="password"?EYE_OPEN:EYE_OFF;
 }
 
 function showOnly(id){
@@ -551,7 +553,35 @@ $("adminMessage").textContent="Confirmed by the ESP32: energy and cost reset.";
 }
 }
 
-/* ---------- log out ---------- */
+/* ---------- back to the second sign-in screen (stays signed in to Firebase) ---------- */
+function backToRoleScreen(){
+
+if(liveRef){
+liveRef.off();
+liveRef=null;
+}
+
+if(staleTimer){
+clearInterval(staleTimer);
+staleTimer=null;
+}
+
+clearTimeout(pendingPowerTimer);
+clearTimeout(pendingResetTimer);
+pendingPower=null;
+pendingReset=false;
+lastRx=0;
+
+currentRole="";
+
+$("rolePassword").value="";
+$("roleError").textContent="";
+$("rolePasswordArea").classList.add("hidden");
+
+showOnly("roleScreen");
+}
+
+/* ---------- full log out (from the second sign-in screen) ---------- */
 async function logout(){
 
 if(liveRef){
@@ -602,6 +632,9 @@ $("loginError").textContent="Access denied for this email.";
 }
 
 });
+
+// eye icons for every password box
+document.querySelectorAll(".eye").forEach(e=>{e.innerHTML=EYE_OPEN;});
 
 // build the reading cards for both dashboards
 $("consumerReadings").innerHTML=readingsMarkup("c");
