@@ -37,6 +37,7 @@ button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;c
 .metric{background:#071a30;border:1px solid #214c75;padding:17px;border-radius:13px;min-width:0}
 .metric small{color:var(--muted)}
 .metric strong{display:block;font-size:25px;margin-top:9px;overflow-wrap:anywhere;color:#f2f9ff}
+.tariff-note{display:block;margin-top:6px;font-size:11px;line-height:1.4;color:var(--cyan)}
 .role{padding:22px;text-align:center;background:#071a30;border:1px solid #35648c;border-radius:13px;cursor:pointer}
 .role:hover{border-color:var(--cyan);background:#0c2948}
 .status{text-align:center;color:var(--green);font-weight:bold;overflow-wrap:anywhere}
@@ -264,7 +265,7 @@ return `
 <div class="metric"><small>POWER FACTOR</small><strong id="${p}PF">—</strong></div>
 <div class="metric"><small>FREQUENCY</small><strong id="${p}Frequency">— Hz</strong></div>
 <div class="metric"><small>ENERGY</small><strong id="${p}Energy">— Wh</strong></div>
-<div class="metric"><small>RUNNING COST</small><strong id="${p}Cost">— Rs</strong></div>
+<div class="metric"><small>RUNNING COST</small><strong id="${p}Cost">— Rs</strong><small class="tariff-note" id="${p}Tariff">Tariff: waiting for ESP32…</small></div>
 <div class="metric"><small>LOAD</small><strong id="${p}Load">—</strong></div>
 </div>
 </div>`;
@@ -379,6 +380,26 @@ $(prefix+"PF").textContent=fmt(d.powerFactor,2);
 $(prefix+"Frequency").textContent=fmt(d.frequency,2)+" Hz";
 $(prefix+"Energy").textContent=fmt(d.energyWh,3)+" Wh";
 $(prefix+"Cost").textContent=fmt(d.cost,6)+" Rs";
+
+// Active time-of-day tariff (the ESP32 calculates the cost with the same rates)
+const TARIFF_RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
+const tariffLabels={
+LOWER:"6 AM–6 PM",
+HIGHER:"6 PM–10 PM",
+NORMAL:"10 PM–6 AM"
+};
+const tz=String(d.tariffZone||"").toUpperCase();
+let tariffText;
+if(tariffLabels[tz]){
+const sent=Number(d.tariffRate);
+const rate=(Number.isFinite(sent)&&sent>0)?sent:TARIFF_RATES[tz];
+tariffText=tz+" TARIFF · "+tariffLabels[tz]+" · ₹"+rate.toFixed(2)+"/kWh";
+}else if(tz==="NO CLOCK"){
+tariffText="CLOCK NOT SYNCED · ₹"+TARIFF_RATES.NORMAL.toFixed(2)+"/kWh";
+}else{
+tariffText="TARIFF: WAITING FOR ESP32";
+}
+$(prefix+"Tariff").textContent=tariffText;
 $(prefix+"Load").textContent=bool(d.loadOn);
 
 // protection status: OVER VOLTAGE has priority over OVERLOAD
