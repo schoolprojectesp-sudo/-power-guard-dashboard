@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POWER GUARD</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+:root{--bg:#061426;--panel:#0c2340;--panel2:#102d50;--line:#24517c;--blue:#39a8ff;--cyan:#69d8ff;--text:#eaf5ff;--muted:#9bb8d4;--green:#55d6a0;--red:#ff667d;--gold:#e4c19d}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:22px;background:radial-gradient(ellipse at top,#123b68 0%,var(--bg) 62%);color:var(--text);font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center}
+.container{width:100%;max-width:960px}
+.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:23px;margin-bottom:17px;box-shadow:0 12px 35px #0005}
+.brand{text-align:center;color:var(--cyan);font-size:28px;font-weight:800;letter-spacing:2px}
+.byline{text-align:center;color:var(--muted);font-size:13px;letter-spacing:1px;margin-top:7px}
+.subtitle{text-align:center;color:var(--muted);margin:12px 0 24px}
+h2{text-align:center;color:var(--cyan);font-size:20px}
+label{display:block;margin:15px 0 7px;color:#c4dcf3}
+input{width:100%;padding:14px;border-radius:10px;border:1px solid #37648d;background:#06172b;color:white;font-size:15px;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #39a8ff22}
+.password{position:relative}
+.password input{padding-right:50px}
+.eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--cyan);user-select:none;display:flex;align-items:center}
+.eye svg{display:block}
+button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;width:100%;margin-top:13px}
+.primary{background:linear-gradient(90deg,#1688e8,#42baff);color:#03172b}
+.secondary{background:#193b5d;color:var(--text);border:1px solid #35648c}
+.danger{background:#b8324b;color:white}
+.success{background:#167c67;color:white}
+.hidden{display:none!important}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.metric{background:#071a30;border:1px solid #214c75;padding:17px;border-radius:13px;min-width:0}
+.metric small{color:var(--muted)}
+.metric strong{display:block;font-size:25px;margin-top:9px;overflow-wrap:anywhere;color:#f2f9ff}
+.role{padding:22px;text-align:center;background:#071a30;border:1px solid #35648c;border-radius:13px;cursor:pointer}
+.role:hover{border-color:var(--cyan);background:#0c2948}
+.status{text-align:center;color:var(--green);font-weight:bold;overflow-wrap:anywhere}
+.error{color:#ff8998;text-align:center;line-height:1.5}
+.note{font-size:12px;color:var(--muted);line-height:1.6}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.top button{width:auto;margin:0}
+.pill{display:inline-block;border:1px solid #35648c;border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px}
+.footer{text-align:center;color:var(--muted);font-size:12px;padding:8px}
+.connection{padding:11px;border-radius:10px;background:#071a30;border:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.5;margin-top:12px}
+.bigstatus{text-align:center;font-size:30px;font-weight:800;padding:14px;border-radius:12px;background:#071a30;border:1px solid #214c75;margin-bottom:12px;letter-spacing:1px}
+.bigstatus.ok{color:var(--green)}
+.bigstatus.bad{color:var(--red);border-color:var(--red)}
+.switchrow{display:flex;justify-content:space-between;align-items:center;gap:14px;background:#071a30;border:1px solid #214c75;border-radius:13px;padding:14px 16px}
+.switchrow strong{display:block;font-size:16px}
+.sw{position:relative;width:64px;height:34px;flex:none;display:inline-block;margin:0}
+.sw input{opacity:0;width:0;height:0;padding:0;border:0}
+.slider{position:absolute;top:0;left:0;right:0;bottom:0;background:#7a2d3d;border-radius:34px;transition:.2s;cursor:pointer}
+.slider:before{content:"";position:absolute;height:26px;width:26px;left:4px;top:4px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+.slider{background:#167c67}
+.sw input:checked+.slider:before{transform:translateX(30px)}
+.sw input:disabled+.slider{opacity:.5;cursor:not-allowed}
+@media(max-width:700px){
+.grid3{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+body{padding:12px}
+.grid{grid-template-columns:1fr}
+.card{padding:17px}
+.brand{font-size:23px}
+.top{align-items:flex-start}
+}
+</style>
+</head>
+
+<body>
+<main class="container">
+
+<!-- SIGN-IN SCREEN 1: Firebase email and password -->
+<section id="login" class="card">
+<div class="brand">POWER GUARD</div>
+<div class="byline">by hassaneeeyy</div>
+<div class="subtitle">SMART ELECTRICAL MONITORING SYSTEM</div>
+
+<h2>SECURE SIGN IN</h2>
+
+<label>Email Address</label>
+<input id="email" type="email" autocomplete="username" placeholder="Enter authorized email">
+
+<label>Password</label>
+<div class="password">
+<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter Firebase password">
+<span class="eye" onclick="togglePassword('loginPassword',this)"></span>
+</div>
+
+<button id="loginBtn" class="primary" onclick="signIn()">SIGN IN</button>
+<p id="loginError" class="error" role="alert"></p>
+
+<div class="note">
+Only the registered email is accepted. The password is verified by Firebase Authentication.
+</div>
+</section>
+
+<!-- SIGN-IN SCREEN 2: CONSUMER or KSEB ADMIN -->
+<section id="roleScreen" class="card hidden">
+<div class="brand">POWER GUARD</div>
+<div class="byline">by hassaneeeyy</div>
+
+<h2>SELECT ACCOUNT</h2>
+
+<div class="grid">
+<div class="role" onclick="selectRole('consumer')">
+<h3>CONSUMER</h3>
+<p class="note">View electrical readings and energy usage</p>
+</div>
+
+<div class="role" onclick="selectRole('admin')">
+<h3>KSEB ADMIN</h3>
+<p class="note">Monitoring, power control and reset</p>
+</div>
+</div>
+
+<div id="rolePasswordArea" class="hidden">
+<h2 id="selectedRole"></h2>
+
+<label>Account Password</label>
+<div class="password">
+<input id="rolePassword" type="password" placeholder="Enter account password">
+<span class="eye" onclick="togglePassword('rolePassword',this)"></span>
+</div>
+
+<button class="primary" onclick="enterDashboard()">CONTINUE</button>
+<p id="roleError" class="error"></p>
+</div>
+
+<button class="secondary" onclick="logout()">LOG OUT</button>
+</section>
+
+<!-- CONSUMER DASHBOARD: view only -->
+<section id="consumerDashboard" class="hidden">
+
+<div class="card">
+<div class="top">
+<div>
+<div class="brand">POWER GUARD</div>
+<div class="byline">by hassaneeeyy</div>
+</div>
+<span class="pill">CONSUMER</span>
+</div>
+
+<p class="subtitle">LIVE ELECTRICAL MONITORING</p>
+<div class="status" id="consumerStatus">Connecting to Firebase…</div>
+<div class="connection" id="consumerConnection">Waiting for live data at powerGuard/live.</div>
+</div>
+
+<div id="consumerReadings"></div>
+
+<button class="secondary" onclick="backToRoleScreen()">LOG OUT</button>
+</section>
+
+<!-- KSEB ADMIN DASHBOARD: monitoring + power control + reset -->
+<section id="adminDashboard" class="hidden">
+
+<div class="card">
+<div class="top">
+<div>
+<div class="brand">POWER GUARD</div>
+<div class="byline">by hassaneeeyy</div>
+</div>
+<span class="pill">KSEB ADMIN</span>
+</div>
+
+<p class="subtitle">ADMIN MONITORING DASHBOARD</p>
+<div class="status" id="adminStatus">Connecting to Firebase…</div>
+<div class="connection" id="adminConnection">Waiting for live data at powerGuard/live.</div>
+</div>
+
+<div id="adminReadings"></div>
+
+<div class="card">
+<h2>POWER CONTROL</h2>
+<div class="switchrow">
+<div>
+<strong>LOAD POWER</strong>
+<div class="note" id="powerState">Output: —</div>
+</div>
+<label class="sw"><input type="checkbox" id="powerSwitch" onchange="onPowerSwitch(this)" disabled><span class="slider"></span></label>
+</div>
+<p id="powerMessage" class="status"></p>
+
+<div class="switchrow" style="margin-top:14px">
+<div>
+<strong>POTENTIOMETER VOLTAGE</strong>
+<div class="note" id="knobState">Potentiometer: —</div>
+</div>
+<label class="sw"><input type="checkbox" id="knobSwitch" onchange="onKnobSwitch(this)" disabled><span class="slider"></span></label>
+</div>
+<p id="knobMessage" class="status"></p>
+</div>
+
+<div class="card">
+<h2>ENERGY AND COST</h2>
+<button class="primary" onclick="resetEnergyCost()">RESET ENERGY AND COST</button>
+<p id="adminMessage" class="status"></p>
+</div>
+
+<button class="secondary" onclick="backToRoleScreen()">LOG OUT</button>
+</section>
+
+<div class="footer">POWER GUARD · by hassaneeeyy</div>
+</main>
+
+<script>
+// Firebase configuration
+const firebaseConfig={
+apiKey:"AIzaSyA0IFRa2NwnV38ynd2alYAhIMzUrnKSbHs",
+authDomain:"power-guard32.firebaseapp.com",
+databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"power-guard32",
+storageBucket:"power-guard32.firebasestorage.app",
+messagingSenderId:"439894450296",
+appId:"1:439894450296:web:2ca9ff01527071b1428d8d"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth=firebase.auth();
+const db=firebase.database();
+
+const ALLOWED_EMAIL="schoolprojectesp@gmail.com";
+const LIVE_PATH="powerGuard/live";
+const CMD_PATH="powerGuard/commands";
+
+let currentRole="";
+let liveRef=null;
+let lastRx=0;
+let staleTimer=null;
+let pendingPower=null;      // true = RESTORE requested, false = CUT requested, null = nothing pending
+let pendingPowerTimer=null;
+let pendingReset=false;
+let pendingKnob=null;       // true = ON requested, false = OFF requested, null = nothing pending
+let pendingKnobTimer=null;
+let pendingResetTimer=null;
+
+const $=id=>document.getElementById(id);
+
+/* ---------- screens mirror the OLED: electrical, power quality, energy and load, system status ---------- */
+function readingsMarkup(p){
+return `
+<div class="card">
+<h2>SYSTEM STATUS</h2>
+<div class="bigstatus ok" id="${p}Protection">—</div>
+<p id="${p}Supply">Supply: —</p>
+<p id="${p}Output">Power output: —</p>
+<p id="${p}Updated">Last updated: —</p>
+</div>
+
+<div class="card">
+<h2>LIVE READINGS</h2>
+<div class="grid3">
+<div class="metric"><small>VOLTAGE</small><strong id="${p}Voltage">— V</strong></div>
+<div class="metric"><small>CURRENT</small><strong id="${p}Current">— A</strong></div>
+<div class="metric"><small>ACTIVE POWER</small><strong id="${p}Power">— W</strong></div>
+<div class="metric"><small>APPARENT POWER</small><strong id="${p}Apparent">— VA</strong></div>
+<div class="metric"><small>POWER FACTOR</small><strong id="${p}PF">—</strong></div>
+<div class="metric"><small>FREQUENCY</small><strong id="${p}Frequency">— Hz</strong></div>
+<div class="metric"><small>ENERGY</small><strong id="${p}Energy">— Wh</strong></div>
+<div class="metric"><small>RUNNING COST</small><strong id="${p}Cost">— Rs</strong></div>
+<div class="metric"><small>LOAD</small><strong id="${p}Load">—</strong></div>
+</div>
+</div>`;
+}
+
+const EYE_OPEN='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+function togglePassword(id,icon){
+const f=$(id);
+f.type=f.type==="password"?"text":"password";
+icon.innerHTML=f.type==="password"?EYE_OPEN:EYE_OFF;
+}
+
+function showOnly(id){
+["login","roleScreen","consumerDashboard","adminDashboard"].forEach(x=>{
+$(x).classList.toggle("hidden",x!==id);
+});
+}
+
+/* ---------- sign-in screen 1: Firebase ---------- */
+async function signIn(){
+
+const email=$("email").value.trim().toLowerCase();
+const password=$("loginPassword").value;
+
+$("loginError").textContent="";
+
+if(email!==ALLOWED_EMAIL){
+$("loginError").textContent="Access denied. Only the authorized email can sign in.";
+return;
+}
+
+if(!password){
+$("loginError").textContent="Enter your password.";
+return;
+}
+
+$("loginBtn").disabled=true;
+$("loginBtn").textContent="SIGNING IN…";
+
+try{
+await auth.signInWithEmailAndPassword(email,password);
+showOnly("roleScreen");
+}
+catch(e){
+$("loginError").textContent="Firebase sign-in failed: "+(e.code||e.message)+". Check that this email account exists and its password is correct.";
+}
+finally{
+$("loginBtn").disabled=false;
+$("loginBtn").textContent="SIGN IN";
+}
+}
+
+/* ---------- sign-in screen 2: CONSUMER or KSEB ADMIN ---------- */
+function selectRole(role){
+
+currentRole=role;
+
+$("selectedRole").textContent=role==="admin"?"KSEB ADMIN LOGIN":"CONSUMER LOGIN";
+
+$("rolePasswordArea").classList.remove("hidden");
+$("rolePassword").value="";
+$("roleError").textContent="";
+}
+
+function enterDashboard(){
+
+const pass=$("rolePassword").value;
+const expected=currentRole==="consumer"?"CONSUMER123":"KSEB123";
+
+if(!auth.currentUser){
+$("roleError").textContent="Please sign in again.";
+return;
+}
+
+if(pass!==expected){
+$("roleError").textContent="Incorrect account password.";
+return;
+}
+
+showOnly(currentRole==="consumer"?"consumerDashboard":"adminDashboard");
+
+startMonitoring();
+}
+
+/* ---------- formatting like the OLED ---------- */
+function fmt(v,d=2){
+
+const n=Number(v);
+
+return v!==null&&v!==undefined&&Number.isFinite(n)?n.toFixed(d):"—";
+}
+
+function fmtBig(v){
+const n=Number(v);
+return Number.isFinite(n)&&n>=100?fmt(v,0):fmt(v,1);
+}
+
+function bool(v){
+
+return v===true?"ON":v===false?"OFF":"—";
+}
+
+function updateDashboard(prefix,d){
+
+$(prefix+"Voltage").textContent=fmt(d.voltage,1)+" V";
+$(prefix+"Current").textContent=fmt(d.current,2)+" A";
+$(prefix+"Power").textContent=fmtBig(d.power)+" W";
+$(prefix+"Apparent").textContent=fmtBig(d.apparentPower)+" VA";
+$(prefix+"PF").textContent=fmt(d.powerFactor,2);
+$(prefix+"Frequency").textContent=fmt(d.frequency,2)+" Hz";
+$(prefix+"Energy").textContent=fmt(d.energyWh,3)+" Wh";
+$(prefix+"Cost").textContent=fmt(d.cost,6)+" Rs";
+$(prefix+"Load").textContent=bool(d.loadOn);
+
+// protection status: OVER VOLTAGE has priority over OVERLOAD
+let status=String(d.status||"NORMAL").toUpperCase();
+if(d.overVoltage===true){
+status="OVER VOLTAGE";
+}else if(d.overload===true){
+status="OVERLOAD";
+}
+
+const box=$(prefix+"Protection");
+box.textContent=status;
+box.className="bigstatus "+(status==="NORMAL"?"ok":"bad");
+
+$(prefix+"Supply").textContent="Supply: "+bool(d.supplyOn);
+$(prefix+"Output").textContent="Power output: "+bool(d.relayOn);
+
+const ts=Number(d.updatedAt);
+$(prefix+"Updated").textContent="Last updated: "+
+(ts>0?new Date(ts).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"}):"Timestamp not supplied");
+}
+
+/* ---------- live data ---------- */
+function startMonitoring(){
+
+if(liveRef)liveRef.off();
+
+liveRef=db.ref(LIVE_PATH);
+
+liveRef.on("value",snap=>{
+
+const d=snap.val();
+
+if(!d){
+setLiveMessage("No data found at "+LIVE_PATH+". Check that the ESP32 writes its readings to this exact path.",false);
+return;
+}
+
+lastRx=Date.now();
+
+updateDashboard("c",d);
+updateDashboard("a",d);
+
+syncPower(d);
+syncKnob(d);
+checkReset(d);
+
+setLiveMessage("Connected · Live data received from the ESP32.",true);
+
+},err=>{
+
+setLiveMessage("Database read error: "+err.message+". Check Realtime Database rules and sign-in permissions.",false);
+
+});
+
+// if no update arrives for 10 s the ESP32 is probably offline
+if(staleTimer)clearInterval(staleTimer);
+staleTimer=setInterval(()=>{
+if(lastRx&&Date.now()-lastRx>10000){
+setLiveMessage("No new data for "+Math.round((Date.now()-lastRx)/1000)+" s. The ESP32 may be offline.",false);
+}
+},3000);
+}
+
+function setLiveMessage(msg,ok){
+
+["consumerConnection","adminConnection"].forEach(id=>{
+if($(id))$(id).textContent=msg;
+});
+
+["consumerStatus","adminStatus"].forEach(id=>{
+
+if($(id)){
+$(id).textContent=ok?"LIVE DATA CONNECTED":"WAITING / CONNECTION ISSUE";
+$(id).style.color=ok?"var(--green)":"var(--red)";
+}
+
+});
+}
+
+/* ---------- KSEB admin: working power switch ---------- */
+function syncPower(d){
+
+const sw=$("powerSwitch");
+if(!sw)return;
+
+const on=d.relayOn;   // real relay state reported by the ESP32
+
+if(on===true||on===false){
+sw.disabled=false;
+}
+
+if(pendingPower!==null&&on===pendingPower){
+pendingPower=null;
+clearTimeout(pendingPowerTimer);
+$("powerMessage").textContent="Confirmed by the ESP32: power is "+(on?"ON":"OFF")+".";
+}
+
+if(pendingPower===null){
+sw.checked=(on===true);
+}
+
+let text="Output: "+(on===true?"ON (relay closed)":on===false?"OFF (relay open)":"—");
+if(d.overload===true){
+text+=" · Overload protection active: the load is cut and tested every 3 s";
+}
+$("powerState").textContent=text;
+}
+
+async function onPowerSwitch(el){
+
+const wantOn=el.checked;   // true = RESTORE POWER, false = CUT POWER
+
+if(!confirm(wantOn?"Restore power to the load?":"Cut power to the load?")){
+el.checked=!wantOn;
+return;
+}
+
+pendingPower=wantOn;
+$("powerMessage").textContent=(wantOn?"RESTORE POWER":"CUT POWER")+" sent. Waiting for the ESP32 to confirm…";
+
+try{
+await db.ref(CMD_PATH).update(wantOn?{restorePower:true,cutPower:false}:{cutPower:true,restorePower:false});
+}catch(e){
+pendingPower=null;
+el.checked=!wantOn;
+$("powerMessage").textContent="Database error: "+e.message;
+return;
+}
+
+clearTimeout(pendingPowerTimer);
+pendingPowerTimer=setTimeout(()=>{
+if(pendingPower!==null){
+pendingPower=null;
+$("powerMessage").textContent="No confirmation from the ESP32. The switch shows the real relay state.";
+}
+},10000);
+}
+
+/* ---------- KSEB admin: potentiometer voltage control ON / OFF ---------- */
+function syncKnob(d){
+
+const sw=$("knobSwitch");
+if(!sw)return;
+
+const on=d.knobOn;   // real state reported by the ESP32
+
+if(on===true||on===false){
+sw.disabled=false;
+}
+
+if(pendingKnob!==null&&on===pendingKnob){
+pendingKnob=null;
+clearTimeout(pendingKnobTimer);
+$("knobMessage").textContent="Confirmed by the ESP32: potentiometer is "+(on?"ON":"OFF")+".";
+}
+
+if(pendingKnob===null){
+sw.checked=(on===true);
+}
+
+$("knobState").textContent="Potentiometer: "+(on===true?"ON (voltage set by the knob)":on===false?"OFF (real voltage)":"—");
+}
+
+async function onKnobSwitch(el){
+
+const want=el.checked;
+
+pendingKnob=want;
+$("knobMessage").textContent="Potentiometer "+(want?"ON":"OFF")+" sent. Waiting for the ESP32 to confirm…";
+
+try{
+await db.ref(CMD_PATH).update(want?{knobOn:true,knobOff:false}:{knobOff:true,knobOn:false});
+}catch(e){
+pendingKnob=null;
+el.checked=!want;
+$("knobMessage").textContent="Database error: "+e.message;
+return;
+}
+
+clearTimeout(pendingKnobTimer);
+pendingKnobTimer=setTimeout(()=>{
+if(pendingKnob!==null){
+pendingKnob=null;
+$("knobMessage").textContent="No confirmation from the ESP32. The switch shows the real state.";
+}
+},10000);
+}
+
+/* ---------- KSEB admin: reset energy and cost ---------- */
+async function resetEnergyCost(){
+
+if(!confirm("Reset energy and cost to zero? This cannot be undone."))return;
+
+try{
+
+await db.ref(CMD_PATH).update({resetEnergy:true,resetCost:true});
+
+pendingReset=true;
+$("adminMessage").textContent="Reset sent. Waiting for the ESP32 to confirm…";
+
+clearTimeout(pendingResetTimer);
+pendingResetTimer=setTimeout(()=>{
+if(pendingReset){
+pendingReset=false;
+$("adminMessage").textContent="No confirmation from the ESP32 yet. Check that the device is online.";
+}
+},10000);
+
+}catch(e){
+
+$("adminMessage").textContent="Database error: "+e.message;
+
+}
+}
+
+function checkReset(d){
+if(pendingReset&&Number(d.energyWh)<0.05){
+pendingReset=false;
+clearTimeout(pendingResetTimer);
+$("adminMessage").textContent="Confirmed by the ESP32: energy and cost reset.";
+}
+}
+
+/* ---------- back to the second sign-in screen (stays signed in to Firebase) ---------- */
+function backToRoleScreen(){
+
+if(liveRef){
+liveRef.off();
+liveRef=null;
+}
+
+if(staleTimer){
+clearInterval(staleTimer);
+staleTimer=null;
+}
+
+clearTimeout(pendingPowerTimer);
+clearTimeout(pendingResetTimer);
+clearTimeout(pendingKnobTimer);
+pendingPower=null;
+pendingReset=false;
+pendingKnob=null;
+lastRx=0;
+
+currentRole="";
+
+$("rolePassword").value="";
+$("roleError").textContent="";
+$("rolePasswordArea").classList.add("hidden");
+
+showOnly("roleScreen");
+}
+
+/* ---------- full log out (from the second sign-in screen) ---------- */
+async function logout(){
+
+if(liveRef){
+liveRef.off();
+liveRef=null;
+}
+
+if(staleTimer){
+clearInterval(staleTimer);
+staleTimer=null;
+}
+
+pendingPower=null;
+pendingReset=false;
+pendingKnob=null;
+lastRx=0;
+
+await auth.signOut();
+
+currentRole="";
+
+showOnly("login");
+
+$("loginPassword").value="";
+$("rolePassword").value="";
+
+}
+
+auth.onAuthStateChanged(user=>{
+
+if(!user){
+
+if(liveRef){
+liveRef.off();
+liveRef=null;
+}
+
+showOnly("login");
+
+return;
+}
+
+if((user.email||"").toLowerCase()!==ALLOWED_EMAIL){
+
+auth.signOut();
+
+$("loginError").textContent="Access denied for this email.";
+
+}
+
+});
+
+// eye icons for every password box
+document.querySelectorAll(".eye").forEach(e=>{e.innerHTML=EYE_OPEN;});
+
+// build the reading cards for both dashboards
+$("consumerReadings").innerHTML=readingsMarkup("c");
+$("adminReadings").innerHTML=readingsMarkup("a");
+
+</script>
+</body>
+</html>
