@@ -37,7 +37,11 @@ button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;c
 .metric{background:#071a30;border:1px solid #214c75;padding:17px;border-radius:13px;min-width:0}
 .metric small{color:var(--muted)}
 .metric strong{display:block;font-size:25px;margin-top:9px;overflow-wrap:anywhere;color:#f2f9ff}
-.tariff-note{display:block;margin-top:6px;font-size:11px;line-height:1.4;color:var(--cyan)}
+.tariff-note{display:block;margin-top:8px;font-size:12px;line-height:1.5;color:var(--cyan)}
+.tariff-note b{display:block;font-size:13px;letter-spacing:1px}
+.tariff-note.t-LOWER{color:var(--green)}
+.tariff-note.t-HIGHER{color:var(--red)}
+.tariff-note.t-NORMAL{color:var(--cyan)}
 .role{padding:22px;text-align:center;background:#071a30;border:1px solid #35648c;border-radius:13px;cursor:pointer}
 .role:hover{border-color:var(--cyan);background:#0c2948}
 .status{text-align:center;color:var(--green);font-weight:bold;overflow-wrap:anywhere}
@@ -370,6 +374,32 @@ function bool(v){
 return v===true?"ON":v===false?"OFF":"—";
 }
 
+/* ---------- time-of-day tariff (only the one that applies right now is shown) ---------- */
+const TARIFFS={
+LOWER:{name:"LOWER TARIFF",window:"6 AM–6 PM",rate:5.30},
+HIGHER:{name:"HIGHER TARIFF",window:"6 PM–10 PM",rate:7.36},
+NORMAL:{name:"NORMAL TARIFF",window:"10 PM–6 AM",rate:5.89}
+};
+
+// zone from the current India time (used when the ESP32 has no clock or is offline)
+function zoneFromClock(){
+const h=Number(new Intl.DateTimeFormat("en-GB",{hour:"numeric",hour12:false,timeZone:"Asia/Kolkata"}).format(new Date()))%24;
+return h>=6&&h<18?"LOWER":h>=18&&h<22?"HIGHER":"NORMAL";
+}
+
+function showTariff(prefix,deviceZone){
+let z=String(deviceZone||"").toUpperCase();
+let extra="";
+if(!TARIFFS[z]){
+z=zoneFromClock();   // "NO CLOCK" or nothing sent: follow India time
+extra=" (dashboard clock)";
+}
+const t=TARIFFS[z];
+const el=$(prefix+"Tariff");
+el.className="tariff-note t-"+z;
+el.innerHTML="<b>"+t.name+"</b>"+t.window+" · ₹"+t.rate.toFixed(2)+"/kWh"+extra;
+}
+
 function updateDashboard(prefix,d){
 
 $(prefix+"Voltage").textContent=fmt(d.voltage,1)+" V";
@@ -381,25 +411,7 @@ $(prefix+"Frequency").textContent=fmt(d.frequency,2)+" Hz";
 $(prefix+"Energy").textContent=fmt(d.energyWh,3)+" Wh";
 $(prefix+"Cost").textContent=fmt(d.cost,6)+" Rs";
 
-// Active time-of-day tariff (the ESP32 calculates the cost with the same rates)
-const TARIFF_RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
-const tariffLabels={
-LOWER:"6 AM–6 PM",
-HIGHER:"6 PM–10 PM",
-NORMAL:"10 PM–6 AM"
-};
-const tz=String(d.tariffZone||"").toUpperCase();
-let tariffText;
-if(tariffLabels[tz]){
-const sent=Number(d.tariffRate);
-const rate=(Number.isFinite(sent)&&sent>0)?sent:TARIFF_RATES[tz];
-tariffText=tz+" TARIFF · "+tariffLabels[tz]+" · ₹"+rate.toFixed(2)+"/kWh";
-}else if(tz==="NO CLOCK"){
-tariffText="CLOCK NOT SYNCED · ₹"+TARIFF_RATES.NORMAL.toFixed(2)+"/kWh";
-}else{
-tariffText="TARIFF: WAITING FOR ESP32";
-}
-$(prefix+"Tariff").textContent=tariffText;
+showTariff(prefix,d.tariffZone);
 $(prefix+"Load").textContent=bool(d.loadOn);
 
 // protection status: OVER VOLTAGE has priority over OVERLOAD
@@ -458,6 +470,7 @@ setLiveMessage("Database read error: "+err.message+". Check Realtime Database ru
 // if no update arrives for 10 s the ESP32 is probably offline
 if(staleTimer)clearInterval(staleTimer);
 staleTimer=setInterval(()=>{
+if(!lastRx||Date.now()-lastRx>10000){showTariff("c",null);showTariff("a",null);}
 if(lastRx&&Date.now()-lastRx>10000){
 setLiveMessage("No new data for "+Math.round((Date.now()-lastRx)/1000)+" s. The ESP32 may be offline.",false);
 }
