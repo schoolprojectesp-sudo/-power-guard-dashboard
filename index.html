@@ -42,6 +42,13 @@ button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;c
 .tariff-note.t-LOWER{color:var(--green)}
 .tariff-note.t-HIGHER{color:var(--red)}
 .tariff-note.t-NORMAL{color:var(--cyan)}
+.chkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.chk{background:#071a30;border:1px solid #214c75;border-radius:13px;padding:15px 17px;display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0}
+.chk small{color:var(--muted)}
+.chk strong{font-size:17px;letter-spacing:1px;color:var(--muted)}
+.chk.ok{border-color:#1f7a63}.chk.ok strong{color:var(--green)}
+.chk.bad{border-color:var(--red)}.chk.bad strong{color:var(--red)}
+.chk.warn{border-color:#b89a3c}.chk.warn strong{color:#e8c95a}
 .role{padding:22px;text-align:center;background:#071a30;border:1px solid #35648c;border-radius:13px;cursor:pointer}
 .role:hover{border-color:var(--cyan);background:#0c2948}
 .status{text-align:center;color:var(--green);font-weight:bold;overflow-wrap:anywhere}
@@ -68,6 +75,7 @@ button{border:0;border-radius:10px;padding:14px;font-size:14px;font-weight:800;c
 .grid3{grid-template-columns:1fr}
 }
 @media(max-width:560px){
+.chkgrid{grid-template-columns:1fr}
 body{padding:12px}
 .grid{grid-template-columns:1fr}
 .card{padding:17px}
@@ -260,6 +268,16 @@ return `
 </div>
 
 <div class="card">
+<h2>SENSOR CHECK</h2>
+<div class="chkgrid">
+<div class="chk" id="${p}ChkOled"><small>OLED DISPLAY</small><strong>—</strong></div>
+<div class="chk" id="${p}ChkV"><small>VOLTAGE SENSOR (ZMPT)</small><strong>—</strong></div>
+<div class="chk" id="${p}ChkAcs"><small>CURRENT SENSOR (ACS712)</small><strong>—</strong></div>
+<div class="chk" id="${p}ChkSys"><small>SYSTEM</small><strong>—</strong></div>
+</div>
+</div>
+
+<div class="card">
 <h2>LIVE READINGS</h2>
 <div class="grid3">
 <div class="metric"><small>VOLTAGE</small><strong id="${p}Voltage">— V</strong></div>
@@ -400,6 +418,30 @@ el.className="tariff-note t-"+z;
 el.innerHTML="<b>"+t.name+"</b>"+t.window+" · ₹"+t.rate.toFixed(2)+"/kWh"+extra;
 }
 
+/* ---------- sensor check (same results as the OLED system-status screens) ---------- */
+function setCheck(id,text,cls){
+const el=$(id);
+el.className="chk "+cls;
+el.querySelector("strong").textContent=text;
+}
+
+function showSensorCheck(prefix,d){
+const oled=d.oledOk, vs=d.voltageSensorOk, acs=d.acsOk;
+
+setCheck(prefix+"ChkOled",oled===true?"OK":oled===false?"FAIL":"—",oled===true?"ok":oled===false?"bad":"");
+
+if(vs===false)setCheck(prefix+"ChkV","FAULT","bad");
+else if(vs===true&&d.supplyOn===false)setCheck(prefix+"ChkV","NO MAINS","warn");
+else if(vs===true)setCheck(prefix+"ChkV","OK","ok");
+else setCheck(prefix+"ChkV","—","");
+
+setCheck(prefix+"ChkAcs",acs===true?"OK":acs===false?"FAULT":"—",acs===true?"ok":acs===false?"bad":"");
+
+if(oled===true&&vs===true&&acs===true)setCheck(prefix+"ChkSys","READY","ok");
+else if(oled===undefined&&vs===undefined&&acs===undefined)setCheck(prefix+"ChkSys","—","");
+else setCheck(prefix+"ChkSys","NOT READY","bad");
+}
+
 function updateDashboard(prefix,d){
 
 $(prefix+"Voltage").textContent=fmt(d.voltage,1)+" V";
@@ -412,6 +454,7 @@ $(prefix+"Energy").textContent=fmt(d.energyWh,3)+" Wh";
 $(prefix+"Cost").textContent=fmt(d.cost,6)+" Rs";
 
 showTariff(prefix,d.tariffZone);
+showSensorCheck(prefix,d);
 $(prefix+"Load").textContent=bool(d.loadOn);
 
 // protection status: OVER VOLTAGE has priority over OVERLOAD
