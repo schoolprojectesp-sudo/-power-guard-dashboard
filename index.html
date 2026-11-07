@@ -2,588 +2,639 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>POWER GUARD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POWER GUARD | Live Dashboard</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
-:root{--bg:#f2f5f8;--card:#fff;--box:#f7f9fb;--text:#1c2b39;--muted:#647383;--line:#d9e1e8;--green:#147d78;--active:#e5f4ef}
-*{box-sizing:border-box}
-body{margin:0;padding:14px;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-.wrap{max-width:1200px;margin:auto}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 3px 14px #1525360d}
-.brand{font-size:27px;font-weight:900;color:#173f5f;letter-spacing:2px}
-.by,.muted{color:var(--muted);font-size:12px}
-h2{font-size:18px;color:var(--green);margin:0 0 15px}
-h3{font-size:16px}
-label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
-input[type=email],input[type=password],input[type=text]{width:100%;padding:14px;border:1px solid #cbd5df;border-radius:10px;background:white;color:#202b36;font-size:15px}
-.password-wrap{position:relative}
-.password-wrap input{padding-right:55px}
-.eye-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:42px;height:40px;padding:8px;background:#e8f5f1!important;color:#176b70!important;border:1px solid #c5e2d9!important;border-radius:8px;display:grid;place-items:center;z-index:2}
-.eye-btn svg{width:21px;height:21px;stroke:#176b70}
-button{border:0;border-radius:10px;padding:12px 15px;background:var(--green);color:white;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-.secondary{background:#edf2f5!important;color:#263746!important;border:1px solid #d2dbe3!important}
-.hidden{display:none!important}
-.error{color:#b42336;min-height:18px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.header-actions{display:flex;align-items:center;gap:8px}
-.pill{border:1px solid #c9dadd;border-radius:30px;padding:8px 12px;color:var(--green);font-size:12px}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.metric,.status,.room,.chartbox,.ai-log,.tariff-current>div,.tariff-slot{background:var(--box);border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}
-.metric small,.tariff-current small{display:block;color:var(--muted);font-size:12px}
-.metric strong,.tariff-current strong{display:block;font-size:25px;margin-top:8px;overflow-wrap:anywhere}
-.status{font-size:14px;border-left:5px solid var(--green)}
+:root{--bg:#081321;--panel:#10243b;--panel2:#172f4c;--line:#315575;--cyan:#62dff2;--blue:#55a8ff;--text:#f2f7ff;--muted:#a8bbd0;--green:#45d6a2;--red:#ff6b83;--amber:#ffd166;--purple:#b69cff;--pink:#ff8db5;--orange:#ffb36b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#24456d 0,transparent 35%),radial-gradient(ellipse at 95% 15%,#422b62 0,transparent 30%),linear-gradient(135deg,#081321,#101d34 55%,#211a37);color:var(--text);font-family:Inter,Arial,sans-serif;padding:22px;min-height:100vh}
+.wrap{max-width:1420px;margin:auto}.card{backdrop-filter:blur(8px)}.card{background:linear-gradient(145deg,#193653,#11243c 58%,#20213f);border:1px solid var(--line);border-radius:17px;padding:20px;margin:0 0 16px;box-shadow:0 12px 30px #0003}
+.brand{text-align:center;color:var(--cyan);font-size:28px;font-weight:900;letter-spacing:2px}.by{text-align:center;color:var(--muted);font-size:12px;letter-spacing:1px;margin-top:5px}.sub{text-align:center;color:var(--muted);margin:12px 0 18px}
+h2{font-size:17px;color:var(--cyan);margin:0 0 15px}h3{font-size:15px;margin:0 0 6px}label{display:block;color:var(--muted);font-size:13px;margin:12px 0 6px}
+input[type=email],input[type=password],input[type=text]{width:100%;padding:14px;border-radius:10px;border:1px solid var(--line);background:#061426;color:white;font-size:15px}.password-wrap{position:relative;display:block}.password-wrap input{width:100%;padding-right:52px}.eye-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:40px;height:38px;padding:8px;background:transparent;color:#9bdcff;border:0;display:grid;place-items:center}.eye-btn:hover{background:#ffffff12}
+button{border:0;border-radius:10px;padding:12px 15px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,#1688e8,#4dbbff);color:#061426}
+button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}
+.hidden{display:none!important}.error{color:var(--red);min-height:18px}.muted{color:var(--muted);font-size:12px;line-height:1.55}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}.pill{border:1px solid var(--line);border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{background:#07182a;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}.metric small{color:var(--muted)}.metric strong{display:block;font-size:25px;margin-top:8px;overflow-wrap:anywhere}
+.tariff{font-size:12px;color:var(--cyan);margin-top:8px;line-height:1.5}.status{border:1px solid var(--line);background:#07182a;border-radius:11px;padding:12px;color:var(--muted);font-size:13px}.ok{color:var(--green)!important}.bad{color:var(--red)!important}.warn{color:var(--amber)!important}
+.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:.2s}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:.2s}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
+.rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.role{padding:22px;border:1px solid var(--line);background:#07182a;border-radius:12px;text-align:center;cursor:pointer}.role:hover{border-color:var(--cyan);transform:translateY(-2px)}.role{transition:.2s;background:linear-gradient(145deg,#153c59,#252448)}.role:nth-child(2){background:linear-gradient(145deg,#45305f,#26304d)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.actions button{flex:1;min-width:160px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.analytics{grid-template-columns:1fr 1fr}.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:24px}.brand{font-size:32px}}@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:500px){body{padding:10px}.card{padding:15px}.grid,.rooms,.rolegrid{grid-template-columns:1fr}.brand{font-size:23px}.metric strong{font-size:22px}}
+
 .analytics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.chartbox{background:white;height:340px}
-.chartbox canvas{width:100%!important;height:270px!important}
-.tariff-current{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
-.tariff-current>div{background:#f2faf7;border-color:#c9e4dc}
-.tariff-current .esp32-rate-card{border:2px solid #198879;background:#e8f5f1}
-.tariff-current .esp32-rate-card small{color:#26786e;font-weight:bold}
-.tariff-schedule{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:15px}
-.tariff-slot{display:flex;flex-direction:column;gap:9px}
-.tariff-slot span{font-size:12px;color:var(--muted)}
-.tariff-slot b{text-transform:uppercase}
-.tariff-slot strong{font-size:20px}
-.tariff-slot.active{border:2px solid #198879;background:#e5f4ef;box-shadow:0 0 0 3px #19887920}
-.tariff-slot.active b,.tariff-slot.active strong{color:#176f63}
+.chartbox{background:#07182a;border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.chartbox{background:linear-gradient(145deg,#101d38,#182b48);border-color:#466b92}.chartbox canvas{width:100%;max-height:290px}.chartbox h3{color:#f2f7ff;margin:2px 0 12px}.role:nth-child(1){background:linear-gradient(135deg,#087e8b,#164d77 60%,#272d5a);color:white}.role:nth-child(2){background:linear-gradient(135deg,#7041a5,#3c397e 60%,#243a68);color:white}.role{box-shadow:0 10px 25px #0003}.role:hover{filter:brightness(1.15)}
 .billgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.room{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.room small{display:block;color:var(--muted);margin-top:5px}
-.switch{position:relative;width:54px;height:30px;flex:none}
-.switch input{opacity:0;width:0;height:0}
-.track{position:absolute;inset:0;border-radius:30px;background:#c45a68;cursor:pointer}
-.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:.2s}
-.switch input:checked+.track{background:#27845d}
-.switch input:checked+.track:before{transform:translateX(24px)}
-.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
-.rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.role{padding:22px;background:#f7fafb;color:#203344;border:1px solid var(--line);border-radius:12px;text-align:center}
-.role h3{color:#203344}
-.role p{color:var(--muted)}
-.actions{display:flex;gap:10px}
-.actions button{flex:1}
+.aihead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.airesult{background:#07182a;border:1px solid var(--line);border-left:3px solid var(--green);border-radius:10px;padding:14px;line-height:1.6;white-space:pre-wrap}
+@media(max-width:650px){.analytics{grid-template-columns:1fr}.billgrid{grid-template-columns:1fr 1fr}}
+
 .ai-chat{display:flex;flex-direction:column;gap:10px}
-.ai-log{min-height:160px;max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:9px}
+.ai-log{min-height:180px;max-height:360px;overflow:auto;display:flex;flex-direction:column;gap:9px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:12px}
 .ai-msg{max-width:92%;padding:10px 12px;border-radius:12px;white-space:pre-wrap;line-height:1.5;font-size:14px}
-.ai-msg.user{align-self:flex-end;background:#e3eef7;color:#183b57}
-.ai-msg.bot{align-self:flex-start;background:#eaf4f0;color:#244b3c;border:1px solid #c6dfd2}
-.ai-entry{display:flex;gap:8px}
-.ai-entry input{flex:1;min-width:0}
-.footer{text-align:center;color:var(--muted);font-size:11px;padding:10px}
-.theme-toggle{min-width:90px}
-body.dark-theme{--bg:#071321;--card:#10243b;--box:#0a1a2b;--text:#edf5ff;--muted:#b7c8d9;--line:#294966;--active:#123b3b;color-scheme:dark}
-body.dark-theme{background:linear-gradient(145deg,#06111f,#0b1b2e 60%,#101c32);color:var(--text)}
-body.dark-theme .card{background:#10243b;border-color:var(--line);box-shadow:0 8px 26px #0005}
-body.dark-theme .brand{color:#a9d9f5}
-body.dark-theme h2{color:#8ee2df}
-body.dark-theme .metric,body.dark-theme .status,body.dark-theme .room,body.dark-theme .chartbox,body.dark-theme .ai-log,body.dark-theme .tariff-current>div,body.dark-theme .tariff-slot{background:var(--box);color:var(--text);border-color:var(--line)}
-body.dark-theme .metric strong,body.dark-theme .tariff-current strong,body.dark-theme .tariff-slot strong,body.dark-theme .chartbox h3{color:var(--text)}
-body.dark-theme input[type=email],body.dark-theme input[type=password],body.dark-theme input[type=text],body.dark-theme .ai-entry input{background:#071321;color:white;border-color:#345775}
-body.dark-theme .role{background:#123a50;color:white;border-color:#345775}
-body.dark-theme .role h3{color:white}
-body.dark-theme .role p{color:#c4d5e5}
-body.dark-theme .secondary{background:#17334e!important;color:#edf5ff!important;border-color:#345775!important}
-body.dark-theme .pill{background:#102b40;color:#8ee2df;border-color:#35647a}
-body.dark-theme .ai-msg.user{background:#16466b;color:white}
-body.dark-theme .ai-msg.bot{background:#123a35;color:#f1faf5;border-color:#246b59}
-body.dark-theme .tariff-slot.active{background:#123b3b;border-color:#55c7c2}
-body.dark-theme .eye-btn{background:#173b40!important;color:#a9eee0!important;border-color:#3a7770!important}
-body.dark-theme .eye-btn svg{stroke:#a9eee0}
-@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.analytics{grid-template-columns:1fr}.tariff-current,.tariff-schedule{grid-template-columns:1fr}}
-@media(max-width:500px){body{padding:9px}.card{padding:14px}.grid,.rooms,.rolegrid{grid-template-columns:1fr}.brand{font-size:23px}.metric strong{font-size:22px}.billgrid{grid-template-columns:1fr 1fr}}
+.ai-msg.user{align-self:flex-end;background:#16466b}
+.ai-msg.bot{align-self:flex-start;background:#123a35;border:1px solid #246b59}
+.ai-entry{display:flex;gap:8px}.ai-entry input{flex:1;min-width:0}
+
+/* Professional neutral theme */
+:root{--bg:#f3f5f7;--panel:#ffffff;--panel2:#f8fafb;--line:#d7dee5;--cyan:#176b70;--blue:#285d82;--text:#202b36;--muted:#647383;--green:#18794e;--red:#b42336;--amber:#9a6700;--purple:#6656a5;--pink:#a84e70;--orange:#a65b18}
+body{background:#f3f5f7;color:#202b36;padding:22px;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.card{background:#fff;border:1px solid #dce2e8;box-shadow:0 3px 14px #1525360d;border-radius:14px;backdrop-filter:none}
+.brand{color:#173f5f}.by,.sub,.muted{color:#647383}
+h2{color:#176b70}
+.pill{color:#176b70;border-color:#c9dadd;background:#f4f9f9}
+.metric,.status,.room,.chartbox,.ai-log{background:#f8fafb;border-color:#dce3e9;color:#202b36}
+.metric small,.room small{color:#647383}
+.metric strong{color:#1d3448}
+input[type=email],input[type=password],input[type=text]{background:#fff;color:#202b36;border-color:#cbd5df}
+input::placeholder{color:#8794a2}
+button{background:#176b70;color:#fff}
+button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
+.eye-btn{color:#176b70}.eye-btn:hover{background:#e8f1f2}
+.role,.role:nth-child(1),.role:nth-child(2){background:#f7fafb;color:#203344;border:1px solid #d8e1e8;box-shadow:0 2px 8px #172b3a0b}
+.role:hover{background:#edf5f5;border-color:#8ab7b8;filter:none}
+.ai-msg.user{background:#e3eef7;color:#183b57}
+.ai-msg.bot{background:#eaf4f0;color:#244b3c;border-color:#c6dfd2}
+.airesult{background:#f8fafb;color:#263746;border-color:#dce3e9;border-left-color:#27845d}
+.chartbox{background:#fff;border-color:#dce3e9}
+.chartbox h3{color:#263746}
+.track{background:#c45a68}.switch input:checked+.track{background:#27845d}
+.footer{color:#758391}
+
+
+/* Power Guard dashboard refinements */
+.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.tariff-current{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.tariff-current>div{padding:15px;border:1px solid var(--line);border-radius:12px;background:var(--metric-bg);min-width:0}
+.tariff-current small{display:block;color:var(--muted);font-size:12px;line-height:1.4}
+.tariff-current strong{display:block;color:var(--text);font-size:clamp(18px,3vw,25px);margin-top:8px;overflow-wrap:anywhere}
+.tariff-schedule{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 16px}
+.tariff-slot{display:flex;flex-direction:column;gap:7px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--metric-bg);color:var(--text)}
+.tariff-slot span{font-size:12px;color:var(--muted)}
+.tariff-slot b{font-size:13px;text-transform:uppercase;letter-spacing:.7px}
+.tariff-slot strong{font-size:19px}
+.tariff-slot.active{border:2px solid var(--accent);background:var(--active-bg);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 13%,transparent)}
+:root{--page:#f2f5f8;--card:#fff;--metric-bg:#f7f9fb;--text:#1c2b39;--muted:#68798a;--line:#d9e1e8;--accent:#147d78;--active-bg:#e6f4f1}
+body{background:var(--page);color:var(--text);transition:background .2s,color .2s}
+.card{background:var(--card);border-color:var(--line);box-shadow:0 5px 22px #102a430d}
+.metric,.status,.room,.chartbox,.ai-log{background:var(--metric-bg);border-color:var(--line);color:var(--text)}
+.metric strong,.chartbox h3{color:var(--text)}
+.chartbox{padding:14px;background:var(--card);box-shadow:0 2px 10px #102a4308;position:relative;height:290px;min-height:260px}
+.chartbox canvas{display:block;width:100%!important;height:220px!important;max-height:220px!important}
+
+
+/* WHITE THEME ONLY — consistent readable text */
+:root{color-scheme:light;--page:#f2f5f8;--card:#ffffff;--metric-bg:#f7f9fb;--text:#1c2b39;--muted:#647383;--line:#d9e1e8;--accent:#147d78;--active-bg:#e6f4f1}
+html,body{background:#f2f5f8!important;color:#1c2b39!important}
+.card{background:#ffffff!important;color:#1c2b39!important;border-color:#d9e1e8!important;box-shadow:0 3px 14px #1525360d!important}
+h1,h2,h3,h4,p,small,label,strong,b,span{ text-shadow:none }
+h2{color:#176b70!important}
+.brand{color:#173f5f!important}
+.by,.sub,.muted,.metric small,.room small,.tariff-slot span{color:#647383!important}
+.metric,.status,.room,.chartbox,.ai-log,.tariff-current>div,.tariff-slot{background:#f7f9fb!important;color:#1c2b39!important;border-color:#d9e1e8!important}
+.metric strong,.tariff-current strong,.tariff-slot strong,.chartbox h3{color:#1c2b39!important}
+.role,.role:nth-child(1),.role:nth-child(2),#roleScreen .role{background:#f7fafb!important;color:#203344!important;border:1px solid #d8e1e8!important;box-shadow:0 2px 8px #172b3a0b!important}
+#roleScreen .role h3{color:#203344!important}
+#roleScreen .role p{color:#647383!important}
+button{color:#ffffff}
+button.secondary{background:#edf2f5!important;color:#263746!important;border-color:#d2dbe3!important}
+input[type=email],input[type=password],input[type=text],.ai-entry input{background:#ffffff!important;color:#202b36!important;border-color:#cbd5df!important}
+input::placeholder{color:#8794a2!important}
+.ai-msg.user{background:#e3eef7!important;color:#183b57!important}
+.ai-msg.bot{background:#eaf4f0!important;color:#244b3c!important;border-color:#c6dfd2!important}
+.chartbox{background:#ffffff!important}
+.chartbox canvas{display:block;width:100%!important}
+
+
+/* OPTIONAL DARK MODE — white remains the default */
+body.dark-theme{
+ color-scheme:dark;
+ --page:#071321;--card:#10243b;--metric-bg:#0b1b2d;
+ --text:#edf5ff;--muted:#b7c8d9;--line:#294966;
+ --accent:#55c7c2;--active-bg:#123b3b;
+ background:radial-gradient(ellipse at 8% 0%,#173b5a 0,transparent 38%),linear-gradient(145deg,#06111f,#0b1b2e 58%,#101c32)!important;
+ color:#edf5ff!important;
+}
+body.dark-theme .card{background:linear-gradient(145deg,#142d47,#10243b 65%,#17243d)!important;color:#edf5ff!important;border-color:#294966!important;box-shadow:0 8px 26px #0005!important}
+body.dark-theme h1,body.dark-theme h2,body.dark-theme h3,body.dark-theme h4,
+body.dark-theme p,body.dark-theme small,body.dark-theme label,body.dark-theme strong,
+body.dark-theme b,body.dark-theme span{color:inherit}
+body.dark-theme h2{color:#8ee2df!important}
+body.dark-theme .brand{color:#a9d9f5!important}
+body.dark-theme .by,body.dark-theme .sub,body.dark-theme .muted,
+body.dark-theme .metric small,body.dark-theme .room small,
+body.dark-theme .tariff-slot span{color:#b7c8d9!important}
+body.dark-theme .metric,body.dark-theme .status,body.dark-theme .room,
+body.dark-theme .chartbox,body.dark-theme .ai-log,
+body.dark-theme .tariff-current>div,body.dark-theme .tariff-slot,
+body.dark-theme #rolePasswordArea{background:#0a1a2b!important;color:#edf5ff!important;border-color:#294966!important}
+body.dark-theme .metric strong,body.dark-theme .tariff-current strong,
+body.dark-theme .tariff-slot strong,body.dark-theme .chartbox h3{color:#edf5ff!important}
+body.dark-theme .role,body.dark-theme .role:nth-child(1),body.dark-theme .role:nth-child(2),
+body.dark-theme #roleScreen .role{background:linear-gradient(145deg,#123a50,#172c4a)!important;color:#f3f8ff!important;border:1px solid #345775!important;box-shadow:0 5px 16px #0003!important}
+body.dark-theme #roleScreen .role h3{color:#ffffff!important}
+body.dark-theme #roleScreen .role p{color:#c4d5e5!important}
+body.dark-theme input[type=email],body.dark-theme input[type=password],
+body.dark-theme input[type=text],body.dark-theme .ai-entry input{background:#071321!important;color:#edf5ff!important;border-color:#345775!important}
+body.dark-theme input::placeholder{color:#91a9c0!important}
+body.dark-theme button.secondary{background:#17334e!important;color:#edf5ff!important;border-color:#345775!important}
+body.dark-theme .pill{background:#102b40!important;color:#8ee2df!important;border-color:#35647a!important}
+body.dark-theme .ai-msg.user{background:#16466b!important;color:#ffffff!important}
+body.dark-theme .ai-msg.bot{background:#123a35!important;color:#f1faf5!important;border-color:#246b59!important}
+body.dark-theme .airesult{background:#0a1a2b!important;color:#edf5ff!important;border-color:#294966!important}
+body.dark-theme .track{background:#a44759}
+body.dark-theme .switch input:checked+.track{background:#168568}
+body.dark-theme .tariff-slot.active{background:#123b3b!important;border-color:#55c7c2!important}
+body.dark-theme .chartbox canvas{color:#d7e5f2}
+body.dark-theme .footer{color:#a9bdd0!important}
+.theme-toggle{min-width:92px}
+
+
+/* White-theme green accents and visible password eye controls */
+body:not(.dark-theme) .tariff-current>div{
+  border-color:#c9e4dc!important;
+  background:#f2faf7!important;
+}
+body:not(.dark-theme) .tariff-current .esp32-rate-card{
+  border:2px solid #198879!important;
+  background:#e8f5f1!important;
+}
+body:not(.dark-theme) .tariff-current .esp32-rate-card small{
+  color:#26786e!important;
+  font-weight:700;
+}
+body:not(.dark-theme) .tariff-slot.active{
+  border:2px solid #198879!important;
+  background:#e5f4ef!important;
+  box-shadow:0 0 0 3px rgba(25,136,121,.12)!important;
+}
+body:not(.dark-theme) .tariff-slot.active b,
+body:not(.dark-theme) .tariff-slot.active strong{
+  color:#176f63!important;
+}
+body:not(.dark-theme) .eye-btn{
+  color:#176b70!important;
+  background:#e8f5f1!important;
+  border:1px solid #c5e2d9!important;
+  opacity:1!important;
+  z-index:2;
+  width:42px!important;
+  height:40px!important;
+  padding:8px!important;
+}
+body:not(.dark-theme) .eye-btn svg{
+  display:block;
+  width:21px;
+  height:21px;
+  stroke:#176b70!important;
+}
+body:not(.dark-theme) .eye-btn:hover{
+  background:#d8eee7!important;
+}
+
+
+/* Refined compact green-tinted white theme */
+body:not(.dark-theme){--green-soft:#eff8f4;--green-border:#cfe5da;--green-strong:#187b60}
+body:not(.dark-theme) .card{background:linear-gradient(145deg,#ffffff 0%,#f8fcfa 100%)!important;border-color:#d3e6dc!important}
+body:not(.dark-theme) .metric,body:not(.dark-theme) .status,body:not(.dark-theme) .room,body:not(.dark-theme) .chartbox,body:not(.dark-theme) .ai-log,body:not(.dark-theme) .tariff-current>div,body:not(.dark-theme) .tariff-slot{background:#f1f8f4!important;border-color:#cfe3d8!important}
+body:not(.dark-theme) .metric strong,body:not(.dark-theme) .tariff-current strong{color:#205344!important}
+body:not(.dark-theme) input[type=email],body:not(.dark-theme) input[type=password],body:not(.dark-theme) input[type=text],body:not(.dark-theme) .ai-entry input{background:#f3faf6!important;border-color:#bcd9ca!important;color:#203c32!important;box-shadow:inset 0 1px 2px #1a6b4510}
+body:not(.dark-theme) input:focus{outline:2px solid #74b99b;outline-offset:1px}
+body:not(.dark-theme) .role{background:linear-gradient(145deg,#f1f8f4,#e8f4ed)!important;border-color:#c6dfd1!important}
+body:not(.dark-theme) .role h3{color:#205344!important}
+body:not(.dark-theme) .ai-msg.bot{background:#e8f4ed!important;border-color:#c3dfcf!important;color:#24533f!important}
+body:not(.dark-theme) .ai-msg.user{background:#e9f2f8!important}
+body:not(.dark-theme) .status{background:#eaf5ef!important;border-left-color:#23815f!important}
+body:not(.dark-theme) .pill{background:#eaf5ef!important;border-color:#c4dfd0!important;color:#176b50!important}
+body:not(.dark-theme) .eye-btn{background:#e1f1e8!important;border:1px solid #b9d9c7!important;color:#176b50!important}
+body:not(.dark-theme) .eye-btn svg{stroke:#176b50!important}
+body:not(.dark-theme) button:not(.secondary){background:linear-gradient(135deg,#167b60,#26956f)!important;color:white!important}
+body.dark-theme .chartbox{height:290px;min-height:260px}
+@media(max-width:600px){.chartbox{height:270px;min-height:250px}.chartbox canvas{height:200px!important;max-height:200px!important}}
+
 </style>
 </head>
-<body>
-<main class="wrap">
-
+<body><main class="wrap">
 <section id="loginScreen" class="card">
-<div class="top" style="justify-content:flex-end">
-<button class="secondary theme-toggle" onclick="toggleTheme()">☾ Dark</button>
-</div>
-<div class="brand">POWER GUARD</div>
-<div class="by">by hassaneeeyy · SECURE SIGN IN</div>
-<p class="muted">SMART ELECTRICAL MONITORING SYSTEM</p>
-<h2>EMAIL LOGIN</h2>
-<label>Email address</label>
-<input id="emailInput" type="email" placeholder="Enter registered Firebase email">
-<label>Email password</label>
-<div class="password-wrap">
-<input id="emailPassword" type="password" placeholder="Enter Firebase password">
-<button class="eye-btn" type="button" onclick="toggleEye('emailPassword',this)" aria-label="Show password">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
-</button>
-</div>
-<button id="emailLoginBtn" style="width:100%;margin-top:15px" onclick="emailSignIn()">SIGN IN</button>
-<p id="emailError" class="error"></p>
+ <div class="top" style="justify-content:flex-end"><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div>
+ <div class="brand">POWER GUARD</div><div class="by">by hassaneeeyy · SECURE SIGN IN</div><div class="sub">SMART ELECTRICAL MONITORING SYSTEM</div>
+ <h2>EMAIL LOGIN</h2>
+ <label for="emailInput">Email address</label>
+ <input id="emailInput" type="email" autocomplete="username" placeholder="Enter registered Firebase email">
+ <label for="emailPassword">Email password</label>
+ <div class="password-wrap"><input id="emailPassword" type="password" autocomplete="current-password" placeholder="Enter Firebase password"><button class="eye-btn" type="button" onclick="toggleEye('emailPassword',this)" aria-label="Show or hide password"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+ <button id="emailLoginBtn" style="width:100%;margin-top:15px" onclick="emailSignIn()">SIGN IN</button>
+ <p id="emailError" class="error"></p>
+ <p class="muted">Sign in with your registered Power Guard Firebase account.</p>
 </section>
-
 <section id="roleScreen" class="card hidden">
-<div class="top" style="justify-content:flex-end">
-<button class="secondary theme-toggle" onclick="toggleTheme()">☾ Dark</button>
-</div>
-<div class="brand">POWER GUARD</div>
-<div class="by">by hassaneeeyy · SELECT DASHBOARD</div>
-<div class="rolegrid" style="margin-top:20px">
-<button class="role" onclick="chooseRole('consumer')"><h3>CONSUMER</h3><p>Live readings, energy usage and room status</p></button>
-<button class="role" onclick="chooseRole('admin')"><h3>KSEB ADMIN</h3><p>System monitoring, main relay and reset</p></button>
-</div>
-<div id="rolePasswordArea" class="hidden" style="margin-top:20px">
-<h2 id="passRoleTitle">CONSUMER LOGIN</h2>
-<label>Dashboard password</label>
-<div class="password-wrap">
-<input id="rolePassword" type="password" placeholder="Enter dashboard password" onkeydown="if(event.key==='Enter')verifyRolePassword()">
-<button class="eye-btn" type="button" onclick="toggleEye('rolePassword',this)" aria-label="Show password">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
-</button>
-</div>
-<button style="width:100%;margin-top:12px" onclick="verifyRolePassword()">CONTINUE</button>
-<p id="passError" class="error"></p>
-</div>
-<button class="secondary" style="width:100%;margin-top:14px" onclick="emailLogout()">LOG OUT</button>
+ <div class="top" style="justify-content:flex-end"><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div>
+ <div class="brand">POWER GUARD</div><div class="by">by hassaneeeyy · SELECT DASHBOARD</div><div class="sub">CHOOSE YOUR ACCESS</div>
+ <div class="rolegrid" style="margin-top:20px">
+  <button class="role" onclick="chooseRole('consumer')"><h3>CONSUMER</h3><p class="muted">Live readings, energy usage and room status</p></button>
+  <button class="role" onclick="chooseRole('admin')"><h3>KSEB ADMIN</h3><p class="muted">System monitoring, main relay and reset</p></button>
+ </div>
+ <div id="rolePasswordArea" class="hidden" style="margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:14px;background:#07182a">
+  <h2 id="passRoleTitle">CONSUMER LOGIN</h2>
+  <label for="rolePassword">Dashboard password</label>
+  <div class="password-wrap"><input id="rolePassword" type="password" autocomplete="off" placeholder="Enter dashboard password" onkeydown="if(event.key==='Enter')verifyRolePassword()"><button class="eye-btn" type="button" onclick="toggleEye('rolePassword',this)" aria-label="Show or hide password"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+  <button id="roleContinue" style="width:100%;margin-top:13px" onclick="verifyRolePassword()">CONTINUE</button>
+  <p id="passError" class="error"></p>
+ </div>
+ <button class="secondary" style="width:100%;margin-top:14px" onclick="emailLogout()">LOG OUT</button>
 </section>
-
 <section id="dashboard" class="hidden">
-<div class="card">
-<div class="top">
-<div><div class="brand">POWER GUARD</div><div class="by">by hassaneeeyy · LIVE MONITORING</div></div>
-<div class="header-actions"><span class="pill" id="rolePill">CONSUMER</span><button class="secondary theme-toggle" onclick="toggleTheme()">☾ Dark</button></div>
-</div>
-<div id="systemStatus" class="status" style="margin-top:15px">SYSTEM STATUS · CONNECTING…</div>
-<p id="connection" class="muted">Connecting to Firebase…</p>
-<p class="muted">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for ESP32 data…</strong></p>
-<div class="grid">
-<div class="metric"><small>VOLTAGE</small><strong id="voltage">— V</strong></div>
-<div class="metric"><small>CURRENT</small><strong id="current">— A</strong></div>
-<div class="metric"><small>ACTIVE POWER</small><strong id="power">— W</strong></div>
-<div class="metric"><small>APPARENT POWER</small><strong id="apparent">— VA</strong></div>
-<div class="metric"><small>POWER FACTOR</small><strong id="pf">—</strong></div>
-<div class="metric"><small>FREQUENCY</small><strong id="frequency">— Hz</strong></div>
-<div class="metric"><small>ENERGY CONSUMED</small><strong id="energy">— Wh</strong></div>
-<div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong><div id="tariff" class="muted"></div></div>
-<div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
-</div>
-</div>
-
-<div class="card">
-<h2>CONSUMPTION HISTORY</h2>
-<div class="analytics">
-<div class="chartbox"><h3>Voltage & Current</h3><canvas id="viChart"></canvas></div>
-<div class="chartbox"><h3>Active Power</h3><canvas id="powerChart"></canvas></div>
-</div>
-<p id="historyStatus" class="muted">Loading saved Firebase history…</p>
-</div>
-
-<div class="card">
-<h2>KSEB TIME-OF-DAY TARIFF & BILL ESTIMATE</h2>
-<div class="tariff-current">
-<div><small>ACTIVE TARIFF ZONE</small><strong id="billZone">—</strong></div>
-<div class="esp32-rate-card"><small>ESP32 TARIFF RATE</small><strong id="billRate">—</strong></div>
-<div><small>CURRENT IST TIME</small><strong id="tariffClock">—</strong></div>
-</div>
-<div class="tariff-schedule">
-<div class="tariff-slot" id="slotNormal"><span>06:00 AM – 06:00 PM</span><b>NORMAL</b><strong>₹5.89/kWh</strong></div>
-<div class="tariff-slot" id="slotHigher"><span>06:00 PM – 10:00 PM</span><b>HIGHER</b><strong>₹7.36/kWh</strong></div>
-<div class="tariff-slot" id="slotLower"><span>10:00 PM – 06:00 AM</span><b>LOWER</b><strong>₹5.30/kWh</strong></div>
-</div>
-<div class="billgrid">
-<div class="metric"><small>ACCUMULATED ENERGY</small><strong id="billEnergy">—</strong></div>
-<div class="metric"><small>ESTIMATED BILL</small><strong id="billEnergyCost">—</strong></div>
-</div>
-</div>
-
-<div class="card">
-<h2>POWER GUARD SMART ASSISTANT</h2>
-<div class="ai-chat">
-<div id="aiChatLog" class="ai-log"><div class="ai-msg bot">Hello! Ask about voltage, current, power, energy, cost, overload or system status.</div></div>
-<div class="ai-entry"><input id="aiQuestion" placeholder="Ask about your Power Guard system…" onkeydown="if(event.key==='Enter')sendAIQuestion()"><button onclick="sendAIQuestion()">SEND</button></div>
-</div>
-</div>
-
-<div id="consumerRooms" class="card">
-<h2>ROOM RELAYS</h2>
-<div id="roomControls" class="rooms"></div>
-<p id="relayMessage" class="muted"></p>
-</div>
-
-<div id="adminActions" class="card hidden">
-<h2>KSEB ADMIN CONTROLS</h2>
-<div class="room">
-<div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for ESP32…</small></div>
-<label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label>
-</div>
-<div class="room" style="margin-top:10px">
-<div><b>RESET ENERGY & COST</b><small>Send energy and cost reset command</small></div>
-<label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label>
-</div>
-<p id="adminMessage" class="muted"></p>
-</div>
-
-<div class="card"><button class="secondary" style="width:100%" onclick="logout()">LOG OUT</button></div>
+ <div class="card">
+  <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><div class="header-actions"><span class="pill" id="rolePill">CONSUMER</span><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div></div>
+  <div id="systemStatus" class="status" style="margin-top:16px;border-left:5px solid var(--amber);font-size:16px;font-weight:800">SYSTEM STATUS · CONNECTING…</div>
+  <p id="connection" class="muted" style="margin-top:8px">Connecting to Firebase…</p>
+  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for ESP32 data…</strong></p>
+  <div class="grid" style="margin-top:13px">
+   <div class="metric"><small>VOLTAGE</small><strong id="voltage">— V</strong></div>
+   <div class="metric"><small>CURRENT</small><strong id="current">— A</strong></div>
+   <div class="metric"><small>ACTIVE POWER</small><strong id="power">— W</strong></div>
+   <div class="metric"><small>APPARENT POWER</small><strong id="apparent">— VA</strong></div>
+   <div class="metric"><small>POWER FACTOR</small><strong id="pf">—</strong></div>
+   <div class="metric"><small>FREQUENCY</small><strong id="frequency">— Hz</strong></div>
+   <div class="metric"><small>ENERGY CONSUMED</small><strong id="energy">— Wh</strong></div>
+   <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong><div id="tariff" class="tariff">Tariff: waiting for ESP32…</div></div>
+   <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>CONSUMPTION HISTORY</h2>
+  <div class="analytics">
+   <div class="chartbox"><h3>Voltage & Current</h3><canvas id="viChart"></canvas></div>
+   <div class="chartbox"><h3>Active Power</h3><canvas id="powerChart"></canvas></div>
+  </div>
+  <p id="historyStatus" class="muted">Loading saved Firebase history…</p>
+ </div>
+ <div class="card">
+  <h2>KSEB TIME-OF-DAY TARIFF & BILL ESTIMATE</h2>
+  <div class="tariff-current">
+   <div><small>ACTIVE TARIFF ZONE</small><strong id="billZone">—</strong></div>
+   <div class="esp32-rate-card"><small>ESP32 TARIFF RATE</small><strong id="billRate">—</strong></div>
+   <div><small>CURRENT IST TIME</small><strong id="tariffClock">—</strong></div>
+  </div>
+  <div class="tariff-schedule">
+   <div class="tariff-slot" id="slotNormal"><span>06:00 AM – 06:00 PM</span><b>Normal</b><strong>₹5.89/kWh</strong></div>
+   <div class="tariff-slot" id="slotHigher"><span>06:00 PM – 10:00 PM</span><b>Higher</b><strong>₹7.36/kWh</strong></div>
+   <div class="tariff-slot" id="slotLower"><span>10:00 PM – 06:00 AM</span><b>Lower</b><strong>₹5.30/kWh</strong></div>
+  </div>
+  <div class="billgrid">
+   <div class="metric"><small>ACCUMULATED ENERGY</small><strong id="billEnergy">—</strong></div>
+   <div class="metric"><small>ESTIMATED BILL</small><strong id="billEnergyCost">—</strong></div>
+  </div>
+ </div>
+ <div class="card">
+  <div class="aihead"><h2 style="margin:0">POWER GUARD SMART ASSISTANT</h2></div>
+  <p class="muted">Ask in normal language about live readings, energy usage, bills, sensors, alerts and controls.</p>
+  <div class="ai-chat">
+   <div id="aiChatLog" class="ai-log"><div class="ai-msg bot">Hello! I am the Power Guard Smart Assistant. Ask about voltage, current, power, energy, cost, gas, overload, overvoltage or system status.</div></div>
+   <div class="ai-entry"><input id="aiQuestion" maxlength="1200" placeholder="Ask about your Power Guard system…" onkeydown="if(event.key==='Enter')sendAIQuestion()"><button id="aiSend" onclick="sendAIQuestion()">SEND</button></div>
+   
+  </div>
+ </div>
+ <div id="consumerRooms" class="card">
+  <div class="top"><h2 style="margin:0">ROOM RELAYS</h2></div>
+  <div id="roomControls" class="rooms" style="margin-top:13px"></div>
+  <p id="relayMessage" class="muted"></p>
+ </div>
+ <div id="adminActions" class="card hidden">
+  <h2>KSEB ADMIN CONTROLS</h2>
+  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
+  <div class="room"><div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label></div>
+  <p id="adminMessage" class="muted"></p>
+ </div>
+ <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
 <div class="footer">POWER GUARD · by hassaneeeyy</div>
 </main>
-
 <script>
+// Firebase web configuration and database paths from your supplied Power Guard details.
 const firebaseConfig={
-apiKey:"AIzaSyDFWE5aJRr8xcsoP6T9O3xLOiBCAmxaQwY",
-authDomain:"power-guard32.firebaseapp.com",
-databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId:"power-guard32",
-storageBucket:"power-guard32.firebasestorage.app",
-messagingSenderId:"439894450296",
-appId:"1:439894450296:web:2ca9ff01527071b1428d8d"
+ apiKey:"AIzaSyDFWE5aJRr8xcsoP6T9O3xLOiBCAmxaQwY",
+ authDomain:"power-guard32.firebaseapp.com",
+ databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"power-guard32",
+ storageBucket:"power-guard32.firebasestorage.app",
+ messagingSenderId:"439894450296",
+ appId:"1:439894450296:web:2ca9ff01527071b1428d8d"
 };
-
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(),db=firebase.database();
-const LIVE="powerGuard/live",COMMANDS="powerGuard/commands";
+const auth=firebase.auth(), db=firebase.database();
+const LIVE="powerGuard/live", COMMANDS="powerGuard/commands";
 const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
+
+let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false;
+let viChart=null, powerChart=null, historyRows=[];
 const HISTORY_LIMIT=60;
-const RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
-const $=id=>document.getElementById(id);
-
-let role="consumer",latest={},ksebCutActive=false;
-let liveRef=null,historyRef=null,cutRef=null;
-let viChart=null,powerChart=null,historyRows=[];
-
-function show(id){
-["loginScreen","roleScreen","dashboard"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+function chartTheme(){
+ const dark=document.body.classList.contains("dark-theme");
+ return dark
+  ? {text:"#c2d2e1",grid:"#38536b",tooltip:"#10243b",border:"#45627b"}
+  : {text:"#657789",grid:"#e4eaf0",tooltip:"#ffffff",border:"#d4dee7"};
 }
-function fmt(v,n=2){
-return v===null||v===undefined||!Number.isFinite(Number(v))?"—":Number(v).toFixed(n);
-}
-function toggleEye(id,button){
-const input=$(id);
-input.type=input.type==="password"?"text":"password";
-button.setAttribute("aria-label",input.type==="password"?"Show password":"Hide password");
-}
-function applyTheme(theme){
-const dark=theme==="dark";
-document.body.classList.toggle("dark-theme",dark);
-document.querySelectorAll(".theme-toggle").forEach(b=>b.textContent=dark?"☀ Light":"☾ Dark");
-try{localStorage.setItem("powerGuardTheme",dark?"dark":"light");}catch(e){}
-refreshChartTheme();
-}
-function toggleTheme(){
-applyTheme(document.body.classList.contains("dark-theme")?"light":"dark");
-}
-function emailSignIn(){
-const email=$("emailInput").value.trim(),password=$("emailPassword").value;
-$("emailError").textContent="";
-if(!email||!password){$("emailError").textContent="Enter your email and password.";return;}
-const b=$("emailLoginBtn");b.disabled=true;b.textContent="SIGNING IN…";
-auth.signInWithEmailAndPassword(email,password).then(()=>{
-$("emailPassword").value="";show("roleScreen");
-}).catch(e=>$("emailError").textContent=e.message).finally(()=>{
-b.disabled=false;b.textContent="SIGN IN";
-});
-}
-function emailLogout(){
-if(liveRef)liveRef.off();
-if(historyRef)historyRef.off();
-if(cutRef)cutRef.off();
-auth.signOut();
-show("loginScreen");
-}
-function chooseRole(r){
-role=r;
-$("passRoleTitle").textContent=r==="admin"?"KSEB ADMIN PASSWORD":"CONSUMER PASSWORD";
-$("rolePasswordArea").classList.remove("hidden");
-$("rolePassword").value="";
-$("passError").textContent="";
-$("rolePassword").focus();
-}
-function verifyRolePassword(){
-const expected=role==="admin"?"KSEB123":"CONSUMER123";
-if(!auth.currentUser){$("passError").textContent="Please sign in again.";return;}
-if($("rolePassword").value!==expected){$("passError").textContent="Incorrect dashboard password.";return;}
-enterRole(role);
-}
-function enterRole(r){
-role=r;
-$("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
-$("adminActions").classList.toggle("hidden",r!=="admin");
-$("consumerRooms").classList.toggle("hidden",r==="admin");
-show("dashboard");
-if(r==="consumer")renderRooms();
-watchKsebCutState();
-startHistory();
-startLive();
-}
-
-function chartColors(){
-return document.body.classList.contains("dark-theme")
-?{text:"#c2d2e1",grid:"#38536b",tooltip:"#10243b"}
-:{text:"#657789",grid:"#e4eaf0",tooltip:"#fff"};
-}
-function gradient(ctx,color){
-const g=ctx.createLinearGradient(0,0,0,280);
-g.addColorStop(0,color.replace("1)",".35)"));
-g.addColorStop(1,color.replace("1)",".01)"));
-return g;
+function chartGradient(ctx,top,bottom){
+ const g=ctx.createLinearGradient(0,0,0,280);g.addColorStop(0,top);g.addColorStop(1,bottom);return g;
 }
 function initCharts(){
-if(!window.Chart)return;
-const c=chartColors();
-const common={
-responsive:true,maintainAspectRatio:false,
-interaction:{mode:"index",intersect:false},
-elements:{line:{tension:.4,borderWidth:2.4},point:{radius:0,hoverRadius:4}},
-plugins:{
-legend:{position:"bottom",labels:{color:c.text,usePointStyle:true}},
-tooltip:{backgroundColor:c.tooltip,titleColor:c.text,bodyColor:c.text}
-},
-scales:{
-x:{ticks:{color:c.text,maxTicksLimit:6},grid:{display:false}},
-y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid}}
-}
-};
-const vctx=$("viChart").getContext("2d");
-const pctx=$("powerChart").getContext("2d");
-viChart=new Chart(vctx,{
-type:"line",
-data:{labels:[],datasets:[
-{label:"Voltage (V)",data:[],borderColor:"#347fbd",backgroundColor:gradient(vctx,"rgba(52,127,189,1)"),fill:true,yAxisID:"y"},
-{label:"Current (A)",data:[],borderColor:"#d99a45",backgroundColor:gradient(vctx,"rgba(217,154,69,1)"),fill:true,yAxisID:"y1"}
-]},
-options:{...common,scales:{
-...common.scales,
-y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:c.text}},
-y1:{beginAtZero:true,position:"right",ticks:{color:c.text},grid:{drawOnChartArea:false},title:{display:true,text:"Current (A)",color:c.text}}
-}}
-});
-powerChart=new Chart(pctx,{
-type:"line",
-data:{labels:[],datasets:[
-{label:"Active power (W)",data:[],borderColor:"#278b70",backgroundColor:gradient(pctx,"rgba(39,139,112,1)"),fill:true}
-]},
-options:common
-});
+ if(!window.Chart)return;
+ const c=chartTheme();
+ const common={responsive:true,maintainAspectRatio:false,animation:{duration:250},interaction:{mode:"index",intersect:false},
+  elements:{line:{tension:.42,borderWidth:2.4},point:{radius:0,hoverRadius:4,hitRadius:12}},
+  plugins:{legend:{position:"bottom",labels:{color:c.text,usePointStyle:true,pointStyle:"circle",padding:16,font:{size:11}}},
+   tooltip:{backgroundColor:c.tooltip,titleColor:c.text,bodyColor:c.text,borderColor:c.border,borderWidth:1,padding:11,displayColors:true}},
+  scales:{x:{ticks:{color:c.text,maxTicksLimit:6,autoSkip:true,maxRotation:0,minRotation:0,font:{size:10},padding:4},grid:{display:false},border:{color:c.border}},
+   y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid},border:{display:false}}}};
+ const vctx=$("viChart").getContext("2d"),pctx=$("powerChart").getContext("2d");
+ viChart=new Chart(vctx,{type:"line",data:{labels:[],datasets:[
+  {label:"Voltage (V)",data:[],borderColor:"#347fbd",backgroundColor:chartGradient(vctx,"rgba(52,127,189,.38)","rgba(52,127,189,.015)"),pointBackgroundColor:"#347fbd",fill:true,yAxisID:"y",order:2},
+  {label:"Current (A)",data:[],borderColor:"#d99a45",backgroundColor:chartGradient(vctx,"rgba(217,154,69,.24)","rgba(217,154,69,.01)"),pointBackgroundColor:"#d99a45",fill:true,yAxisID:"y1",order:1}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:c.text}},y1:{beginAtZero:true,position:"right",ticks:{color:c.text},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:c.text}}}}});
+ powerChart=new Chart(pctx,{type:"line",data:{labels:[],datasets:[
+  {label:"Active power (W)",data:[],borderColor:"#278b70",backgroundColor:chartGradient(pctx,"rgba(39,139,112,.38)","rgba(39,139,112,.015)"),pointBackgroundColor:"#278b70",fill:true}
+ ]},options:common});
 }
 function refreshChartTheme(){
-if(!viChart||!powerChart)return;
-const c=chartColors();
-[viChart,powerChart].forEach(ch=>{
-ch.options.plugins.legend.labels.color=c.text;
-ch.options.plugins.tooltip.backgroundColor=c.tooltip;
-ch.options.plugins.tooltip.titleColor=c.text;
-ch.options.plugins.tooltip.bodyColor=c.text;
-Object.values(ch.options.scales).forEach(a=>{
-if(a.ticks)a.ticks.color=c.text;
-if(a.grid)a.grid.color=c.grid;
-});
-ch.update("none");
-});
+ if(!viChart||!powerChart)return;
+ const c=chartTheme();
+ [viChart,powerChart].forEach(ch=>{
+  ch.options.plugins.legend.labels.color=c.text;ch.options.plugins.tooltip.backgroundColor=c.tooltip;
+  ch.options.plugins.tooltip.titleColor=c.text;ch.options.plugins.tooltip.bodyColor=c.text;
+  Object.values(ch.options.scales).forEach(axis=>{if(axis.ticks)axis.ticks.color=c.text;if(axis.grid)axis.grid.color=c.grid;if(axis.border)axis.border.color=c.border;});
+  ch.update("none");
+ });
 }
-function timestamp(d){
-const v=d.timestamp??d.updatedAt??d.updatedMillis;
-if(typeof v==="number")return v;
-if(typeof v==="string"){
-const n=Number(v);
-return Number.isFinite(n)?n:Date.parse(v);
+function historyTimestamp(d){
+ if(!d || typeof d!=="object") return null;
+ let raw=d.timestamp ?? d.time ?? d.updatedAt ?? d.updatedMillis ?? d.createdAt;
+ if(raw && typeof raw==="object") raw=raw[".sv"] ?? raw.timestamp ?? raw.value;
+ if(typeof raw==="string" && !/^\d+(\.\d+)?$/.test(raw)){
+  const parsed=Date.parse(raw); return Number.isFinite(parsed)?parsed:null;
+ }
+ const n=Number(raw);
+ if(!Number.isFinite(n)||n<=0)return null;
+ return n<1000000000000?n*1000:n;
 }
-return null;
-}
-function startHistory(){
-if(historyRef)historyRef.off();
-historyRef=db.ref("powerGuard/history").limitToLast(HISTORY_LIMIT);
-historyRef.on("value",snap=>{
-const data=snap.val()||{};
-historyRows=Object.values(data).map(d=>({...d,timestamp:timestamp(d)}))
-.filter(d=>Number.isFinite(d.timestamp)&&Number.isFinite(Number(d.voltage))&&Number.isFinite(Number(d.current))&&Number.isFinite(Number(d.power)))
-.sort((a,b)=>a.timestamp-b.timestamp);
-renderHistory();
-},e=>$("historyStatus").textContent="History error: "+e.message);
+function historyNumber(d,...keys){
+ for(const key of keys){const n=Number(d[key]);if(d[key]!==null&&d[key]!==undefined&&d[key]!==""&&Number.isFinite(n))return n;}
+ return null;
 }
 function renderHistory(){
-if(!window.Chart){$("historyStatus").textContent="Chart library did not load.";return;}
-if(!viChart)initCharts();
-if(!viChart)return;
-const rows=historyRows.slice(-HISTORY_LIMIT);
-const labels=rows.map(r=>new Intl.DateTimeFormat("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true}).format(new Date(r.timestamp)));
-viChart.data.labels=labels;
-viChart.data.datasets[0].data=rows.map(r=>Number(r.voltage));
-viChart.data.datasets[1].data=rows.map(r=>Number(r.current));
-powerChart.data.labels=labels;
-powerChart.data.datasets[0].data=rows.map(r=>Number(r.power));
-viChart.update("none");powerChart.update("none");
-$("historyStatus").textContent=rows.length?rows.length+" saved Firebase samples loaded.":"No saved history samples yet.";
+ if(!window.Chart){$("historyStatus").textContent="Chart.js could not load. Check your internet connection and reload.";return;}
+ if(!viChart)initCharts();
+ if(!viChart||!powerChart){$("historyStatus").textContent="Charts could not be initialized.";return;}
+ const rows=historyRows.slice(-HISTORY_LIMIT);
+ const labels=rows.map(r=>new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",hour12:true}).format(new Date(r.timestamp)));
+ viChart.data.labels=labels;
+ viChart.data.datasets[0].data=rows.map(r=>r.voltage);
+ viChart.data.datasets[1].data=rows.map(r=>r.current);
+ powerChart.data.labels=labels;
+ powerChart.data.datasets[0].data=rows.map(r=>r.power);
+ viChart.update();powerChart.update();
+ requestAnimationFrame(()=>{viChart.resize();powerChart.resize();});
+ $("historyStatus").textContent=rows.length?"Showing "+rows.length+" saved Firebase history records (oldest to newest).":"No valid records found at powerGuard/history yet.";
 }
+function startHistory(){
+ if(historyRef)historyRef.off();
+ historyRows=[];
+ historyRef=db.ref("powerGuard/history").limitToLast(HISTORY_LIMIT);
+ $("historyStatus").textContent="Loading saved Firebase history…";
+ historyRef.on("value",snap=>{
+  const data=snap.val()||{};
+  historyRows=Object.entries(data).map(([key,d])=>{
+   const timestamp=historyTimestamp(d||{});
+   return {_key:key,timestamp,voltage:historyNumber(d||{},"voltage","voltageV","v"),current:historyNumber(d||{},"current","currentA","amps","i"),power:historyNumber(d||{},"power","activePower","watts","p")};
+  }).filter(r=>Number.isFinite(r.timestamp)).sort((a,b)=>a.timestamp-b.timestamp);
+  renderHistory();
+ },e=>{$("historyStatus").textContent="Firebase history error: "+e.message;});
+}
+const KSEB_TOD_RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
 function updateTariffClock(){
-const parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(new Date());
-const get=t=>Number(parts.find(p=>p.type===t)?.value||0);
-const h=get("hour");
-const zone=h>=18&&h<22?"HIGHER":h>=22||h<6?"LOWER":"NORMAL";
-$("tariffClock").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(new Date())+" IST";
-["Normal","Higher","Lower"].forEach(x=>$("slot"+x).classList.toggle("active",zone===x.toUpperCase()));
-return zone;
+ const now=new Date();
+ const parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(now);
+ const get=t=>Number(parts.find(p=>p.type===t)?.value||0);
+ const h=get("hour"),m=get("minute");
+ const zone=(h>=18&&h<22)?"HIGHER":(h>=22||h<6)?"LOWER":"NORMAL";
+ const rate=KSEB_TOD_RATES[zone];
+ $("tariffClock").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now)+" IST";
+ $("slotNormal").classList.toggle("active",zone==="NORMAL");
+ $("slotHigher").classList.toggle("active",zone==="HIGHER");
+ $("slotLower").classList.toggle("active",zone==="LOWER");
+ return {zone,rate};
 }
 function updateBill(d){
-const zone=String(d.tariffZone||updateTariffClock()).toUpperCase();
-$("billZone").textContent=zone;
-$("billRate").textContent=RATES[zone]!==undefined?"₹"+RATES[zone].toFixed(2)+"/kWh":"—";
-$("billEnergy").textContent=fmt(d.energyWh,3)+" Wh";
-$("billEnergyCost").textContent="₹"+fmt(d.cost,2);
+ const current=updateTariffClock();
+ const zone=String(d.tariffZone||current.zone).toUpperCase();
+ const rate=KSEB_TOD_RATES[zone]??current.rate;
+ $("billZone").textContent=zone;
+ $("billRate").textContent=rate!==undefined?"₹"+rate.toFixed(2)+"/kWh":"—";
+ $("billEnergy").textContent=fmt(d.energyWh,3)+" Wh";
+ $("billEnergyCost").textContent="₹"+fmt(d.cost,2);
 }
-function startLive(){
-if(liveRef)liveRef.off();
-liveRef=db.ref(LIVE);
-liveRef.on("value",snap=>{
-const d=snap.val();
-if(!d){
-$("connection").textContent="Waiting for ESP32 data…";
-return;
+
+const $=id=>document.getElementById(id);
+function show(id){["loginScreen","roleScreen","dashboard"].forEach(x=>$(x).classList.toggle("hidden",x!==id));}
+async function emailSignIn(){
+ const email=$("emailInput").value.trim(),password=$("emailPassword").value;
+ const button=$("emailLoginBtn");
+ $("emailError").textContent="";
+ if(!email||!password){$("emailError").textContent="Enter your email address and password.";return;}
+ button.disabled=true;button.textContent="SIGNING IN…";
+ try{await auth.signInWithEmailAndPassword(email,password);$("emailPassword").value="";show("roleScreen");}
+ catch(e){$("emailError").textContent=e.message||"Sign-in failed. Check your details and try again.";}
+ finally{button.disabled=false;button.textContent="SIGN IN";}
 }
-latest=d;
-$("connection").textContent="LIVE · Firebase connected";
-$("latestUpdateTime").textContent=new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
-update(d);
-},e=>$("connection").textContent="Firebase error: "+e.message);
+const fmt=(v,n=2)=>v===null||v===undefined||!Number.isFinite(Number(v))?"—":Number(v).toFixed(n);
+const bool=v=>v===true?"ON":v===false?"OFF":"—";
+function applyTheme(theme){
+ const dark=theme==="dark";
+ document.body.classList.toggle("dark-theme",dark);
+ document.querySelectorAll(".theme-toggle").forEach(button=>{
+  button.textContent=dark?"☀ Light":"☾ Dark";
+  button.setAttribute("aria-label",dark?"Switch to light theme":"Switch to dark theme");
+ });
+ try{localStorage.setItem("powerGuardTheme",dark?"dark":"light");}catch(e){}
+ refreshChartTheme();
 }
-function update(d){
-updateBill(d);
-$("voltage").textContent=fmt(d.voltage,1)+" V";
-$("current").textContent=fmt(d.current,2)+" A";
-$("power").textContent=fmt(d.power,1)+" W";
-$("apparent").textContent=fmt(d.apparentPower,1)+" VA";
-$("pf").textContent=fmt(d.powerFactor,2);
-$("frequency").textContent=fmt(d.frequency,2)+" Hz";
-$("energy").textContent=fmt(d.energyWh,3)+" Wh";
-$("cost").textContent="₹"+fmt(d.cost,6);
-$("load").textContent=d.loadOn===true||d.relayOn===true?"ON":d.loadOn===false||d.relayOn===false?"OFF":"—";
-$("tariff").textContent="Tariff zone: "+(d.tariffZone||"—");
-let status=d.status||"SYSTEM ONLINE";
-if(d.gasDetected===true)status="GAS ALERT";
-else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
-else if(d.overload===true)status="OVERLOAD ALERT";
-$("systemStatus").textContent="SYSTEM STATUS · "+String(status).toUpperCase();
-$("systemStatus").style.borderLeftColor=(d.gasDetected||d.overVoltage||d.overload)?"#b42336":"#198879";
-if($("mainRelaySwitch")){
-$("mainRelaySwitch").checked=d.relayOn===true;
-$("mainRelaySwitch").disabled=!!(d.gasDetected||d.overVoltage||d.overload);
+function toggleTheme(){
+ applyTheme(document.body.classList.contains("dark-theme")?"light":"dark");
 }
-$("mainRelayState").textContent=d.relayOn===true?"ON":"OFF";
-if(role==="consumer"){
-for(let i=1;i<=6;i++){
-const sw=$("r"+i),label=$("r"+i+"State");
-if(sw){
-if(sw.dataset.pending!=="true")sw.checked=d["relay"+i+"On"]===true;
-sw.disabled=ksebCutActive||sw.dataset.pending==="true";
+function chooseRole(r){role=r;$("passRoleTitle").textContent=r==="admin"?"KSEB ADMIN PASSWORD":"CONSUMER PASSWORD";$("rolePasswordArea").classList.remove("hidden");$("rolePassword").value="";$("passError").textContent="";$("rolePassword").type="password";$("rolePassword").focus();}
+function verifyRolePassword(){
+ const expected=role==="admin"?"KSEB123":"CONSUMER123";
+ if(!auth.currentUser){$("passError").textContent="Your email session has expired. Please sign in again.";show("loginScreen");return;}
+ if($("rolePassword").value!==expected){$("passError").textContent="Incorrect "+(role==="admin"?"KSEB ADMIN":"CONSUMER")+" password. Check the spelling and try again.";return;}
+ enterRole(role);
 }
-if(label)label.textContent=d["relay"+i+"On"]===true?"ON":"OFF";
-}
-}
-}
-function renderRooms(){
-$("roomControls").innerHTML=names.map((n,i)=>`<div class="room"><div><b>R${i+1} · ${n}</b><small id="r${i+1}State">Waiting…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label></div>`).join("");
-updateConsumerRelayLock();
-}
-function updateConsumerRelayLock(){
-for(let i=1;i<=6;i++){
-const sw=$("r"+i);
-if(sw)sw.disabled=ksebCutActive||role!=="consumer";
-}
-$("relayMessage").textContent=ksebCutActive?"Main supply disconnected by KSEB ADMIN.":"Consumer relay controls available.";
-}
-function watchKsebCutState(){
-if(cutRef)cutRef.off();
-cutRef=db.ref(COMMANDS+"/ksebCutActive");
-cutRef.on("value",snap=>{
-ksebCutActive=snap.val()===true;
-updateConsumerRelayLock();
-});
-}
-async function sendCommand(payload,label){
-try{
-await db.ref(COMMANDS).update(payload);
-$("relayMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
-$("adminMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
-return true;
-}catch(e){
-$("relayMessage").textContent="Command failed: "+e.message;
-$("adminMessage").textContent="Command failed: "+e.message;
-return false;
-}
-}
-async function setConsumerRelay(channel,on){
-if(role!=="consumer"||ksebCutActive)return;
-const sw=$("r"+channel);
-if(!sw||sw.dataset.pending==="true")return;
-sw.dataset.pending="true";sw.disabled=true;
-const key="relay"+channel,payload={};
-payload[key+"On"]=on;payload[key+"Off"]=!on;
-const ok=await sendCommand(payload,names[channel-1]+" relay "+(on?"ON":"OFF"));
-sw.dataset.pending="false";
-if(!ok)sw.checked=!on;
-sw.disabled=ksebCutActive;
-}
-async function setMainRelay(on){
-const sw=$("mainRelaySwitch");
-if(on&&(latest.gasDetected||latest.overload||latest.overVoltage)){
-sw.checked=false;
-$("adminMessage").textContent="Power restoration blocked while an alert is active.";
-return;
-}
-if(!on&&!confirm("Turn MAIN relay OFF?")){sw.checked=true;return;}
-sw.disabled=true;
-const ok=await sendCommand({restorePower:on,cutPower:!on,ksebCutActive:!on},"MAIN relay "+(on?"ON":"OFF"));
-if(!ok)sw.checked=!on;
-sw.disabled=!!(latest.gasDetected||latest.overload||latest.overVoltage);
-}
-async function resetEnergyCost(on){
-if(!on)return;
-if(!confirm("Reset accumulated energy and cost?")){
-$("resetEnergySwitch").checked=false;return;
-}
-await sendCommand({resetEnergy:true,resetCost:true},"Energy and cost reset");
-$("resetEnergySwitch").checked=false;
-}
-function addAI(text,type){
-const el=document.createElement("div");
-el.className="ai-msg "+type;
-el.textContent=text;
-$("aiChatLog").appendChild(el);
-$("aiChatLog").scrollTop=$("aiChatLog").scrollHeight;
+async function emailLogout(){if(liveRef){liveRef.off();liveRef=null;}if(historyRef){historyRef.off();historyRef=null;}await auth.signOut();$("emailPassword").value="";$("emailError").textContent="";show("loginScreen");}
+
+
+// Free local assistant: all responses are generated in this browser from live Firebase readings.
+function addAIMessage(text, who){
+ const log=$("aiChatLog"), node=document.createElement("div");
+ node.className="ai-msg "+who; node.textContent=text; log.appendChild(node); log.scrollTop=log.scrollHeight;
 }
 function sendAIQuestion(){
-const input=$("aiQuestion"),q=input.value.trim().toLowerCase();
-if(!q)return;
-addAI(input.value,"user");input.value="";
-let answer="Ask about voltage, current, power, energy, cost, tariff, relay status or system alerts.";
-if(q.includes("voltage"))answer="Latest voltage: "+fmt(latest.voltage,1)+" V.";
-else if(q.includes("current")||q.includes("amp"))answer="Latest current: "+fmt(latest.current,2)+" A.";
-else if(q.includes("power"))answer="Latest active power: "+fmt(latest.power,1)+" W.";
-else if(q.includes("energy"))answer="Accumulated energy: "+fmt(latest.energyWh,3)+" Wh.";
-else if(q.includes("cost")||q.includes("bill"))answer="Estimated accumulated cost: ₹"+fmt(latest.cost,2)+".";
-else if(q.includes("tariff"))answer="Current tariff zone: "+(latest.tariffZone||"not available")+".";
-else if(q.includes("overload"))answer="Overload status: "+(latest.overload===true?"ACTIVE":latest.overload===false?"Not active":"Not available")+".";
-else if(q.includes("overvoltage"))answer="Overvoltage status: "+(latest.overVoltage===true?"ACTIVE":latest.overVoltage===false?"Not active":"Not available")+".";
-else if(q.includes("status"))answer="System status: "+$("systemStatus").textContent+".";
-else if(q.includes("relay")||q.includes("load"))answer="Main relay: "+(latest.relayOn===true?"ON":latest.relayOn===false?"OFF":"Not available")+".";
-addAI(answer,"bot");
+ const input=$("aiQuestion"), question=input.value.trim();
+ if(!question)return;
+ addAIMessage(question,"user"); input.value="";
+ const answer=answerPowerGuardQuestion(question,latest||{});
+ addAIMessage(answer,"bot");
+
 }
-async function logout(){
-if(liveRef)liveRef.off();
-if(historyRef)historyRef.off();
-if(cutRef)cutRef.off();
-latest={};
-await auth.signOut();
-show("loginScreen");
+function answerPowerGuardQuestion(question,d){
+ const q=question.toLowerCase();
+ const num=(v,n=2)=>v===null||v===undefined||v===""||!Number.isFinite(Number(v))?"not available":Number(v).toFixed(n);
+ const gas=d.gasDetected===true, overload=d.overload===true, ov=d.overVoltage===true;
+ if(/hello|hi\b|hey|good morning/.test(q)) return "Hello! I can check your latest Power Guard readings, explain alerts and identify which dashboard controls do what. Try: What is the system status? How much energy is recorded? Is MAIN ON?";
+ if(/help|what can you do|commands|questions/.test(q)) return "Ask me about live voltage, current, active/apparent power, power factor, frequency, energy, estimated cost, tariff zone, gas sensor, overload, overvoltage, system status or relay states. I can also explain whether a reading is current or accumulated.";
+ if(/gas|mq.?6|leak/.test(q)) return "Gas sensor status: "+(gas?"ALERT reported":""+(d.gasDetected===false?"Normal according to the current sensor flag":"not available"))+". MQ-6 raw reading: "+(d.gasRaw??"not available")+". This MQ-6 prototype is not a certified gas alarm; do not use it as a substitute for a certified detector.";
+ if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your ESP32 code.";
+ if(/over.?voltage|high voltage|voltage fault/.test(q)) return "Overvoltage flag: "+(ov?"ACTIVE":d.overVoltage===false?"not active":"not available")+". Measured voltage: "+num(d.voltage,1)+" V.";
+ if(/voltage|volt/.test(q)) return "Latest voltage reading: "+num(d.voltage,1)+" V.";
+ if(/current|amp|ampere/.test(q)) return "Latest current reading: "+num(d.current)+" A.";
+ if(/power factor|\bpf\b/.test(q)) return "Latest power factor: "+num(d.powerFactor,3)+".";
+ if(/frequency|hertz|hz/.test(q)) return "Latest frequency reading: "+num(d.frequency)+" Hz.";
+ if(/apparent power|\bva\b/.test(q)) return "Latest apparent power: "+num(d.apparentPower)+" VA.";
+ if(/watt|active power|\bpower\b/.test(q)) return "Latest active power: "+num(d.power)+" W.";
+ if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /energy|consum|unit|kwh|use|used|usage/.test(q)) { if(d.dailyEnergyWh!==undefined) return "Energy recorded today: "+num(d.dailyEnergyWh,3)+" Wh ("+(Number(d.dailyEnergyWh)/1000).toFixed(6)+" kWh)."; return "The dashboard currently receives accumulated energy ("+num(d.energyWh,3)+" Wh), not a separate daily counter. This value is since the last energy reset or firmware counter start; it does not prove the total for today unless the ESP32 resets it daily."; }
+ if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the ESP32 counter, usually since its last reset.";
+ if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const z=String(d.tariffZone||"").toUpperCase(),r=KSEB_TOD_RATES[z];return "ESP32-calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(z||"not available")+". Display tariff rate: "+(r!==undefined?"₹"+r.toFixed(2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill. The ESP32 firmware must use the same rates for the accumulated cost to match.";}
+ if(/main relay|main switch|main output|room switch|which switch|relay|room|load|supply/.test(q)){
+  const main=(d.relay1On===true||d.relayOn===true)?"ON":(d.relay1On===false||d.relayOn===false)?"OFF":"not reported";
+  if(/kseb|admin|main switch|main relay|which switch/.test(q))return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). The RESET ENERGY & COST switch sends the energy/cost reset command. Individual room switches are not shown in the KSEB dashboard.";
+  return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the ESP32 publishes them. These are reported states, not independent proof of physical contact position.";
+ }
+ if(/status|condition|healthy|normal|problem|alert/.test(q)){
+  const issues=[]; if(gas)issues.push("gas alert"); if(overload)issues.push("overload"); if(ov)issues.push("overvoltage");
+  return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the ESP32 has not published that field.";
+ }
+ if(/thank|thanks/.test(q)) return "You're welcome. Power Guard is using its free local smart assistant; no external AI service is connected.";
+ return "I could not match that question to a live Power Guard value. Try asking more specifically, for example: What is the voltage now? How much energy since reset? Why is the system in alert? Is the MAIN relay ON? What does power factor mean?";
 }
-auth.onAuthStateChanged(user=>{
-if(!user&&liveRef){liveRef.off();liveRef=null;}
-});
+
+function enterRole(r){
+ role=r; $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
+ $("adminActions").classList.toggle("hidden",r!=="admin");
+ $("consumerRooms").classList.toggle("hidden",r==="admin");
+ show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); startHistory(); startLive();
+}
+function renderRooms(){
+ $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label></div>`).join("");
+ updateConsumerRelayLock();
+}
+function updateConsumerRelayLock(){
+ for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive);}
+ $("relayMessage").textContent=ksebCutActive?"KSEB ADMIN has disconnected the main supply. Consumer relay controls are locked until KSEB restores power.":"Consumer relay controls are available.";
+}
+function watchKsebCutState(){
+ if(cutRef)cutRef.off();
+ cutRef=db.ref(COMMANDS+"/ksebCutActive");
+ cutRef.on("value",snap=>{ksebCutActive=snap.val()===true;updateConsumerRelayLock();});
+}
+async function setConsumerRelay(channel,on){
+ if(role!=="consumer"||ksebCutActive||channel<1||channel>6)return;
+ const sw=$("r"+channel);
+ if(!sw||sw.dataset.pending==="true")return;
+ sw.dataset.pending="true";
+ sw.disabled=true;
+ const key="relay"+channel;
+ const payload={};
+ payload[key+"On"]=on;
+ payload[key+"Off"]=!on;
+ const ok=await sendCommand(payload,names[channel-1]+" relay "+(on?"ON":"OFF"));
+ sw.dataset.pending="false";
+ if(!ok)sw.checked=!on;
+ sw.disabled=(role!=="consumer"||ksebCutActive);
+}
+function startLive(){
+ if(liveRef)liveRef.off();
+ liveRef=db.ref(LIVE);
+ liveRef.on("value",snap=>{
+  const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the ESP32 Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR ESP32 DATA";return;}
+  latest=d; $("connection").textContent="LIVE · Firebase data received"; $("connection").className="muted ok";
+  updateLatestUpdateTime();
+  update(d);
+ },e=>{$("connection").textContent="Firebase read error: "+e.message;$("connection").className="status bad";});
+}
+function updateLatestUpdateTime(){
+ const now=new Date();
+ const formatted=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now);
+ $("latestUpdateTime").textContent=formatted+" IST (last received)";
+}
+function update(d){
+ updateBill(d);
+ $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
+ $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
+ $("pf").textContent=fmt(d.powerFactor,2); $("frequency").textContent=fmt(d.frequency,2)+" Hz";
+ $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,6);
+ $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
+ const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(), rate=KSEB_TOD_RATES[zone];
+ $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
+  (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
+ let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
+ if(d.gasDetected===true)status="GAS ALERT · CHECK SYSTEM";
+ else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
+ else if(d.overload===true)status="OVERLOAD ALERT";
+ else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
+ $("systemStatus").textContent="SYSTEM STATUS · "+status;
+ $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
+ const mainOn=(d.relayOn===true);
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true; }
+ if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
+ if(role==="consumer"){for(let i=1;i<=6;i++){
+  const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
+  const sw=$("r"+i), label=$("r"+i+"State"); if(sw){if(sw.dataset.pending!=="true")sw.checked=val;sw.disabled=ksebCutActive||sw.dataset.pending==="true";} if(label)label.textContent=val?"ON":"OFF";
+ }}
+}
+async function setMainRelay(on){
+ if(role!=="admin")return;
+ const sw=$("mainRelaySwitch");
+ if(sw.dataset.pending==="true")return;
+ if(on&&(latest.gasDetected===true||latest.overload===true||latest.overVoltage===true)){
+  sw.checked=false;
+  $("adminMessage").textContent="Power restoration blocked while a protection alert is active.";
+  return;
+ }
+ if(!on&&!confirm("Turn the MAIN relay OFF?")){sw.checked=true;return;}
+ sw.dataset.pending="true";
+ sw.disabled=true;
+ const ok=await sendCommand({restorePower:on,cutPower:!on,ksebCutActive:!on},"MAIN relay "+(on?"ON":"OFF"));
+ sw.dataset.pending="false";
+ if(!ok)sw.checked=!on;
+ sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true;
+}
+async function resetEnergyCost(on){
+ if(!on)return;
+ if(!confirm("Reset accumulated energy and cost?")){$("resetEnergySwitch").checked=false;return;}
+ await sendCommand({resetEnergy:true,resetCost:true},"Energy and cost reset");
+ setTimeout(()=>{$("resetEnergySwitch").checked=false;},700);
+}
+async function sendCommand(payload,label){
+ try{
+  await db.ref(COMMANDS).update(payload);
+  if($("relayMessage"))$("relayMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
+  if($("adminMessage"))$("adminMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
+  return true;
+ }catch(e){
+  if($("relayMessage"))$("relayMessage").textContent="Command failed: "+e.message;
+  if($("adminMessage"))$("adminMessage").textContent="Command failed: "+e.message;
+  return false;
+ }
+}
+async function returnToRoles(){if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
+async function logout(){await returnToRoles();}
+auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
 let savedTheme="light";
 try{savedTheme=localStorage.getItem("powerGuardTheme")==="dark"?"dark":"light";}catch(e){}
 applyTheme(savedTheme);
-updateTariffClock();
-setInterval(updateTariffClock,1000);
+updateTariffClock();setInterval(updateTariffClock,1000);
 </script>
-</body>
-</html>
+</body></html>
