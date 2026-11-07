@@ -33,6 +33,13 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
 .aihead{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .airesult{background:#07182a;border:1px solid var(--line);border-left:3px solid var(--green);border-radius:10px;padding:14px;line-height:1.6;white-space:pre-wrap}
 @media(max-width:650px){.analytics{grid-template-columns:1fr}.billgrid{grid-template-columns:1fr 1fr}}
+
+.ai-chat{display:flex;flex-direction:column;gap:10px}
+.ai-log{min-height:180px;max-height:360px;overflow:auto;display:flex;flex-direction:column;gap:9px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:12px}
+.ai-msg{max-width:92%;padding:10px 12px;border-radius:12px;white-space:pre-wrap;line-height:1.5;font-size:14px}
+.ai-msg.user{align-self:flex-end;background:#16466b}
+.ai-msg.bot{align-self:flex-start;background:#123a35;border:1px solid #246b59}
+.ai-entry{display:flex;gap:8px}.ai-entry input{flex:1;min-width:0}
 </style>
 </head>
 <body><main class="wrap">
@@ -104,9 +111,17 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
   <p class="muted">The displayed cost is the ESP32's accumulated tariff calculation, not an official KSEB bill. Fixed charges, taxes, meter periods and slab adjustments may not be included unless implemented in the firmware.</p>
  </div>
  <div class="card">
-  <div class="aihead"><h2 style="margin:0">POWER GUARD AI INSIGHTS</h2><span class="pill">LIVE ANALYSIS</span></div>
-  <p class="muted">On-device-style analysis based on the actual Firebase readings. It provides recommendations only and never operates relays or overrides protection.</p>
-  <div id="aiInsight" class="airesult">Waiting for live readings to generate an analysis…</div>
+  <div class="aihead"><h2 style="margin:0">POWER GUARD SMART ASSISTANT</h2><span class="pill">FREE · OFFLINE LOGIC</span></div>
+  <p class="muted">Ask about the live readings, energy use, tariff and protection alerts. Answers are generated locally from programmed rules; no AI API or paid cloud service is used.</p>
+  <div class="ai-chat">
+   <div id="aiChatLog" class="ai-log"><div class="ai-msg bot">Hello! I am the Power Guard Smart Assistant. Ask about voltage, current, power, energy, cost, gas, overload, overvoltage or system status.</div></div>
+   <div class="ai-entry"><input id="aiQuestion" maxlength="1200" placeholder="Ask about your Power Guard system…" onkeydown="if(event.key==='Enter')sendAIQuestion()"><button id="aiSend" onclick="sendAIQuestion()">SEND</button></div>
+   <p id="aiStatus" class="muted">Free local rule-based assistant · no API key required.</p>
+  </div>
+ </div>
+ <div class="card">
+  <div class="aihead"><h2 style="margin:0">AUTOMATIC SYSTEM INSIGHTS</h2><span class="pill">LIVE DATA</span></div>
+  <div id="aiInsight" class="airesult">Waiting for live readings…</div>
  </div>
  <div class="card">
   <div class="top"><h2 style="margin:0">ROOM RELAYS</h2><span class="pill">LOW-VOLTAGE DEMO</span></div>
@@ -134,7 +149,7 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
 <script>
 // Firebase web configuration and database paths from your supplied Power Guard details.
 const firebaseConfig={
- apiKey:"AIzaSyA0IFRa2NwnV38ynd2alYAhIMzUrnKSbHs",
+ apiKey:"AIzaSyA0IFRa2NwnV38ynd2alYAhIMzUrNKSbHs",
  authDomain:"power-guard32.firebaseapp.com",
  databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
  projectId:"power-guard32",
@@ -194,14 +209,56 @@ function makeAIInsight(d){
  if(Number.isFinite(cost)&&cost>=0)out.push("ESP32-calculated accumulated energy cost: ₹"+cost.toFixed(2)+".");
  if(d.tariffZone)out.push("Current time-of-day tariff zone from ESP32: "+String(d.tariffZone)+".");
  if(!out.length)out.push("Waiting for valid sensor values.");
- out.push("This is rule-based dashboard analysis, not a cloud generative-AI model. It does not send commands or control relays.");
- $("aiInsight").textContent=out.join("\\n");
+ out.push("Rule-based analysis only; it does not control relays.");
+ $("aiInsight").textContent=out.join("\n");
 }
 
 const $=id=>document.getElementById(id);
 const fmt=(v,n=2)=>v===null||v===undefined||!Number.isFinite(Number(v))?"—":Number(v).toFixed(n);
 const bool=v=>v===true?"ON":v===false?"OFF":"—";
 function show(id){["login","roleScreen","dashboard"].forEach(x=>$(x).classList.toggle("hidden",x!==id));}
+
+// Free local assistant: all responses are generated in this browser from live Firebase readings.
+function addAIMessage(text, who){
+ const log=$("aiChatLog"), node=document.createElement("div");
+ node.className="ai-msg "+who; node.textContent=text; log.appendChild(node); log.scrollTop=log.scrollHeight;
+}
+function sendAIQuestion(){
+ const input=$("aiQuestion"), question=input.value.trim();
+ if(!question)return;
+ addAIMessage(question,"user"); input.value="";
+ const answer=answerPowerGuardQuestion(question,latest||{});
+ addAIMessage(answer,"bot");
+ $("aiStatus").textContent="Answered locally using programmed rules and the latest available dashboard readings.";
+}
+function answerPowerGuardQuestion(question,d){
+ const q=question.toLowerCase();
+ const num=(v,n=2)=>v===null||v===undefined||v===""||!Number.isFinite(Number(v))?"not available":Number(v).toFixed(n);
+ const gas=d.gasDetected===true, overload=d.overload===true, ov=d.overVoltage===true;
+ if(/hello|hi\b|hey|good morning/.test(q)) return "Hello! I can explain your Power Guard readings and protection status. Try asking: 'What is the system status?' or 'How much energy have I used?'";
+ if(/help|what can you do|commands|questions/.test(q)) return "I can answer questions about voltage, current, power, power factor, frequency, energy, estimated cost, tariff zone, gas status, overload, overvoltage and relay status. I use the latest values received by this dashboard.";
+ if(/gas|mq.?6|leak/.test(q)) return "Gas sensor status: "+(gas?"ALERT reported":""+(d.gasDetected===false?"Normal according to the current sensor flag":"not available"))+". MQ-6 raw reading: "+(d.gasRaw??"not available")+". This MQ-6 prototype is not a certified gas alarm; do not use it as a substitute for a certified detector.";
+ if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your ESP32 code.";
+ if(/over.?voltage|high voltage|voltage fault/.test(q)) return "Overvoltage flag: "+(ov?"ACTIVE":d.overVoltage===false?"not active":"not available")+". Measured voltage: "+num(d.voltage,1)+" V.";
+ if(/voltage|volt/.test(q)) return "Latest voltage reading: "+num(d.voltage,1)+" V.";
+ if(/current|amp|ampere/.test(q)) return "Latest current reading: "+num(d.current)+" A.";
+ if(/power factor|\bpf\b/.test(q)) return "Latest power factor: "+num(d.powerFactor,3)+".";
+ if(/frequency|hertz|hz/.test(q)) return "Latest frequency reading: "+num(d.frequency)+" Hz.";
+ if(/apparent power|\bva\b/.test(q)) return "Latest apparent power: "+num(d.apparentPower)+" VA.";
+ if(/watt|active power|\bpower\b/.test(q)) return "Latest active power: "+num(d.power)+" W.";
+ if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh).";
+ if(/cost|bill|rupee|₹|tariff|rate/.test(q)) return "ESP32-calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(d.tariffZone||"not available")+". Tariff rate: "+(d.tariffRate!==undefined?"₹"+num(d.tariffRate,2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill.";
+ if(/relay|room|main|load|supply/.test(q)){
+  const parts=[]; for(let i=1;i<=6;i++){let v=d["relay"+i+"On"]; if(i===1&&v===undefined)v=d.relayOn; parts.push("R"+i+": "+(v===true?"ON":v===false?"OFF":"unknown"));}
+  return "Reported relay states: "+parts.join(", ")+". Main/load status: "+(d.loadOn===true?"ON":d.loadOn===false?"OFF":"not available")+". These are reported states, not independent proof of physical contact position.";
+ }
+ if(/status|condition|healthy|normal|problem|alert/.test(q)){
+  const issues=[]; if(gas)issues.push("gas alert"); if(overload)issues.push("overload"); if(ov)issues.push("overvoltage");
+  return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the ESP32 has not published that field.";
+ }
+ if(/thank|thanks/.test(q)) return "You're welcome. Power Guard is using its free local smart assistant; no external AI service is connected.";
+ return "I don't have a programmed answer for that question yet. Try asking about voltage, current, power, energy, cost, tariff, gas, overload, overvoltage, relays or system status.";
+}
 async function signIn(){
  const email=$("email").value.trim(), pass=$("password").value;
  $("loginError").textContent="";
