@@ -244,6 +244,48 @@ body.dark-theme .eye-btn svg{stroke:#b7c8d9!important}
 @media(min-width:700px){.analytics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:380px){.tariff-current,.tariff-schedule{gap:6px}.tariff-current>div{padding:10px 8px}.tariff-slot{padding:9px 7px}.tariff-slot strong{font-size:12px}}
 
+
+/* TARIFF CARDS: LONG FULL-WIDTH ROWS ON MOBILE */
+.tariff-current{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:10px!important;
+}
+.tariff-current>div{
+  width:100%;min-height:112px;padding:18px 20px!important;
+  display:flex;flex-direction:column;justify-content:center;gap:8px;
+}
+.tariff-current small{font-size:clamp(13px,3.5vw,16px)!important;line-height:1.4}
+.tariff-current strong{font-size:clamp(22px,5.5vw,29px)!important;line-height:1.25;overflow-wrap:anywhere}
+.tariff-schedule{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:10px!important;
+}
+.tariff-slot{
+  width:100%;min-height:112px;padding:16px 20px!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:"time time" "name rate";
+  align-items:center;column-gap:12px;row-gap:8px;
+}
+.tariff-slot span{grid-area:time;font-size:clamp(13px,3.5vw,16px)!important;line-height:1.35}
+.tariff-slot b{grid-area:name;font-size:clamp(14px,3.8vw,17px)!important;letter-spacing:.6px}
+.tariff-slot strong{grid-area:rate;text-align:right;font-size:clamp(19px,5vw,25px)!important;white-space:nowrap;overflow-wrap:normal}
+.tariff-slot.active{border-width:2px!important}
+/* Eye icon: transparent hit area, no box/border, soft green icon */
+.password-wrap .eye-btn,
+.password-wrap .eye-btn:hover,
+.password-wrap .eye-btn:focus,
+.password-wrap .eye-btn:active{
+  background:transparent!important;border:0!important;outline:0!important;
+  box-shadow:none!important;color:#9bcbb4!important;
+}
+.password-wrap .eye-btn svg{stroke:#9bcbb4!important;fill:none!important}
+.password-wrap .eye-btn:focus-visible{outline:2px solid #9bcbb4!important;outline-offset:2px;border-radius:50%}
+@media(max-width:380px){
+ .tariff-current>div{min-height:100px;padding:14px 16px!important}
+ .tariff-slot{min-height:100px;padding:13px 16px!important}
+ .tariff-slot strong{font-size:18px!important}
+}
+
 </style>
 </head>
 <body><main class="wrap">
