@@ -408,14 +408,14 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
- <div class="card">
-  <h2>VOLTAGE SETPOINT</h2>
+ <div class="card" id="voltageSetpointCard">
+  <h2>VOLTAGE REFERENCE</h2>
   <div class="voltage-control">
    <div class="voltage-control-head"><div><div class="muted">REFERENCE SETPOINT</div><div class="voltage-setpoint"><span id="voltageSetpointValue">220</span> V</div></div><button id="voltageSetpointToggle" type="button" class="secondary" onclick="toggleVoltageSetpoint()">TURN ON</button></div>
-   <input id="voltageSetpointSlider" class="voltage-slider" type="range" min="190" max="240" step="1" value="220" disabled oninput="updateVoltageSetpoint()">
+   <input id="voltageSetpointSlider" class="voltage-slider" type="range" min="190" max="240" step="1" value="220" disabled oninput="updateVoltageSetpoint()" onchange="sendVoltageSetpoint()">
    <div class="voltage-limits"><span>190 V</span><span>200 V · LOW LIMIT</span><span>215 V · HIGH LIMIT</span><span>240 V</span></div>
    <div id="voltageSetpointState" class="voltage-state">OFF · Reference control disabled</div>
-   <p class="voltage-note">Display-only demonstration. This slider does not adjust or regulate the actual AC supply. The 200 V and 215 V markers are visual thresholds only; actual protection must remain in the independently engineered hardware.</p>
+   <p class="voltage-note">Consumer reference control only. The selected value is sent to the device and shown on its OLED. It does not adjust the actual AC supply or replace independent voltage protection.</p>
   </div>
  </div>
  <div class="card">
@@ -696,6 +696,7 @@ function enterRole(r){
  role=r; $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
  $("adminActions").classList.toggle("hidden",r!=="admin");
  $("consumerRooms").classList.toggle("hidden",r==="admin");
+ $("voltageSetpointCard").classList.toggle("hidden",r!=="consumer");
  show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); initCharts(); startHistory(); startLive(); startLiveChartSampling();
 }
 function renderRooms(){
@@ -743,6 +744,16 @@ function updateLatestUpdateTime(){
 }
 function update(d){
  updateBill(d);
+ if(role==="consumer" && Number.isFinite(Number(d.voltageSetpoint))){
+  const sv=Math.max(190,Math.min(240,Number(d.voltageSetpoint)));
+  $("voltageSetpointSlider").value=String(sv);
+  $("voltageSetpointValue").textContent=String(Math.round(sv));
+ }
+ if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("voltageSetpointToggle"))){
+  voltageSetpointEnabled=d.knobOn;
+  $("voltageSetpointSlider").disabled=!d.knobOn;
+  $("voltageSetpointToggle").textContent=d.knobOn?"TURN OFF":"TURN ON";
+ }
  $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
  $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
  $("pf").textContent=fmt(d.powerFactor,2); $("frequency").textContent=fmt(d.frequency,2)+" Hz";
@@ -815,26 +826,37 @@ function toggleEye(inputId, button){
 }
 auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
 
-// Local display-only setpoint demo. It deliberately sends no Firebase or hardware command.
+// Firebase-backed consumer voltage reference. This is a display/reference value only.
 let voltageSetpointEnabled=false;
 function updateVoltageSetpoint(){
- const slider=document.getElementById("voltageSetpointSlider");
- const value=Number(slider.value);
- document.getElementById("voltageSetpointValue").textContent=String(value);
- const state=document.getElementById("voltageSetpointState");
- if(value<200)state.textContent="REFERENCE ONLY · Below 200 V threshold";
- else if(value>215)state.textContent="REFERENCE ONLY · Above 215 V threshold";
- else state.textContent="REFERENCE ONLY · Within 200–215 V marker range";
+ const slider=$("voltageSetpointSlider"), value=Number(slider.value);
+ $("voltageSetpointValue").textContent=String(value);
+ const state=$("voltageSetpointState");
+ if(value<200)state.textContent="REFERENCE · Below 200 V marker";
+ else if(value>215)state.textContent="REFERENCE · Above 215 V marker";
+ else state.textContent="REFERENCE · Within 200–215 V marker range";
 }
-function toggleVoltageSetpoint(){
- voltageSetpointEnabled=!voltageSetpointEnabled;
- const slider=document.getElementById("voltageSetpointSlider");
- const button=document.getElementById("voltageSetpointToggle");
- slider.disabled=!voltageSetpointEnabled;
- button.textContent=voltageSetpointEnabled?"TURN OFF":"TURN ON";
- button.classList.toggle("secondary",!voltageSetpointEnabled);
- if(!voltageSetpointEnabled)document.getElementById("voltageSetpointState").textContent="OFF · Reference control disabled";
- else updateVoltageSetpoint();
+async function sendVoltageSetpoint(){
+ if(role!=="consumer"||!voltageSetpointEnabled)return;
+ const value=Math.max(190,Math.min(240,Number($("voltageSetpointSlider").value)));
+ try{
+  await db.ref(COMMANDS).update({voltageSetpoint:value});
+  $("voltageSetpointState").textContent="SENT · "+value+" V reference";
+ }catch(e){$("voltageSetpointState").textContent="SEND FAILED · "+e.message;}
+}
+async function toggleVoltageSetpoint(){
+ if(role!=="consumer")return;
+ const next=!voltageSetpointEnabled, button=$("voltageSetpointToggle"), slider=$("voltageSetpointSlider");
+ button.disabled=true;
+ try{
+  await db.ref(COMMANDS).update(next?{knobOn:true}:{knobOff:true});
+  voltageSetpointEnabled=next; slider.disabled=!next;
+  button.textContent=next?"TURN OFF":"TURN ON";
+  button.classList.toggle("secondary",!next);
+  if(next){updateVoltageSetpoint();await sendVoltageSetpoint();}
+  else $("voltageSetpointState").textContent="OFF · Reference control disabled";
+ }catch(e){$("voltageSetpointState").textContent="COMMAND FAILED · "+e.message;}
+ finally{button.disabled=false;}
 }
 
 let savedTheme="light";
