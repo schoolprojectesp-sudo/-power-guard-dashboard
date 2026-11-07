@@ -321,6 +321,22 @@ body.dark-theme #roleScreen .role h3{color:#c4f0d4!important}
 body.dark-theme #roleScreen .role p{color:#b4d0c2!important}
 body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid #34765e!important;border-radius:12px;padding:14px!important}
 
+
+/* Final polish: narrower tariff cards, premium theme switch, larger navy charts */
+.tariff-current,.tariff-schedule{width:94%!important;max-width:900px!important;margin-left:auto!important;margin-right:auto!important}
+.tariff-current>div,.tariff-slot{border-radius:18px!important}
+.theme-toggle{min-width:112px!important;padding:10px 16px!important;border-radius:999px!important;border:1px solid #c8d5dc!important;background:linear-gradient(180deg,#ffffff,#edf2f5)!important;color:#294052!important;box-shadow:0 2px 7px #18304412!important;font-weight:700!important;letter-spacing:.2px}
+.theme-toggle:hover{background:#e7f2ed!important;border-color:#9bcbb4!important}
+body.dark-theme .theme-toggle{background:linear-gradient(180deg,#1d3449,#10243a)!important;color:#d8eee5!important;border-color:#42647b!important;box-shadow:0 2px 8px #0004!important}
+body.dark-theme .theme-toggle:hover{background:#1b463e!important;border-color:#5ba88d!important}
+.chartbox{height:430px!important;min-height:400px!important;padding:18px!important;border-radius:18px!important}
+.chartbox canvas{height:340px!important;max-height:340px!important}
+@media(max-width:600px){.chartbox{height:390px!important;min-height:370px!important}.chartbox canvas{height:300px!important;max-height:300px!important}.tariff-current,.tariff-schedule{width:92%!important}}
+@media(max-width:380px){.chartbox{height:360px!important;min-height:340px!important}.chartbox canvas{height:270px!important;max-height:270px!important}}
+/* Reference-inspired navy blue gradient area charts */
+
+body:not(.dark-theme) .password-wrap .eye-btn,body:not(.dark-theme) .password-wrap .eye-btn:hover,body:not(.dark-theme) .password-wrap .eye-btn:focus,body:not(.dark-theme) .password-wrap .eye-btn:active{background:transparent!important;border:0!important;box-shadow:none!important;color:#23845f!important}
+body:not(.dark-theme) .password-wrap .eye-btn svg{stroke:#23845f!important}
 </style>
 </head>
 <body><main class="wrap">
@@ -772,19 +788,3 @@ applyTheme(savedTheme);
 updateTariffClock();setInterval(updateTariffClock,1000);
 </script>
 </body></html>
-
-/* Final polish: narrower tariff cards, premium theme switch, larger navy charts */
-.tariff-current,.tariff-schedule{width:94%!important;max-width:900px!important;margin-left:auto!important;margin-right:auto!important}
-.tariff-current>div,.tariff-slot{border-radius:18px!important}
-.theme-toggle{min-width:112px!important;padding:10px 16px!important;border-radius:999px!important;border:1px solid #c8d5dc!important;background:linear-gradient(180deg,#ffffff,#edf2f5)!important;color:#294052!important;box-shadow:0 2px 7px #18304412!important;font-weight:700!important;letter-spacing:.2px}
-.theme-toggle:hover{background:#e7f2ed!important;border-color:#9bcbb4!important}
-body.dark-theme .theme-toggle{background:linear-gradient(180deg,#1d3449,#10243a)!important;color:#d8eee5!important;border-color:#42647b!important;box-shadow:0 2px 8px #0004!important}
-body.dark-theme .theme-toggle:hover{background:#1b463e!important;border-color:#5ba88d!important}
-.chartbox{height:430px!important;min-height:400px!important;padding:18px!important;border-radius:18px!important}
-.chartbox canvas{height:340px!important;max-height:340px!important}
-@media(max-width:600px){.chartbox{height:390px!important;min-height:370px!important}.chartbox canvas{height:300px!important;max-height:300px!important}.tariff-current,.tariff-schedule{width:92%!important}}
-@media(max-width:380px){.chartbox{height:360px!important;min-height:340px!important}.chartbox canvas{height:270px!important;max-height:270px!important}}
-/* Reference-inspired navy blue gradient area charts */
-
-body:not(.dark-theme) .password-wrap .eye-btn,body:not(.dark-theme) .password-wrap .eye-btn:hover,body:not(.dark-theme) .password-wrap .eye-btn:focus,body:not(.dark-theme) .password-wrap .eye-btn:active{background:transparent!important;border:0!important;box-shadow:none!important;color:#23845f!important}
-body:not(.dark-theme) .password-wrap .eye-btn svg{stroke:#23845f!important}
