@@ -286,6 +286,41 @@ body.dark-theme .eye-btn svg{stroke:#b7c8d9!important}
  .tariff-slot strong{font-size:18px!important}
 }
 
+
+/* FINAL PASSWORD EYE + GREEN ROLE LOGIN POLISH */
+.password-wrap{position:relative!important;width:100%!important}
+.password-wrap input{width:100%!important;padding-right:54px!important}
+.password-wrap .eye-btn,
+.password-wrap .eye-btn:hover,
+.password-wrap .eye-btn:focus,
+.password-wrap .eye-btn:active{
+  position:absolute!important;right:6px!important;top:50%!important;transform:translateY(-50%)!important;
+  width:38px!important;height:38px!important;padding:8px!important;
+  display:grid!important;place-items:center!important;
+  color:#79b99a!important;background:transparent!important;border:0!important;
+  outline:0!important;box-shadow:none!important;border-radius:50%!important;
+  cursor:pointer!important;z-index:5!important;
+}
+.password-wrap .eye-btn svg{width:21px!important;height:21px!important;stroke:#79b99a!important;fill:none!important;pointer-events:none!important}
+body.dark-theme .password-wrap .eye-btn,
+body.dark-theme .password-wrap .eye-btn:hover,
+body.dark-theme .password-wrap .eye-btn:focus,
+body.dark-theme .password-wrap .eye-btn:active{color:#8fd0aa!important;background:transparent!important;border:0!important;box-shadow:none!important}
+body.dark-theme .password-wrap .eye-btn svg{stroke:#8fd0aa!important}
+/* Second login / role selection: subtle green accent in both themes */
+body:not(.dark-theme) #roleScreen{background:linear-gradient(145deg,#ffffff 0%,#f1f8f4 100%)!important;border-color:#c8dfd1!important}
+body:not(.dark-theme) #roleScreen h2{color:#187b60!important}
+body:not(.dark-theme) #roleScreen .role{background:linear-gradient(135deg,#f0f8f3,#e5f2e9)!important;border:1px solid #bcd9c7!important;box-shadow:0 3px 12px #1b684512!important}
+body:not(.dark-theme) #roleScreen .role h3{color:#205b43!important}
+body:not(.dark-theme) #roleScreen .role p{color:#587365!important}
+body:not(.dark-theme) #rolePasswordArea{background:#edf7f0!important;border:1px solid #c5dfcd!important;border-radius:12px;padding:14px!important}
+body.dark-theme #roleScreen{background:linear-gradient(145deg,#102b28,#10243b 75%)!important;border-color:#28634f!important}
+body.dark-theme #roleScreen h2{color:#8fd0aa!important}
+body.dark-theme #roleScreen .role{background:linear-gradient(135deg,#123b32,#15334a)!important;border:1px solid #34765e!important;box-shadow:0 4px 15px #0004!important}
+body.dark-theme #roleScreen .role h3{color:#c4f0d4!important}
+body.dark-theme #roleScreen .role p{color:#b4d0c2!important}
+body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid #34765e!important;border-radius:12px;padding:14px!important}
+
 </style>
 </head>
 <body><main class="wrap">
@@ -700,6 +735,16 @@ async function sendCommand(payload,label){
 }
 async function returnToRoles(){if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
 async function logout(){await returnToRoles();}
+function toggleEye(inputId, button){
+  const field=document.getElementById(inputId);
+  if(!field) return;
+  const show=field.type==='password';
+  field.type=show?'text':'password';
+  if(button){
+    button.setAttribute('aria-label',show?'Hide password':'Show password');
+    button.setAttribute('aria-pressed',show?'true':'false');
+  }
+}
 auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
 let savedTheme="light";
 try{savedTheme=localStorage.getItem("powerGuardTheme")==="dark"?"dark":"light";}catch(e){}
