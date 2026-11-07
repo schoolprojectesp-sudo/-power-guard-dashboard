@@ -357,7 +357,7 @@ body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid 
   <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><div class="header-actions"><span class="pill" id="rolePill">CONSUMER</span><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div></div>
   <div id="systemStatus" class="status" style="margin-top:16px;border-left:5px solid var(--amber);font-size:16px;font-weight:800">SYSTEM STATUS · CONNECTING…</div>
   <p id="connection" class="muted" style="margin-top:8px">Connecting to Firebase…</p>
-  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for ESP32 data…</strong></p>
+  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for device data…</strong></p>
   <div class="grid" style="margin-top:13px">
    <div class="metric"><small>VOLTAGE</small><strong id="voltage">— V</strong></div>
    <div class="metric"><small>CURRENT</small><strong id="current">— A</strong></div>
@@ -366,7 +366,7 @@ body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid 
    <div class="metric"><small>POWER FACTOR</small><strong id="pf">—</strong></div>
    <div class="metric"><small>FREQUENCY</small><strong id="frequency">— Hz</strong></div>
    <div class="metric"><small>ENERGY CONSUMED</small><strong id="energy">— Wh</strong></div>
-   <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong><div id="tariff" class="tariff">Tariff: waiting for ESP32…</div></div>
+   <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong><div id="tariff" class="tariff">Tariff: waiting for device…</div></div>
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
@@ -382,7 +382,7 @@ body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid 
   <h2>KSEB TIME-OF-DAY TARIFF & BILL ESTIMATE</h2>
   <div class="tariff-current">
    <div><small>ACTIVE TARIFF ZONE</small><strong id="billZone">—</strong></div>
-   <div class="esp32-rate-card"><small>ESP32 TARIFF RATE</small><strong id="billRate">—</strong></div>
+   <div class="esp32-rate-card"><small>TARIFF RATE</small><strong id="billRate">—</strong></div>
    <div><small>CURRENT IST TIME</small><strong id="tariffClock">—</strong></div>
   </div>
   <div class="tariff-schedule">
@@ -411,7 +411,7 @@ body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid 
  </div>
  <div id="adminActions" class="card hidden">
   <h2>KSEB ADMIN CONTROLS</h2>
-  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
+  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
   <div class="room"><div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label></div>
   <p id="adminMessage" class="muted"></p>
  </div>
@@ -436,8 +436,9 @@ const LIVE="powerGuard/live", COMMANDS="powerGuard/commands";
 const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
 
 let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false;
-let viChart=null, powerChart=null, historyRows=[];
-const HISTORY_LIMIT=60;
+let viChart=null, powerChart=null, historyRows=[], liveChartRows=[];
+const HISTORY_LIMIT=60, LIVE_CHART_LIMIT=120;
+let liveChartTimer=null;
 function chartTheme(){
  const dark=document.body.classList.contains("dark-theme");
  return dark
@@ -458,11 +459,11 @@ function initCharts(){
    y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid},border:{display:false}}}};
  const vctx=$("viChart").getContext("2d"),pctx=$("powerChart").getContext("2d");
  viChart=new Chart(vctx,{type:"line",data:{labels:[],datasets:[
-  {label:"Voltage (V)",data:[],borderColor:"#347fbd",backgroundColor:chartGradient(vctx,"rgba(52,127,189,.38)","rgba(52,127,189,.015)"),pointBackgroundColor:"#347fbd",fill:true,yAxisID:"y",order:2},
-  {label:"Current (A)",data:[],borderColor:"#d99a45",backgroundColor:chartGradient(vctx,"rgba(217,154,69,.24)","rgba(217,154,69,.01)"),pointBackgroundColor:"#d99a45",fill:true,yAxisID:"y1",order:1}
+  {label:"Voltage (V)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(vctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true,yAxisID:"y",order:2},
+  {label:"Current (A)",data:[],borderColor:"#8ca4b7",backgroundColor:chartGradient(vctx,"rgba(140,164,183,.32)","rgba(140,164,183,.015)"),pointBackgroundColor:"#8ca4b7",borderDash:[5,4],fill:true,yAxisID:"y1",order:1}
  ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:c.text}},y1:{beginAtZero:true,position:"right",ticks:{color:c.text},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:c.text}}}}});
  powerChart=new Chart(pctx,{type:"line",data:{labels:[],datasets:[
-  {label:"Active power (W)",data:[],borderColor:"#278b70",backgroundColor:chartGradient(pctx,"rgba(39,139,112,.38)","rgba(39,139,112,.015)"),pointBackgroundColor:"#278b70",fill:true}
+  {label:"Active power (W)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(pctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true}
  ]},options:common});
 }
 function refreshChartTheme(){
@@ -503,7 +504,7 @@ function renderHistory(){
  powerChart.data.datasets[0].data=rows.map(r=>r.power);
  viChart.update();powerChart.update();
  requestAnimationFrame(()=>{viChart.resize();powerChart.resize();});
- $("historyStatus").textContent=rows.length?"Showing "+rows.length+" saved Firebase history records (oldest to newest).":"No valid records found at powerGuard/history yet.";
+ $("historyStatus").textContent=(rows.length?"Saved Firebase history: "+rows.length+" records. ":"No saved Firebase history records yet. ")+"Live chart samples update every 1 second while this dashboard is open.";
 }
 function startHistory(){
  if(historyRef)historyRef.off();
@@ -519,6 +520,25 @@ function startHistory(){
   requestAnimationFrame(()=>{renderHistory();});
  },e=>{$("historyStatus").textContent="Firebase history error: "+e.message;});
 }
+function startLiveChartSampling(){
+ if(liveChartTimer)clearInterval(liveChartTimer);
+ liveChartRows=[];
+ liveChartTimer=setInterval(()=>{
+  if(!latest||!Object.keys(latest).length||!viChart||!powerChart)return;
+  const voltage=historyNumber(latest,"voltage","voltageV","v");
+  const current=historyNumber(latest,"current","currentA","amps","i");
+  const power=historyNumber(latest,"power","activePower","watts","p");
+  if(voltage===null&&current===null&&power===null)return;
+  const now=Date.now();
+  liveChartRows.push({timestamp:now,voltage,current,power});
+  if(liveChartRows.length>LIVE_CHART_LIMIT)liveChartRows.shift();
+  const labels=liveChartRows.map(r=>new Intl.DateTimeFormat("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(new Date(r.timestamp)));
+  viChart.data.labels=labels;viChart.data.datasets[0].data=liveChartRows.map(r=>r.voltage);viChart.data.datasets[1].data=liveChartRows.map(r=>r.current);
+  powerChart.data.labels=labels;powerChart.data.datasets[0].data=liveChartRows.map(r=>r.power);
+  viChart.update("none");powerChart.update("none");
+ },1000);
+}
+
 const KSEB_TOD_RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
 function updateTariffClock(){
  const now=new Date();
@@ -577,7 +597,7 @@ function verifyRolePassword(){
  if($("rolePassword").value!==expected){$("passError").textContent="Incorrect "+(role==="admin"?"KSEB ADMIN":"CONSUMER")+" password. Check the spelling and try again.";return;}
  enterRole(role);
 }
-async function emailLogout(){if(liveRef){liveRef.off();liveRef=null;}if(historyRef){historyRef.off();historyRef=null;}await auth.signOut();$("emailPassword").value="";$("emailError").textContent="";show("loginScreen");}
+async function emailLogout(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(historyRef){historyRef.off();historyRef=null;}await auth.signOut();$("emailPassword").value="";$("emailError").textContent="";show("loginScreen");}
 
 
 // Free local assistant: all responses are generated in this browser from live Firebase readings.
@@ -600,7 +620,7 @@ function answerPowerGuardQuestion(question,d){
  if(/hello|hi\b|hey|good morning/.test(q)) return "Hello! I can check your latest Power Guard readings, explain alerts and identify which dashboard controls do what. Try: What is the system status? How much energy is recorded? Is MAIN ON?";
  if(/help|what can you do|commands|questions/.test(q)) return "Ask me about live voltage, current, active/apparent power, power factor, frequency, energy, estimated cost, tariff zone, gas sensor, overload, overvoltage, system status or relay states. I can also explain whether a reading is current or accumulated.";
  if(/gas|mq.?6|leak/.test(q)) return "Gas sensor status: "+(gas?"ALERT reported":""+(d.gasDetected===false?"Normal according to the current sensor flag":"not available"))+". MQ-6 raw reading: "+(d.gasRaw??"not available")+". This MQ-6 prototype is not a certified gas alarm; do not use it as a substitute for a certified detector.";
- if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your ESP32 code.";
+ if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your device firmware.";
  if(/over.?voltage|high voltage|voltage fault/.test(q)) return "Overvoltage flag: "+(ov?"ACTIVE":d.overVoltage===false?"not active":"not available")+". Measured voltage: "+num(d.voltage,1)+" V.";
  if(/voltage|volt/.test(q)) return "Latest voltage reading: "+num(d.voltage,1)+" V.";
  if(/current|amp|ampere/.test(q)) return "Latest current reading: "+num(d.current)+" A.";
@@ -608,17 +628,17 @@ function answerPowerGuardQuestion(question,d){
  if(/frequency|hertz|hz/.test(q)) return "Latest frequency reading: "+num(d.frequency)+" Hz.";
  if(/apparent power|\bva\b/.test(q)) return "Latest apparent power: "+num(d.apparentPower)+" VA.";
  if(/watt|active power|\bpower\b/.test(q)) return "Latest active power: "+num(d.power)+" W.";
- if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /energy|consum|unit|kwh|use|used|usage/.test(q)) { if(d.dailyEnergyWh!==undefined) return "Energy recorded today: "+num(d.dailyEnergyWh,3)+" Wh ("+(Number(d.dailyEnergyWh)/1000).toFixed(6)+" kWh)."; return "The dashboard currently receives accumulated energy ("+num(d.energyWh,3)+" Wh), not a separate daily counter. This value is since the last energy reset or firmware counter start; it does not prove the total for today unless the ESP32 resets it daily."; }
- if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the ESP32 counter, usually since its last reset.";
- if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const z=String(d.tariffZone||"").toUpperCase(),r=KSEB_TOD_RATES[z];return "ESP32-calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(z||"not available")+". Display tariff rate: "+(r!==undefined?"₹"+r.toFixed(2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill. The ESP32 firmware must use the same rates for the accumulated cost to match.";}
+ if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /energy|consum|unit|kwh|use|used|usage/.test(q)) { if(d.dailyEnergyWh!==undefined) return "Energy recorded today: "+num(d.dailyEnergyWh,3)+" Wh ("+(Number(d.dailyEnergyWh)/1000).toFixed(6)+" kWh)."; return "The dashboard currently receives accumulated energy ("+num(d.energyWh,3)+" Wh), not a separate daily counter. This value is since the last energy reset or firmware counter start; it does not prove the total for today unless the device resets it daily."; }
+ if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the device counter, usually since its last reset.";
+ if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const z=String(d.tariffZone||"").toUpperCase(),r=KSEB_TOD_RATES[z];return "Calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(z||"not available")+". Display tariff rate: "+(r!==undefined?"₹"+r.toFixed(2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill. The device firmware must use the same rates for the accumulated cost to match.";}
  if(/main relay|main switch|main output|room switch|which switch|relay|room|load|supply/.test(q)){
   const main=(d.relay1On===true||d.relayOn===true)?"ON":(d.relay1On===false||d.relayOn===false)?"OFF":"not reported";
   if(/kseb|admin|main switch|main relay|which switch/.test(q))return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). The RESET ENERGY & COST switch sends the energy/cost reset command. Individual room switches are not shown in the KSEB dashboard.";
-  return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the ESP32 publishes them. These are reported states, not independent proof of physical contact position.";
+  return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the device publishes them. These are reported states, not independent proof of physical contact position.";
  }
  if(/status|condition|healthy|normal|problem|alert/.test(q)){
   const issues=[]; if(gas)issues.push("gas alert"); if(overload)issues.push("overload"); if(ov)issues.push("overvoltage");
-  return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the ESP32 has not published that field.";
+  return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the device has not published that field.";
  }
  if(/thank|thanks/.test(q)) return "You're welcome. Power Guard is using its free local smart assistant; no external AI service is connected.";
  return "I could not match that question to a live Power Guard value. Try asking more specifically, for example: What is the voltage now? How much energy since reset? Why is the system in alert? Is the MAIN relay ON? What does power factor mean?";
@@ -628,10 +648,10 @@ function enterRole(r){
  role=r; $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
  $("adminActions").classList.toggle("hidden",r!=="admin");
  $("consumerRooms").classList.toggle("hidden",r==="admin");
- show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); startHistory(); startLive();
+ show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); initCharts(); startHistory(); startLive(); startLiveChartSampling();
 }
 function renderRooms(){
- $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label></div>`).join("");
+ $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label></div>`).join("");
  updateConsumerRelayLock();
 }
 function updateConsumerRelayLock(){
@@ -662,7 +682,7 @@ function startLive(){
  if(liveRef)liveRef.off();
  liveRef=db.ref(LIVE);
  liveRef.on("value",snap=>{
-  const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the ESP32 Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR ESP32 DATA";return;}
+  const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the device Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR DEVICE DATA";return;}
   latest=d; $("connection").textContent="LIVE · Firebase data received"; $("connection").className="muted ok";
   updateLatestUpdateTime();
   update(d);
@@ -724,8 +744,8 @@ async function resetEnergyCost(on){
 async function sendCommand(payload,label){
  try{
   await db.ref(COMMANDS).update(payload);
-  if($("relayMessage"))$("relayMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
-  if($("adminMessage"))$("adminMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
+  if($("relayMessage"))$("relayMessage").textContent=label+" command sent. Waiting for device confirmation.";
+  if($("adminMessage"))$("adminMessage").textContent=label+" command sent. Waiting for device confirmation.";
   return true;
  }catch(e){
   if($("relayMessage"))$("relayMessage").textContent="Command failed: "+e.message;
@@ -733,7 +753,7 @@ async function sendCommand(payload,label){
   return false;
  }
 }
-async function returnToRoles(){if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
+async function returnToRoles(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
 async function logout(){await returnToRoles();}
 function toggleEye(inputId, button){
   const field=document.getElementById(inputId);
@@ -752,3 +772,19 @@ applyTheme(savedTheme);
 updateTariffClock();setInterval(updateTariffClock,1000);
 </script>
 </body></html>
+
+/* Final polish: narrower tariff cards, premium theme switch, larger navy charts */
+.tariff-current,.tariff-schedule{width:94%!important;max-width:900px!important;margin-left:auto!important;margin-right:auto!important}
+.tariff-current>div,.tariff-slot{border-radius:18px!important}
+.theme-toggle{min-width:112px!important;padding:10px 16px!important;border-radius:999px!important;border:1px solid #c8d5dc!important;background:linear-gradient(180deg,#ffffff,#edf2f5)!important;color:#294052!important;box-shadow:0 2px 7px #18304412!important;font-weight:700!important;letter-spacing:.2px}
+.theme-toggle:hover{background:#e7f2ed!important;border-color:#9bcbb4!important}
+body.dark-theme .theme-toggle{background:linear-gradient(180deg,#1d3449,#10243a)!important;color:#d8eee5!important;border-color:#42647b!important;box-shadow:0 2px 8px #0004!important}
+body.dark-theme .theme-toggle:hover{background:#1b463e!important;border-color:#5ba88d!important}
+.chartbox{height:430px!important;min-height:400px!important;padding:18px!important;border-radius:18px!important}
+.chartbox canvas{height:340px!important;max-height:340px!important}
+@media(max-width:600px){.chartbox{height:390px!important;min-height:370px!important}.chartbox canvas{height:300px!important;max-height:300px!important}.tariff-current,.tariff-schedule{width:92%!important}}
+@media(max-width:380px){.chartbox{height:360px!important;min-height:340px!important}.chartbox canvas{height:270px!important;max-height:270px!important}}
+/* Reference-inspired navy blue gradient area charts */
+
+body:not(.dark-theme) .password-wrap .eye-btn,body:not(.dark-theme) .password-wrap .eye-btn:hover,body:not(.dark-theme) .password-wrap .eye-btn:focus,body:not(.dark-theme) .password-wrap .eye-btn:active{background:transparent!important;border:0!important;box-shadow:none!important;color:#23845f!important}
+body:not(.dark-theme) .password-wrap .eye-btn svg{stroke:#23845f!important}
