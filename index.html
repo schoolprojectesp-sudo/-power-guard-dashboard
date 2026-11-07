@@ -67,6 +67,40 @@ button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
 .footer{color:#758391}
 @media(prefers-color-scheme:dark){body{background:#f3f5f7;color:#202b36}}
 
+/* Power Guard dashboard refinements */
+.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.theme-toggle{min-width:94px;padding:10px 13px}
+.tariff-current{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.tariff-current>div{padding:15px;border:1px solid var(--line);border-radius:12px;background:var(--metric-bg);min-width:0}
+.tariff-current small{display:block;color:var(--muted);font-size:12px;line-height:1.4}
+.tariff-current strong{display:block;color:var(--text);font-size:clamp(18px,3vw,25px);margin-top:8px;overflow-wrap:anywhere}
+.tariff-schedule{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 16px}
+.tariff-slot{display:flex;flex-direction:column;gap:7px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--metric-bg);color:var(--text)}
+.tariff-slot span{font-size:12px;color:var(--muted)}
+.tariff-slot b{font-size:13px;text-transform:uppercase;letter-spacing:.7px}
+.tariff-slot strong{font-size:19px}
+.tariff-slot.active{border:2px solid var(--accent);background:var(--active-bg);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 13%,transparent)}
+:root{--page:#f2f5f8;--card:#fff;--metric-bg:#f7f9fb;--text:#1c2b39;--muted:#68798a;--line:#d9e1e8;--accent:#147d78;--active-bg:#e6f4f1}
+body{background:var(--page);color:var(--text);transition:background .2s,color .2s}
+.card{background:var(--card);border-color:var(--line);box-shadow:0 5px 22px #102a430d}
+.metric,.status,.room,.chartbox,.ai-log{background:var(--metric-bg);border-color:var(--line);color:var(--text)}
+.metric strong,.chartbox h3{color:var(--text)}
+.chartbox{padding:18px;background:var(--card);box-shadow:0 2px 10px #102a4308}
+.chartbox canvas{max-height:300px}
+body.dark-theme{--page:#07111f;--card:#101e30;--metric-bg:#0b1929;--text:#e8f0f8;--muted:#9aacc0;--line:#263d55;--accent:#58d5c4;--active-bg:#123a3a;background:radial-gradient(ellipse at 10% 0%,#173754 0,transparent 38%),linear-gradient(145deg,#07111f,#0d1b2d 60%,#171c32);color:var(--text)}
+body.dark-theme .card{background:linear-gradient(145deg,#13263b,#101e30);border-color:#29435d;box-shadow:0 12px 30px #0003}
+body.dark-theme .metric,body.dark-theme .status,body.dark-theme .room,body.dark-theme .chartbox,body.dark-theme .ai-log,body.dark-theme .tariff-current>div,body.dark-theme .tariff-slot{background:#0a192a;border-color:#29435d;color:#e8f0f8}
+body.dark-theme .metric strong,body.dark-theme .chartbox h3,body.dark-theme .tariff-current strong,body.dark-theme .tariff-slot{color:#e8f0f8}
+body.dark-theme input[type=email],body.dark-theme input[type=password],body.dark-theme input[type=text],body.dark-theme .ai-entry input{background:#081625;color:#e8f0f8;border-color:#35516e}
+body.dark-theme .pill{background:#10283a;color:#75dacf;border-color:#31566b}
+body.dark-theme button.secondary{background:#172c42;color:#e8f0f8;border-color:#35516e}
+body.dark-theme .ai-msg.user{background:#183c5c;color:#e8f0f8}
+body.dark-theme .ai-msg.bot{background:#12372f;color:#d8f5e9;border-color:#28634e}
+body.dark-theme .role,body.dark-theme .role:nth-child(1),body.dark-theme .role:nth-child(2){background:#142a40;color:#e8f0f8;border-color:#35516e}
+body.dark-theme .chartbox{background:#0b1929}
+body.dark-theme .tariff-slot.active{background:#123a3a;border-color:#58d5c4}
+@media(max-width:650px){.tariff-current,.tariff-schedule{grid-template-columns:1fr}.tariff-slot{display:grid;grid-template-columns:1fr auto;align-items:center}.tariff-slot span{grid-column:1/-1}.header-actions{gap:6px}.theme-toggle{min-width:82px}}
+
 </style>
 </head>
 <body><main class="wrap">
@@ -98,9 +132,10 @@ button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
 </section>
 <section id="dashboard" class="hidden">
  <div class="card">
-  <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><span class="pill" id="rolePill">CONSUMER</span></div>
+  <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><div class="header-actions"><span class="pill" id="rolePill">CONSUMER</span><button type="button" class="theme-toggle secondary" id="themeToggle" onclick="toggleTheme()">☾ Dark</button></div></div>
   <div id="systemStatus" class="status" style="margin-top:16px;border-left:5px solid var(--amber);font-size:16px;font-weight:800">SYSTEM STATUS · CONNECTING…</div>
   <p id="connection" class="muted" style="margin-top:8px">Connecting to Firebase…</p>
+  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for ESP32 data…</strong></p>
   <div class="grid" style="margin-top:13px">
    <div class="metric"><small>VOLTAGE</small><strong id="voltage">— V</strong></div>
    <div class="metric"><small>CURRENT</small><strong id="current">— A</strong></div>
@@ -123,9 +158,17 @@ button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
  </div>
  <div class="card">
   <h2>KSEB TIME-OF-DAY TARIFF & BILL ESTIMATE</h2>
+  <div class="tariff-current">
+   <div><small>ACTIVE TARIFF ZONE</small><strong id="billZone">—</strong></div>
+   <div><small>TARIFF RATE</small><strong id="billRate">—</strong></div>
+   <div><small>CURRENT IST TIME</small><strong id="tariffClock">—</strong></div>
+  </div>
+  <div class="tariff-schedule">
+   <div class="tariff-slot" id="slotNormal"><span>06:00 AM – 06:00 PM</span><b>Normal</b><strong>₹5.89/kWh</strong></div>
+   <div class="tariff-slot" id="slotHigher"><span>06:00 PM – 10:00 PM</span><b>Higher</b><strong>₹7.36/kWh</strong></div>
+   <div class="tariff-slot" id="slotLower"><span>10:00 PM – 06:00 AM</span><b>Lower</b><strong>₹5.30/kWh</strong></div>
+  </div>
   <div class="billgrid">
-   <div class="metric"><small>ACTIVE TARIFF ZONE</small><strong id="billZone">—</strong></div>
-   <div class="metric"><small>ESP32 TARIFF RATE</small><strong id="billRate">—</strong></div>
    <div class="metric"><small>ACCUMULATED ENERGY</small><strong id="billEnergy">—</strong></div>
    <div class="metric"><small>ENERGY COST</small><strong id="billEnergyCost">—</strong></div>
    <div class="metric"><small>ESTIMATED CURRENT BILL</small><strong id="billTotal">—</strong></div>
@@ -137,12 +180,11 @@ button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
   <div class="ai-chat">
    <div id="aiChatLog" class="ai-log"><div class="ai-msg bot">Hello! I am the Power Guard Smart Assistant. Ask about voltage, current, power, energy, cost, gas, overload, overvoltage or system status.</div></div>
    <div class="ai-entry"><input id="aiQuestion" maxlength="1200" placeholder="Ask about your Power Guard system…" onkeydown="if(event.key==='Enter')sendAIQuestion()"><button id="aiSend" onclick="sendAIQuestion()">SEND</button></div>
-   <p id="aiStatus" class="muted">Free local rule-based assistant · no API key required.</p>
+
   </div>
  </div>
  <div id="consumerRooms" class="card">
-  <div class="top"><h2 style="margin:0">ROOM RELAYS</h2><span class="pill">LOW-VOLTAGE DEMO</span></div>
-  <p class="muted">R1 is the master. R2–R6 are individual room outputs. Room outputs cannot be enabled while MAIN is OFF. Gas, overload or overvoltage protection cuts MAIN only.</p>
+  <div class="top"><h2 style="margin:0">ROOM RELAYS</h2></div>
   <div id="roomControls" class="rooms" style="margin-top:13px"></div>
   <p id="relayMessage" class="muted"></p>
  </div>
@@ -152,7 +194,7 @@ button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
   <div class="room"><div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label></div>
   <p id="adminMessage" class="muted"></p>
  </div>
- <div class="card"><div class="actions"><button class="secondary" onclick="returnToRoles()">SWITCH ROLE</button><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
+ <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
 <div class="footer">POWER GUARD · by hassaneeeyy</div>
 </main>
@@ -175,19 +217,38 @@ const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
 let role="consumer", liveRef=null, commandBusy=false, latest={};
 let viChart=null, powerChart=null, chartLabels=[], voltageSeries=[], currentSeries=[], powerSeries=[];
 let lastChartAt=0;
+function chartTheme(){
+ const dark=document.body.classList.contains("dark-theme");
+ return {text:dark?"#a9bdd0":"#657789",grid:dark?"#263b50":"#e4eaf0",tooltip:dark?"#102238":"#ffffff",border:dark?"#34516c":"#d4dee7"};
+}
 function initCharts(){
- if(!window.Chart) return;
- const common={responsive:true,maintainAspectRatio:true,animation:{duration:450},interaction:{mode:"index",intersect:false},
-  plugins:{legend:{position:"bottom",labels:{color:"#425466",usePointStyle:true,padding:18}},tooltip:{backgroundColor:"#ffffff",titleColor:"#203344",bodyColor:"#425466",borderColor:"#cbd5df",borderWidth:1}},
-  scales:{x:{ticks:{color:"#647383",maxTicksLimit:6},grid:{color:"#e5eaef"}},
-          y:{ticks:{color:"#647383"},grid:{color:"#e5eaef"}}}};
+ if(!window.Chart)return;
+ const c=chartTheme();
+ const common={responsive:true,maintainAspectRatio:false,animation:{duration:350},interaction:{mode:"index",intersect:false},
+  elements:{line:{tension:.35,borderWidth:2.5},point:{radius:0,hoverRadius:5,hitRadius:12}},
+  plugins:{legend:{position:"bottom",labels:{color:c.text,usePointStyle:true,pointStyle:"circle",padding:18,font:{size:12}}},
+   tooltip:{backgroundColor:c.tooltip,titleColor:c.text,bodyColor:c.text,borderColor:c.border,borderWidth:1,padding:12,displayColors:true}},
+  scales:{x:{ticks:{color:c.text,maxTicksLimit:6,maxRotation:0},grid:{display:false},border:{color:c.border}},
+   y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid},border:{display:false}}}};
  viChart=new Chart($("viChart"),{type:"line",data:{labels:chartLabels,datasets:[
-  {label:"Voltage (V)",data:voltageSeries,borderColor:"#3569a8",backgroundColor:"#3569a81a",pointBackgroundColor:"#3569a8",pointRadius:2,borderWidth:3,yAxisID:"y",tension:.38,fill:true},
-  {label:"Current (A)",data:currentSeries,borderColor:"#c18432",backgroundColor:"#c184321a",pointBackgroundColor:"#c18432",pointRadius:2,borderWidth:3,yAxisID:"y1",tension:.38}
- ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left"},y1:{position:"right",ticks:{color:"#647383"},grid:{drawOnChartArea:false}}}}});
+  {label:"Voltage (V)",data:voltageSeries,borderColor:"#39a0ed",backgroundColor:"rgba(57,160,237,.12)",pointBackgroundColor:"#39a0ed",fill:true,yAxisID:"y"},
+  {label:"Current (A)",data:currentSeries,borderColor:"#f0a34a",backgroundColor:"rgba(240,163,74,.08)",pointBackgroundColor:"#f0a34a",fill:false,yAxisID:"y1"}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left"},y1:{beginAtZero:true,position:"right",ticks:{color:c.text},grid:{drawOnChartArea:false},border:{display:false}}}}});
  powerChart=new Chart($("powerChart"),{type:"line",data:{labels:chartLabels,datasets:[
-  {label:"Active power (W)",data:powerSeries,borderColor:"#23866b",backgroundColor:"#23866b1a",pointBackgroundColor:"#23866b",pointRadius:2,borderWidth:3,fill:true,tension:.38}
+  {label:"Active power (W)",data:powerSeries,borderColor:"#27a783",backgroundColor:"rgba(39,167,131,.14)",pointBackgroundColor:"#27a783",fill:true}
  ]},options:common});
+}
+function refreshChartTheme(){
+ if(!viChart||!powerChart)return;
+ const c=chartTheme();
+ [viChart,powerChart].forEach(ch=>{
+  ch.options.plugins.legend.labels.color=c.text;
+  ch.options.plugins.tooltip.backgroundColor=c.tooltip;
+  ch.options.plugins.tooltip.titleColor=c.text;
+  ch.options.plugins.tooltip.bodyColor=c.text;
+  Object.values(ch.options.scales).forEach(axis=>{if(axis.ticks)axis.ticks.color=c.text;if(axis.grid)axis.grid.color=c.grid;if(axis.border)axis.border.color=c.border;});
+  ch.update();
+ });
 }
 function addChartPoint(d){
  if(!window.Chart)return;
@@ -199,9 +260,23 @@ function addChartPoint(d){
  if(viChart){viChart.update("none");powerChart.update("none");}
 }
 const KSEB_TOD_RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
-function updateBill(d){
- const zone=String(d.tariffZone||"NO CLOCK").toUpperCase();
+function updateTariffClock(){
+ const now=new Date();
+ const parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(now);
+ const get=t=>Number(parts.find(p=>p.type===t)?.value||0);
+ const h=get("hour"),m=get("minute");
+ const zone=(h>=18&&h<22)?"HIGHER":(h>=22||h<6)?"LOWER":"NORMAL";
  const rate=KSEB_TOD_RATES[zone];
+ $("tariffClock").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now)+" IST";
+ $("slotNormal").classList.toggle("active",zone==="NORMAL");
+ $("slotHigher").classList.toggle("active",zone==="HIGHER");
+ $("slotLower").classList.toggle("active",zone==="LOWER");
+ return {zone,rate};
+}
+function updateBill(d){
+ const current=updateTariffClock();
+ const zone=String(d.tariffZone||current.zone).toUpperCase();
+ const rate=KSEB_TOD_RATES[zone]??current.rate;
  $("billZone").textContent=zone;
  $("billRate").textContent=rate!==undefined?"₹"+rate.toFixed(2)+"/kWh":"—";
  $("billEnergy").textContent=fmt(d.energyWh,3)+" Wh";
@@ -212,6 +287,15 @@ function updateBill(d){
 const $=id=>document.getElementById(id);
 const fmt=(v,n=2)=>v===null||v===undefined||!Number.isFinite(Number(v))?"—":Number(v).toFixed(n);
 const bool=v=>v===true?"ON":v===false?"OFF":"—";
+function applyTheme(theme){
+ document.body.classList.toggle("dark-theme",theme==="dark");
+ $("themeToggle").textContent=theme==="dark"?"☀ Light":"☾ Dark";
+ $("themeToggle").setAttribute("aria-label",theme==="dark"?"Switch to light theme":"Switch to dark theme");
+ try{localStorage.setItem("powerGuardTheme",theme);}catch(e){}
+ refreshChartTheme();
+}
+function toggleTheme(){applyTheme(document.body.classList.contains("dark-theme")?"light":"dark");}
+
 function show(id){["loginScreen","roleScreen","dashboard"].forEach(x=>$(x).classList.toggle("hidden",x!==id));}
 const ALLOWED_EMAIL="schoolprojectesp@gmail.com";
 function toggleEye(id,button){const f=$(id);const reveal=f.type==="password";f.type=reveal?"text":"password";button.innerHTML=reveal?'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-4 4.8M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7c1.2 0 2.3-.2 3.3-.6"/></svg>':'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';}
@@ -246,7 +330,6 @@ function sendAIQuestion(){
  addAIMessage(question,"user"); input.value="";
  const answer=answerPowerGuardQuestion(question,latest||{});
  addAIMessage(answer,"bot");
- $("aiStatus").textContent="Answered locally using programmed rules and the latest available dashboard readings.";
 }
 function answerPowerGuardQuestion(question,d){
  const q=question.toLowerCase();
@@ -294,8 +377,14 @@ function startLive(){
  liveRef.on("value",snap=>{
   const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the ESP32 Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR ESP32 DATA";return;}
   latest=d; $("connection").textContent="LIVE · Firebase data received"; $("connection").className="muted ok";
+  updateLatestUpdateTime();
   update(d);
  },e=>{$("connection").textContent="Firebase read error: "+e.message;$("connection").className="status bad";});
+}
+function updateLatestUpdateTime(){
+ const now=new Date();
+ const formatted=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now);
+ $("latestUpdateTime").textContent=formatted+" IST (last received)";
 }
 function update(d){
  addChartPoint(d); updateBill(d);
@@ -342,6 +431,8 @@ async function sendCommand(payload,label){
 async function returnToRoles(){if(liveRef){liveRef.off();liveRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
 async function logout(){await returnToRoles();}
 auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
+try{applyTheme(localStorage.getItem("powerGuardTheme")==="dark"?"dark":"light");}catch(e){applyTheme("light");}
+updateTariffClock();setInterval(updateTariffClock,1000);
 </script>
 </body>
 </html>
