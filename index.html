@@ -337,6 +337,28 @@ body.dark-theme .theme-toggle:hover{background:#1b463e!important;border-color:#5
 
 body:not(.dark-theme) .password-wrap .eye-btn,body:not(.dark-theme) .password-wrap .eye-btn:hover,body:not(.dark-theme) .password-wrap .eye-btn:focus,body:not(.dark-theme) .password-wrap .eye-btn:active{background:transparent!important;border:0!important;box-shadow:none!important;color:#23845f!important}
 body:not(.dark-theme) .password-wrap .eye-btn svg{stroke:#23845f!important}
+
+/* Voltage setpoint interface — display-only simulator; no mains control output */
+.voltage-control{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--metric-bg);}
+.voltage-control-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.voltage-setpoint{font-size:clamp(30px,5vw,42px);font-weight:850;color:var(--text);letter-spacing:-1px}
+.voltage-slider{width:100%;accent-color:#25845f;margin:18px 0 8px}
+.voltage-limits{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px}
+.voltage-control .voltage-state{margin-top:12px;padding:11px 13px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:13px}
+.voltage-control .voltage-note{margin:10px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+.voltage-control button{min-width:130px}
+body.dark-theme .voltage-control{background:#101d2d!important;border-color:#35485d!important}
+body.dark-theme .voltage-control .voltage-state{background:#0b1725!important;border-color:#35485d!important}
+/* Neutralize green-tinted surfaces in dark theme */
+body.dark-theme .ai-msg.bot{background:#172638!important;color:#dce7f2!important;border-color:#34495e!important}
+body.dark-theme .airesult{background:#172638!important;color:#dce7f2!important;border-color:#34495e!important;border-left-color:#6b8ba8!important}
+body.dark-theme #roleScreen{background:linear-gradient(145deg,#142236,#101b2b 75%)!important;border-color:#35485d!important}
+body.dark-theme #roleScreen .role{background:linear-gradient(135deg,#1a2c40,#172338)!important;border-color:#40536a!important;box-shadow:0 4px 15px #0004!important}
+body.dark-theme #roleScreen .role h3{color:#e0e9f2!important}
+body.dark-theme #roleScreen .role p{color:#aebdcd!important}
+body.dark-theme #rolePasswordArea{background:#142236!important;border-color:#40536a!important}
+body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#647b91!important}
+
 </style>
 </head>
 <body><main class="wrap">
@@ -384,6 +406,16 @@ body:not(.dark-theme) .password-wrap .eye-btn svg{stroke:#23845f!important}
    <div class="metric"><small>ENERGY CONSUMED</small><strong id="energy">— Wh</strong></div>
    <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong><div id="tariff" class="tariff">Tariff: waiting for device…</div></div>
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>VOLTAGE SETPOINT</h2>
+  <div class="voltage-control">
+   <div class="voltage-control-head"><div><div class="muted">REFERENCE SETPOINT</div><div class="voltage-setpoint"><span id="voltageSetpointValue">220</span> V</div></div><button id="voltageSetpointToggle" type="button" class="secondary" onclick="toggleVoltageSetpoint()">TURN ON</button></div>
+   <input id="voltageSetpointSlider" class="voltage-slider" type="range" min="190" max="240" step="1" value="220" disabled oninput="updateVoltageSetpoint()">
+   <div class="voltage-limits"><span>190 V</span><span>200 V · LOW LIMIT</span><span>215 V · HIGH LIMIT</span><span>240 V</span></div>
+   <div id="voltageSetpointState" class="voltage-state">OFF · Reference control disabled</div>
+   <p class="voltage-note">Display-only demonstration. This slider does not adjust or regulate the actual AC supply. The 200 V and 215 V markers are visual thresholds only; actual protection must remain in the independently engineered hardware.</p>
   </div>
  </div>
  <div class="card">
@@ -782,6 +814,29 @@ function toggleEye(inputId, button){
   }
 }
 auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
+
+// Local display-only setpoint demo. It deliberately sends no Firebase or hardware command.
+let voltageSetpointEnabled=false;
+function updateVoltageSetpoint(){
+ const slider=document.getElementById("voltageSetpointSlider");
+ const value=Number(slider.value);
+ document.getElementById("voltageSetpointValue").textContent=String(value);
+ const state=document.getElementById("voltageSetpointState");
+ if(value<200)state.textContent="REFERENCE ONLY · Below 200 V threshold";
+ else if(value>215)state.textContent="REFERENCE ONLY · Above 215 V threshold";
+ else state.textContent="REFERENCE ONLY · Within 200–215 V marker range";
+}
+function toggleVoltageSetpoint(){
+ voltageSetpointEnabled=!voltageSetpointEnabled;
+ const slider=document.getElementById("voltageSetpointSlider");
+ const button=document.getElementById("voltageSetpointToggle");
+ slider.disabled=!voltageSetpointEnabled;
+ button.textContent=voltageSetpointEnabled?"TURN OFF":"TURN ON";
+ button.classList.toggle("secondary",!voltageSetpointEnabled);
+ if(!voltageSetpointEnabled)document.getElementById("voltageSetpointState").textContent="OFF · Reference control disabled";
+ else updateVoltageSetpoint();
+}
+
 let savedTheme="light";
 try{savedTheme=localStorage.getItem("powerGuardTheme")==="dark"?"dark":"light";}catch(e){}
 applyTheme(savedTheme);
