@@ -359,6 +359,9 @@ body.dark-theme #roleScreen .role p{color:#aebdcd!important}
 body.dark-theme #rolePasswordArea{background:#142236!important;border-color:#40536a!important}
 body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#647b91!important}
 
+
+/* Round dashboard rotary potentiometer */
+.rotary-wrap{display:flex;justify-content:center;padding:12px 0 4px}.rotary-dial{--dial-angle:0deg;position:relative;width:218px;height:218px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0,#e7eee9 42%,#b7c8bd 100%);border:9px solid #d5dfd8;box-shadow:inset 0 3px 12px #78918466,0 8px 20px #102d2030;display:flex;align-items:center;justify-content:center}.rotary-dial:before{content:"";position:absolute;inset:12px;border-radius:50%;border:2px dashed #7b9b89}.dial-ticks{position:absolute;inset:0;color:#315b47;font-size:11px;font-weight:800}.dial-ticks span{position:absolute}.dial-ticks span:nth-child(1){left:18px;bottom:36px}.dial-ticks span:nth-child(2){left:7px;top:47px}.dial-ticks span:nth-child(3){right:7px;top:47px}.dial-ticks span:nth-child(4){right:18px;bottom:36px}.dial-pointer{position:absolute;width:5px;height:72px;border-radius:5px;background:#178653;top:24px;left:calc(50% - 2.5px);transform-origin:50% 85px;transform:rotate(var(--dial-angle));box-shadow:0 1px 4px #123}.dial-center{z-index:1;width:104px;height:104px;border-radius:50%;background:linear-gradient(145deg,#fff,#e4ece6);box-shadow:0 3px 10px #244b3540,inset 0 1px 4px #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#173d2b}.dial-center strong{font-size:30px;line-height:1.1}.dial-center small{font-size:10px;letter-spacing:2px;font-weight:800}.rotary-range{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.rotary-dial:has(.rotary-range:disabled){opacity:.72}.dark-theme .rotary-dial{background:radial-gradient(circle at 35% 28%,#30483b,#13271d 75%);border-color:#344b3e}.dark-theme .dial-center{background:linear-gradient(145deg,#253b30,#14251c);color:#e4f5e9}.dark-theme .dial-ticks{color:#c3ddcb}
 </style>
 </head>
 <body><main class="wrap">
@@ -412,10 +415,10 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
   <h2>VOLTAGE REFERENCE</h2>
   <div class="voltage-control">
    <div class="voltage-control-head"><div><div class="muted">REFERENCE SETPOINT</div><div class="voltage-setpoint"><span id="voltageSetpointValue">220</span> V</div></div><button id="voltageSetpointToggle" type="button" class="secondary" onclick="toggleVoltageSetpoint()">TURN ON</button></div>
-   <input id="voltageSetpointSlider" class="voltage-slider" type="range" min="190" max="240" step="1" value="220" disabled oninput="updateVoltageSetpoint()" onchange="sendVoltageSetpoint()">
-   <div class="voltage-limits"><span>190 V</span><span>200 V · LOW LIMIT</span><span>215 V · HIGH LIMIT</span><span>240 V</span></div>
+   <div class="rotary-wrap"><div class="rotary-dial" id="voltageRotary" style="--dial-angle:0deg"><div class="dial-ticks"><span>190</span><span>200</span><span>215</span><span>240</span></div><div class="dial-pointer"></div><div class="dial-center"><strong id="dialValue">220</strong><small>VOLTS</small></div><input id="voltageSetpointSlider" class="rotary-range" type="range" min="190" max="240" step="1" value="220" disabled oninput="updateVoltageSetpoint()" onchange="sendVoltageSetpoint()" aria-label="Voltage demonstration setpoint"></div></div>
+   <div class="voltage-limits"><span>190 V · MIN</span><span>200 V · LOW</span><span>215 V · HIGH</span><span>240 V · MAX</span></div>
    <div id="voltageSetpointState" class="voltage-state">OFF · Reference control disabled</div>
-   <p class="voltage-note">Consumer reference control only. The selected value is sent to the device and shown on its OLED. It does not adjust the actual AC supply or replace independent voltage protection.</p>
+   <p class="voltage-note">DEMO CONTROL · OFF uses the sensor reading. ON substitutes this selected demonstration value for voltage display and voltage-fault logic. This does not adjust a physical supply.</p>
   </div>
  </div>
  <div class="card">
@@ -664,11 +667,12 @@ function sendAIQuestion(){
 function answerPowerGuardQuestion(question,d){
  const q=question.toLowerCase();
  const num=(v,n=2)=>v===null||v===undefined||v===""||!Number.isFinite(Number(v))?"not available":Number(v).toFixed(n);
- const gas=d.gasDetected===true, overload=d.overload===true, ov=d.overVoltage===true;
+ const gas=d.gasDetected===true, overload=d.overload===true, ov=d.overVoltage===true, uv=d.underVoltage===true;
  if(/hello|hi\b|hey|good morning/.test(q)) return "Hello! I can check your latest Power Guard readings, explain alerts and identify which dashboard controls do what. Try: What is the system status? How much energy is recorded? Is MAIN ON?";
  if(/help|what can you do|commands|questions/.test(q)) return "Ask me about live voltage, current, active/apparent power, power factor, frequency, energy, estimated cost, tariff zone, gas sensor, overload, overvoltage, system status or relay states. I can also explain whether a reading is current or accumulated.";
  if(/gas|mq.?6|leak/.test(q)) return "Gas sensor status: "+(gas?"ALERT reported":""+(d.gasDetected===false?"Normal according to the current sensor flag":"not available"))+". MQ-6 raw reading: "+(d.gasRaw??"not available")+". This MQ-6 prototype is not a certified gas alarm; do not use it as a substitute for a certified detector.";
  if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your device firmware.";
+ if(/under.?voltage|low voltage/.test(q)) return "Undervoltage flag: "+(uv?"ACTIVE":d.underVoltage===false?"not active":"not available")+". Voltage: "+num(d.voltage,1)+" V.";
  if(/over.?voltage|high voltage|voltage fault/.test(q)) return "Overvoltage flag: "+(ov?"ACTIVE":d.overVoltage===false?"not active":"not available")+". Measured voltage: "+num(d.voltage,1)+" V.";
  if(/voltage|volt/.test(q)) return "Latest voltage reading: "+num(d.voltage,1)+" V.";
  if(/current|amp|ampere/.test(q)) return "Latest current reading: "+num(d.current)+" A.";
@@ -685,7 +689,7 @@ function answerPowerGuardQuestion(question,d){
   return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the device publishes them. These are reported states, not independent proof of physical contact position.";
  }
  if(/status|condition|healthy|normal|problem|alert/.test(q)){
-  const issues=[]; if(gas)issues.push("gas alert"); if(overload)issues.push("overload"); if(ov)issues.push("overvoltage");
+  const issues=[]; if(gas)issues.push("gas alert"); if(ov)issues.push("overvoltage"); if(uv)issues.push("undervoltage"); if(overload)issues.push("overload");
   return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the device has not published that field.";
  }
  if(/thank|thanks/.test(q)) return "You're welcome. Power Guard is using its free local smart assistant; no external AI service is connected.";
@@ -747,7 +751,7 @@ function update(d){
  if(role==="consumer" && Number.isFinite(Number(d.voltageSetpoint))){
   const sv=Math.max(190,Math.min(240,Number(d.voltageSetpoint)));
   $("voltageSetpointSlider").value=String(sv);
-  $("voltageSetpointValue").textContent=String(Math.round(sv));
+  $("voltageSetpointValue").textContent=String(Math.round(sv)); $("dialValue").textContent=String(Math.round(sv)); $("voltageRotary").style.setProperty("--dial-angle",(-135+(sv-190)*270/50)+"deg");
  }
  if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("voltageSetpointToggle"))){
   voltageSetpointEnabled=d.knobOn;
@@ -828,9 +832,22 @@ auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}})
 
 // Firebase-backed consumer voltage reference. This is a display/reference value only.
 let voltageSetpointEnabled=false;
+function setRotaryFromPointer(ev){
+ const dial=$("voltageRotary"), slider=$("voltageSetpointSlider");
+ if(!voltageSetpointEnabled||slider.disabled)return;
+ const r=dial.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
+ let deg=Math.atan2(ev.clientY-cy,ev.clientX-cx)*180/Math.PI+90;
+ if(deg<0)deg+=360;
+ // Active arc runs from 225 degrees (190 V) through top to 135 degrees (240 V).
+ let arc=(deg-225+360)%360; arc=Math.max(0,Math.min(270,arc));
+ slider.value=String(Math.round(190+arc*50/270)); updateVoltageSetpoint();
+}
+$("voltageRotary").addEventListener("pointerdown",ev=>{setRotaryFromPointer(ev);$("voltageRotary").setPointerCapture(ev.pointerId);});
+$("voltageRotary").addEventListener("pointermove",ev=>{if(ev.buttons)setRotaryFromPointer(ev);});
+$("voltageRotary").addEventListener("pointerup",()=>{sendVoltageSetpoint();});
 function updateVoltageSetpoint(){
  const slider=$("voltageSetpointSlider"), value=Number(slider.value);
- $("voltageSetpointValue").textContent=String(value);
+ $("voltageSetpointValue").textContent=String(value); $("dialValue").textContent=String(value); $("voltageRotary").style.setProperty("--dial-angle",(-135+(value-190)*270/50)+"deg");
  const state=$("voltageSetpointState");
  if(value<200)state.textContent="REFERENCE · Below 200 V marker";
  else if(value>215)state.textContent="REFERENCE · Above 215 V marker";
