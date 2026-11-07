@@ -40,27 +40,47 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
 .ai-msg.user{align-self:flex-end;background:#16466b}
 .ai-msg.bot{align-self:flex-start;background:#123a35;border:1px solid #246b59}
 .ai-entry{display:flex;gap:8px}.ai-entry input{flex:1;min-width:0}
+
+/* Professional neutral theme */
+:root{--bg:#f3f5f7;--panel:#ffffff;--panel2:#f8fafb;--line:#d7dee5;--cyan:#176b70;--blue:#285d82;--text:#202b36;--muted:#647383;--green:#18794e;--red:#b42336;--amber:#9a6700;--purple:#6656a5;--pink:#a84e70;--orange:#a65b18}
+body{background:#f3f5f7;color:#202b36;padding:22px;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.card{background:#fff;border:1px solid #dce2e8;box-shadow:0 3px 14px #1525360d;border-radius:14px;backdrop-filter:none}
+.brand{color:#173f5f}.by,.sub,.muted{color:#647383}
+h2{color:#176b70}
+.pill{color:#176b70;border-color:#c9dadd;background:#f4f9f9}
+.metric,.status,.room,.chartbox,.ai-log{background:#f8fafb;border-color:#dce3e9;color:#202b36}
+.metric small,.room small{color:#647383}
+.metric strong{color:#1d3448}
+input[type=email],input[type=password],input[type=text]{background:#fff;color:#202b36;border-color:#cbd5df}
+input::placeholder{color:#8794a2}
+button{background:#176b70;color:#fff}
+button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
+.eye-btn{color:#176b70}.eye-btn:hover{background:#e8f1f2}
+.role,.role:nth-child(1),.role:nth-child(2){background:#f7fafb;color:#203344;border:1px solid #d8e1e8;box-shadow:0 2px 8px #172b3a0b}
+.role:hover{background:#edf5f5;border-color:#8ab7b8;filter:none}
+.ai-msg.user{background:#e3eef7;color:#183b57}
+.ai-msg.bot{background:#eaf4f0;color:#244b3c;border-color:#c6dfd2}
+.airesult{background:#f8fafb;color:#263746;border-color:#dce3e9;border-left-color:#27845d}
+.chartbox{background:#fff;border-color:#dce3e9}
+.chartbox h3{color:#263746}
+.track{background:#c45a68}.switch input:checked+.track{background:#27845d}
+.footer{color:#758391}
+@media(prefers-color-scheme:dark){body{background:#f3f5f7;color:#202b36}}
+
 </style>
 </head>
 <body><main class="wrap">
-
 <section id="loginScreen" class="card">
  <div class="brand">POWER GUARD</div><div class="by">by hassaneeeyy · SECURE SIGN IN</div><div class="sub">SMART ELECTRICAL MONITORING SYSTEM</div>
  <h2>EMAIL LOGIN</h2>
  <label for="emailInput">Email address</label>
  <input id="emailInput" type="email" autocomplete="username" placeholder="Enter registered Firebase email">
  <label for="emailPassword">Email password</label>
- <div class="password-wrap">
-  <input id="emailPassword" type="password" autocomplete="current-password" placeholder="Enter Firebase password">
-  <button class="eye-btn" type="button" onclick="toggleEye('emailPassword',this)" aria-label="Show or hide password">
-   <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
-  </button>
- </div>
+ <div class="password-wrap"><input id="emailPassword" type="password" autocomplete="current-password" placeholder="Enter Firebase password"><button class="eye-btn" type="button" onclick="toggleEye('emailPassword',this)" aria-label="Show or hide password"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
  <button id="emailLoginBtn" style="width:100%;margin-top:15px" onclick="emailSignIn()">SIGN IN</button>
  <p id="emailError" class="error"></p>
  <p class="muted">Sign in with your registered Power Guard Firebase account.</p>
 </section>
-
 <section id="roleScreen" class="card hidden">
  <div class="brand">POWER GUARD</div><div class="by">by hassaneeeyy · SELECT DASHBOARD</div><div class="sub">CHOOSE YOUR ACCESS</div>
  <div class="rolegrid" style="margin-top:20px">
@@ -70,18 +90,12 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
  <div id="rolePasswordArea" class="hidden" style="margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:14px;background:#07182a">
   <h2 id="passRoleTitle">CONSUMER LOGIN</h2>
   <label for="rolePassword">Dashboard password</label>
-  <div class="password-wrap">
-   <input id="rolePassword" type="password" autocomplete="off" placeholder="Enter dashboard password" onkeydown="if(event.key==='Enter')verifyRolePassword()">
-   <button class="eye-btn" type="button" onclick="toggleEye('rolePassword',this)" aria-label="Show or hide password">
-    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
-   </button>
-  </div>
+  <div class="password-wrap"><input id="rolePassword" type="password" autocomplete="off" placeholder="Enter dashboard password" onkeydown="if(event.key==='Enter')verifyRolePassword()"><button class="eye-btn" type="button" onclick="toggleEye('rolePassword',this)" aria-label="Show or hide password"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
   <button id="roleContinue" style="width:100%;margin-top:13px" onclick="verifyRolePassword()">CONTINUE</button>
   <p id="passError" class="error"></p>
  </div>
  <button class="secondary" style="width:100%;margin-top:14px" onclick="emailLogout()">LOG OUT</button>
 </section>
-
 <section id="dashboard" class="hidden">
  <div class="card">
   <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><span class="pill" id="rolePill">CONSUMER</span></div>
@@ -99,7 +113,6 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
-
  <div class="card">
   <h2>LIVE ANALYTICS</h2>
   <p class="muted">Charts collect readings while this dashboard remains open. They are session charts, not permanent Firebase history.</p>
@@ -108,19 +121,16 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
    <div class="chartbox"><h3>Active Power</h3><canvas id="powerChart"></canvas></div>
   </div>
  </div>
-
  <div class="card">
-  <h2>KSEB TARIFF & BILL ESTIMATE</h2>
+  <h2>KSEB TIME-OF-DAY TARIFF & BILL ESTIMATE</h2>
   <div class="billgrid">
    <div class="metric"><small>ACTIVE TARIFF ZONE</small><strong id="billZone">—</strong></div>
    <div class="metric"><small>ESP32 TARIFF RATE</small><strong id="billRate">—</strong></div>
    <div class="metric"><small>ACCUMULATED ENERGY</small><strong id="billEnergy">—</strong></div>
    <div class="metric"><small>ENERGY COST</small><strong id="billEnergyCost">—</strong></div>
    <div class="metric"><small>ESTIMATED CURRENT BILL</small><strong id="billTotal">—</strong></div>
-   <div class="metric"><small>ESTIMATE BASIS</small><strong style="font-size:15px">ESP32 cost</strong></div>
   </div>
  </div>
-
  <div class="card">
   <div class="aihead"><h2 style="margin:0">POWER GUARD SMART ASSISTANT</h2><span class="pill">FREE · OFFLINE LOGIC</span></div>
   <p class="muted">Ask in normal language about live readings, energy usage, bills, sensors, alerts and controls.</p>
@@ -130,39 +140,24 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
    <p id="aiStatus" class="muted">Free local rule-based assistant · no API key required.</p>
   </div>
  </div>
-
- <div class="card">
-  <div class="aihead"><h2 style="margin:0">AUTOMATIC SYSTEM INSIGHTS</h2><span class="pill">LIVE DATA</span></div>
-  <div id="aiInsight" class="airesult">Waiting for live readings…</div>
- </div>
-
  <div id="consumerRooms" class="card">
   <div class="top"><h2 style="margin:0">ROOM RELAYS</h2><span class="pill">LOW-VOLTAGE DEMO</span></div>
   <p class="muted">R1 is the master. R2–R6 are individual room outputs. Room outputs cannot be enabled while MAIN is OFF. Gas, overload or overvoltage protection cuts MAIN only.</p>
   <div id="roomControls" class="rooms" style="margin-top:13px"></div>
   <p id="relayMessage" class="muted"></p>
  </div>
-
  <div id="adminActions" class="card hidden">
   <h2>KSEB ADMIN CONTROLS</h2>
-  <div class="room" style="margin-bottom:12px">
-   <div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for ESP32…</small></div>
-   <label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label>
-  </div>
-  <div class="room">
-   <div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div>
-   <label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label>
-  </div>
+  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
+  <div class="room"><div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label></div>
   <p id="adminMessage" class="muted"></p>
  </div>
-
  <div class="card"><div class="actions"><button class="secondary" onclick="returnToRoles()">SWITCH ROLE</button><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
-
 <div class="footer">POWER GUARD · by hassaneeeyy</div>
 </main>
-
 <script>
+// Firebase web configuration and database paths from your supplied Power Guard details.
 const firebaseConfig={
  apiKey:"AIzaSyDFWE5aJRr8xcsoP6T9O3xLOiBCAmxaQwY",
  authDomain:"power-guard32.firebaseapp.com",
@@ -172,7 +167,6 @@ const firebaseConfig={
  messagingSenderId:"439894450296",
  appId:"1:439894450296:web:2ca9ff01527071b1428d8d"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(), db=firebase.database();
 const LIVE="powerGuard/live", COMMANDS="powerGuard/commands";
@@ -181,413 +175,173 @@ const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
 let role="consumer", liveRef=null, commandBusy=false, latest={};
 let viChart=null, powerChart=null, chartLabels=[], voltageSeries=[], currentSeries=[], powerSeries=[];
 let lastChartAt=0;
-
-const $=id=>document.getElementById(id);
-const fmt=(v,n=2)=>v===null||v===undefined||!Number.isFinite(Number(v))?"—":Number(v).toFixed(n);
-const bool=v=>v===true?"ON":v===false?"OFF":"—";
-const ALLOWED_EMAIL="schoolprojectesp@gmail.com";
-
-function show(id){
- ["loginScreen","roleScreen","dashboard"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
-}
-
-function toggleEye(id,button){
- const f=$(id),reveal=f.type==="password";
- f.type=reveal?"text":"password";
- button.innerHTML=reveal
- ?'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-4 4.8M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7c1.2 0 2.3-.2 3.3-.6"/></svg>'
- :'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
-}
-
-async function emailSignIn(){
- const email=$("emailInput").value.trim().toLowerCase();
- const password=$("emailPassword").value;
- $("emailError").textContent="";
-
- if(email!==ALLOWED_EMAIL){
-  $("emailError").textContent="Access denied. Enter the registered Power Guard email.";
-  return;
- }
- if(!password){
-  $("emailError").textContent="Enter your Firebase email password.";
-  return;
- }
-
- $("emailLoginBtn").disabled=true;
- $("emailLoginBtn").textContent="SIGNING IN…";
-
- try{
-  await auth.signInWithEmailAndPassword(email,password);
-  show("roleScreen");
- }catch(e){
-  $("emailError").textContent="Firebase sign-in failed: "+(e.code||e.message)+". Check the registered email, password and Firebase Email/Password sign-in setting.";
- }finally{
-  $("emailLoginBtn").disabled=false;
-  $("emailLoginBtn").textContent="SIGN IN";
- }
-}
-
-function chooseRole(r){
- role=r;
- $("passRoleTitle").textContent=r==="admin"?"KSEB ADMIN PASSWORD":"CONSUMER PASSWORD";
- $("rolePasswordArea").classList.remove("hidden");
- $("rolePassword").value="";
- $("passError").textContent="";
- $("rolePassword").type="password";
- $("rolePassword").focus();
-}
-
-function verifyRolePassword(){
- const expected=role==="admin"?"KSEB123":"CONSUMER123";
-
- if(!auth.currentUser){
-  $("passError").textContent="Your email session has expired. Please sign in again.";
-  show("loginScreen");
-  return;
- }
-
- if($("rolePassword").value!==expected){
-  $("passError").textContent="Incorrect "+(role==="admin"?"KSEB ADMIN":"CONSUMER")+" password. Check the spelling and try again.";
-  return;
- }
-
- enterRole(role);
-}
-
-async function emailLogout(){
- if(liveRef){liveRef.off();liveRef=null;}
- await auth.signOut();
- $("emailPassword").value="";
- $("emailError").textContent="";
- show("loginScreen");
-}
-
-// Charts
 function initCharts(){
- if(!window.Chart)return;
-
- const common={
-  responsive:true,
-  maintainAspectRatio:true,
-  animation:{duration:450},
-  interaction:{mode:"index",intersect:false},
-  plugins:{
-   legend:{position:"bottom",labels:{color:"#e4efff",usePointStyle:true,padding:18}},
-   tooltip:{backgroundColor:"#071426",titleColor:"#fff",bodyColor:"#dcecff",borderColor:"#47749a",borderWidth:1}
-  },
-  scales:{
-   x:{ticks:{color:"#9bb2c7",maxTicksLimit:6},grid:{color:"#18334d"}},
-   y:{ticks:{color:"#9bb2c7"},grid:{color:"#18334d"}}
-  }
- };
-
- viChart=new Chart($("viChart"),{
-  type:"line",
-  data:{
-   labels:chartLabels,
-   datasets:[
-    {label:"Voltage (V)",data:voltageSeries,borderColor:"#54dcff",backgroundColor:"#54dcff22",pointBackgroundColor:"#54dcff",pointRadius:2,borderWidth:3,yAxisID:"y",tension:.38,fill:true},
-    {label:"Current (A)",data:currentSeries,borderColor:"#ffb86b",backgroundColor:"#ffb86b22",pointBackgroundColor:"#ffb86b",pointRadius:2,borderWidth:3,yAxisID:"y1",tension:.38}
-   ]
-  },
-  options:{
-   ...common,
-   scales:{
-    ...common.scales,
-    y:{...common.scales.y,position:"left"},
-    y1:{position:"right",ticks:{color:"#9bb2c7"},grid:{drawOnChartArea:false}}
-   }
-  }
- });
-
- powerChart=new Chart($("powerChart"),{
-  type:"line",
-  data:{
-   labels:chartLabels,
-   datasets:[
-    {label:"Active power (W)",data:powerSeries,borderColor:"#b69cff",backgroundColor:"#b69cff35",pointBackgroundColor:"#ff8db5",pointRadius:2,borderWidth:3,fill:true,tension:.38}
-   ]
-  },
-  options:common
- });
+ if(!window.Chart) return;
+ const common={responsive:true,maintainAspectRatio:true,animation:{duration:450},interaction:{mode:"index",intersect:false},
+  plugins:{legend:{position:"bottom",labels:{color:"#425466",usePointStyle:true,padding:18}},tooltip:{backgroundColor:"#ffffff",titleColor:"#203344",bodyColor:"#425466",borderColor:"#cbd5df",borderWidth:1}},
+  scales:{x:{ticks:{color:"#647383",maxTicksLimit:6},grid:{color:"#e5eaef"}},
+          y:{ticks:{color:"#647383"},grid:{color:"#e5eaef"}}}};
+ viChart=new Chart($("viChart"),{type:"line",data:{labels:chartLabels,datasets:[
+  {label:"Voltage (V)",data:voltageSeries,borderColor:"#3569a8",backgroundColor:"#3569a81a",pointBackgroundColor:"#3569a8",pointRadius:2,borderWidth:3,yAxisID:"y",tension:.38,fill:true},
+  {label:"Current (A)",data:currentSeries,borderColor:"#c18432",backgroundColor:"#c184321a",pointBackgroundColor:"#c18432",pointRadius:2,borderWidth:3,yAxisID:"y1",tension:.38}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left"},y1:{position:"right",ticks:{color:"#647383"},grid:{drawOnChartArea:false}}}}});
+ powerChart=new Chart($("powerChart"),{type:"line",data:{labels:chartLabels,datasets:[
+  {label:"Active power (W)",data:powerSeries,borderColor:"#23866b",backgroundColor:"#23866b1a",pointBackgroundColor:"#23866b",pointRadius:2,borderWidth:3,fill:true,tension:.38}
+ ]},options:common});
 }
-
 function addChartPoint(d){
  if(!window.Chart)return;
- const now=Date.now();
- if(now-lastChartAt<5000)return;
- lastChartAt=now;
-
+ const now=Date.now(); if(now-lastChartAt<5000)return; lastChartAt=now;
  chartLabels.push(new Date(now).toLocaleTimeString("en-IN"));
- voltageSeries.push(Number(d.voltage)||0);
- currentSeries.push(Number(d.current)||0);
- powerSeries.push(Number(d.power)||0);
-
- if(chartLabels.length>60){
-  chartLabels.shift();
-  voltageSeries.shift();
-  currentSeries.shift();
-  powerSeries.shift();
- }
-
+ voltageSeries.push(Number(d.voltage)||0);currentSeries.push(Number(d.current)||0);powerSeries.push(Number(d.power)||0);
+ if(chartLabels.length>60){chartLabels.shift();voltageSeries.shift();currentSeries.shift();powerSeries.shift();}
  if(!viChart)initCharts();
- if(viChart){
-  viChart.update("none");
-  powerChart.update("none");
- }
+ if(viChart){viChart.update("none");powerChart.update("none");}
 }
-
+const KSEB_TOD_RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
 function updateBill(d){
  const zone=String(d.tariffZone||"NO CLOCK").toUpperCase();
- const rate=Number(d.tariffRate);
-
+ const rate=KSEB_TOD_RATES[zone];
  $("billZone").textContent=zone;
- $("billRate").textContent=Number.isFinite(rate)&&rate>0?"₹"+rate.toFixed(2)+"/kWh":"—";
+ $("billRate").textContent=rate!==undefined?"₹"+rate.toFixed(2)+"/kWh":"—";
  $("billEnergy").textContent=fmt(d.energyWh,3)+" Wh";
  $("billEnergyCost").textContent="₹"+fmt(d.cost,2);
  $("billTotal").textContent="₹"+fmt(d.cost,2);
 }
 
-function makeAIInsight(d){
- const out=[];
- const v=Number(d.voltage),a=Number(d.current),w=Number(d.power),wh=Number(d.energyWh),cost=Number(d.cost);
-
- if(d.gasDetected===true)out.push("CRITICAL: MQ-6 gas alert is active. MAIN relay status should be checked. Do not treat this prototype sensor as a certified gas alarm.");
- if(d.overload===true)out.push("PROTECTION: Overload status is active. The ESP32 reports the overload protection state.");
- if(d.overVoltage===true)out.push("PROTECTION: Overvoltage status is active.");
- if(Number.isFinite(v)&&v>0)out.push("Voltage reading: "+v.toFixed(1)+" V.");
- if(Number.isFinite(a)&&a>=0)out.push("Current reading: "+a.toFixed(2)+" A");
- if(Number.isFinite(w)&&w>=0)out.push("Active power: "+w.toFixed(1)+" W.");
- if(Number.isFinite(wh)&&wh>=0)out.push("Accumulated energy: "+wh.toFixed(3)+" Wh.");
- if(Number.isFinite(cost)&&cost>=0)out.push("ESP32-calculated accumulated energy cost: ₹"+cost.toFixed(2)+".");
- if(d.tariffZone)out.push("Current time-of-day tariff zone from ESP32: "+String(d.tariffZone)+".");
- if(!out.length)out.push("Waiting for valid sensor values.");
- out.push("Rule-based analysis only; it does not control relays.");
- $("aiInsight").textContent=out.join("\n");
+const $=id=>document.getElementById(id);
+const fmt=(v,n=2)=>v===null||v===undefined||!Number.isFinite(Number(v))?"—":Number(v).toFixed(n);
+const bool=v=>v===true?"ON":v===false?"OFF":"—";
+function show(id){["loginScreen","roleScreen","dashboard"].forEach(x=>$(x).classList.toggle("hidden",x!==id));}
+const ALLOWED_EMAIL="schoolprojectesp@gmail.com";
+function toggleEye(id,button){const f=$(id);const reveal=f.type==="password";f.type=reveal?"text":"password";button.innerHTML=reveal?'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-4 4.8M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7c1.2 0 2.3-.2 3.3-.6"/></svg>':'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';}
+async function emailSignIn(){
+ const email=$("emailInput").value.trim().toLowerCase(), password=$("emailPassword").value;
+ $("emailError").textContent="";
+ if(email!==ALLOWED_EMAIL){$("emailError").textContent="Access denied. Enter the registered Power Guard email.";return;}
+ if(!password){$("emailError").textContent="Enter your Firebase email password.";return;}
+ $("emailLoginBtn").disabled=true;$("emailLoginBtn").textContent="SIGNING IN…";
+ try{await auth.signInWithEmailAndPassword(email,password);show("roleScreen");}
+ catch(e){$("emailError").textContent="Firebase sign-in failed: "+(e.code||e.message)+". Check the registered email, password and Firebase Email/Password sign-in setting.";}
+ finally{$("emailLoginBtn").disabled=false;$("emailLoginBtn").textContent="SIGN IN";}
 }
-
-// Local assistant
-function addAIMessage(text,who){
- const log=$("aiChatLog"),node=document.createElement("div");
- node.className="ai-msg "+who;
- node.textContent=text;
- log.appendChild(node);
- log.scrollTop=log.scrollHeight;
+function chooseRole(r){role=r;$("passRoleTitle").textContent=r==="admin"?"KSEB ADMIN PASSWORD":"CONSUMER PASSWORD";$("rolePasswordArea").classList.remove("hidden");$("rolePassword").value="";$("passError").textContent="";$("rolePassword").type="password";$("rolePassword").focus();}
+function verifyRolePassword(){
+ const expected=role==="admin"?"KSEB123":"CONSUMER123";
+ if(!auth.currentUser){$("passError").textContent="Your email session has expired. Please sign in again.";show("loginScreen");return;}
+ if($("rolePassword").value!==expected){$("passError").textContent="Incorrect "+(role==="admin"?"KSEB ADMIN":"CONSUMER")+" password. Check the spelling and try again.";return;}
+ enterRole(role);
 }
+async function emailLogout(){if(liveRef){liveRef.off();liveRef=null;}await auth.signOut();$("emailPassword").value="";$("emailError").textContent="";show("loginScreen");}
 
+
+// Free local assistant: all responses are generated in this browser from live Firebase readings.
+function addAIMessage(text, who){
+ const log=$("aiChatLog"), node=document.createElement("div");
+ node.className="ai-msg "+who; node.textContent=text; log.appendChild(node); log.scrollTop=log.scrollHeight;
+}
 function sendAIQuestion(){
- const input=$("aiQuestion"),question=input.value.trim();
+ const input=$("aiQuestion"), question=input.value.trim();
  if(!question)return;
- addAIMessage(question,"user");
- input.value="";
+ addAIMessage(question,"user"); input.value="";
  const answer=answerPowerGuardQuestion(question,latest||{});
  addAIMessage(answer,"bot");
  $("aiStatus").textContent="Answered locally using programmed rules and the latest available dashboard readings.";
 }
-
 function answerPowerGuardQuestion(question,d){
  const q=question.toLowerCase();
  const num=(v,n=2)=>v===null||v===undefined||v===""||!Number.isFinite(Number(v))?"not available":Number(v).toFixed(n);
- const gas=d.gasDetected===true,overload=d.overload===true,ov=d.overVoltage===true;
-
- if(/hello|hi\b|hey|good morning/.test(q))
-  return "Hello! I can check your latest Power Guard readings, explain alerts and identify which dashboard controls do what. Try: What is the system status? How much energy is recorded? Is MAIN ON?";
-
- if(/help|what can you do|commands|questions/.test(q))
-  return "Ask me about live voltage, current, active/apparent power, power factor, frequency, energy, estimated cost, tariff zone, gas sensor, overload, overvoltage, system status or relay states. I can also explain whether a reading is current or accumulated.";
-
- if(/gas|mq.?6|leak/.test(q))
-  return "Gas sensor status: "+(gas?"ALERT reported":""+(d.gasDetected===false?"Normal according to the current sensor flag":"not available"))+". MQ-6 raw reading: "+(d.gasRaw??"not available")+". This MQ-6 prototype is not a certified gas alarm; do not use it as a substitute for a certified detector.";
-
- if(/overload|over current|too much current/.test(q))
-  return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your ESP32 code.";
-
- if(/over.?voltage|high voltage|voltage fault/.test(q))
-  return "Overvoltage flag: "+(ov?"ACTIVE":d.overVoltage===false?"not active":"not available")+". Measured voltage: "+num(d.voltage,1)+" V.";
-
- if(/voltage|volt/.test(q))
-  return "Latest voltage reading: "+num(d.voltage,1)+" V.";
-
- if(/current|amp|ampere/.test(q))
-  return "Latest current reading: "+num(d.current)+" A.";
-
- if(/power factor|\bpf\b/.test(q))
-  return "Latest power factor: "+num(d.powerFactor,3)+".";
-
- if(/frequency|hertz|hz/.test(q))
-  return "Latest frequency reading: "+num(d.frequency)+" Hz.";
-
- if(/apparent power|\bva\b/.test(q))
-  return "Latest apparent power: "+num(d.apparentPower)+" VA.";
-
- if(/watt|active power|\bpower\b/.test(q))
-  return "Latest active power: "+num(d.power)+" W.";
-
- if(/today|daily|all day|since morning|this morning|yesterday/.test(q)&&/energy|consum|unit|kwh|use|used|usage/.test(q)){
-  if(d.dailyEnergyWh!==undefined)
-   return "Energy recorded today: "+num(d.dailyEnergyWh,3)+" Wh ("+(Number(d.dailyEnergyWh)/1000).toFixed(6)+" kWh).";
-  return "The dashboard currently receives accumulated energy ("+num(d.energyWh,3)+" Wh), not a separate daily counter. This value is since the last energy reset or firmware counter start; it does not prove the total for today unless the ESP32 resets it daily.";
- }
-
- if(/energy|consum|unit|kwh/.test(q))
-  return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the ESP32 counter, usually since its last reset.";
-
- if(/cost|bill|rupee|₹|tariff|rate/.test(q))
-  return "ESP32-calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(d.tariffZone||"not available")+". Tariff rate: "+(d.tariffRate!==undefined?"₹"+num(d.tariffRate,2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill.";
-
+ const gas=d.gasDetected===true, overload=d.overload===true, ov=d.overVoltage===true;
+ if(/hello|hi\b|hey|good morning/.test(q)) return "Hello! I can check your latest Power Guard readings, explain alerts and identify which dashboard controls do what. Try: What is the system status? How much energy is recorded? Is MAIN ON?";
+ if(/help|what can you do|commands|questions/.test(q)) return "Ask me about live voltage, current, active/apparent power, power factor, frequency, energy, estimated cost, tariff zone, gas sensor, overload, overvoltage, system status or relay states. I can also explain whether a reading is current or accumulated.";
+ if(/gas|mq.?6|leak/.test(q)) return "Gas sensor status: "+(gas?"ALERT reported":""+(d.gasDetected===false?"Normal according to the current sensor flag":"not available"))+". MQ-6 raw reading: "+(d.gasRaw??"not available")+". This MQ-6 prototype is not a certified gas alarm; do not use it as a substitute for a certified detector.";
+ if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your ESP32 code.";
+ if(/over.?voltage|high voltage|voltage fault/.test(q)) return "Overvoltage flag: "+(ov?"ACTIVE":d.overVoltage===false?"not active":"not available")+". Measured voltage: "+num(d.voltage,1)+" V.";
+ if(/voltage|volt/.test(q)) return "Latest voltage reading: "+num(d.voltage,1)+" V.";
+ if(/current|amp|ampere/.test(q)) return "Latest current reading: "+num(d.current)+" A.";
+ if(/power factor|\bpf\b/.test(q)) return "Latest power factor: "+num(d.powerFactor,3)+".";
+ if(/frequency|hertz|hz/.test(q)) return "Latest frequency reading: "+num(d.frequency)+" Hz.";
+ if(/apparent power|\bva\b/.test(q)) return "Latest apparent power: "+num(d.apparentPower)+" VA.";
+ if(/watt|active power|\bpower\b/.test(q)) return "Latest active power: "+num(d.power)+" W.";
+ if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /energy|consum|unit|kwh|use|used|usage/.test(q)) { if(d.dailyEnergyWh!==undefined) return "Energy recorded today: "+num(d.dailyEnergyWh,3)+" Wh ("+(Number(d.dailyEnergyWh)/1000).toFixed(6)+" kWh)."; return "The dashboard currently receives accumulated energy ("+num(d.energyWh,3)+" Wh), not a separate daily counter. This value is since the last energy reset or firmware counter start; it does not prove the total for today unless the ESP32 resets it daily."; }
+ if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the ESP32 counter, usually since its last reset.";
+ if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const z=String(d.tariffZone||"").toUpperCase(),r=KSEB_TOD_RATES[z];return "ESP32-calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(z||"not available")+". Display tariff rate: "+(r!==undefined?"₹"+r.toFixed(2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill. The ESP32 firmware must use the same rates for the accumulated cost to match.";}
  if(/main relay|main switch|main output|room switch|which switch|relay|room|load|supply/.test(q)){
   const main=(d.relay1On===true||d.relayOn===true)?"ON":(d.relay1On===false||d.relayOn===false)?"OFF":"not reported";
-  if(/kseb|admin|main switch|main relay|which switch/.test(q))
-   return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). The RESET ENERGY & COST switch sends the energy/cost reset command. Individual room switches are not shown in the KSEB dashboard.";
+  if(/kseb|admin|main switch|main relay|which switch/.test(q))return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). The RESET ENERGY & COST switch sends the energy/cost reset command. Individual room switches are not shown in the KSEB dashboard.";
   return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the ESP32 publishes them. These are reported states, not independent proof of physical contact position.";
  }
-
  if(/status|condition|healthy|normal|problem|alert/.test(q)){
-  const issues=[];
-  if(gas)issues.push("gas alert");
-  if(overload)issues.push("overload");
-  if(ov)issues.push("overvoltage");
+  const issues=[]; if(gas)issues.push("gas alert"); if(overload)issues.push("overload"); if(ov)issues.push("overvoltage");
   return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the ESP32 has not published that field.";
  }
-
- if(/thank|thanks/.test(q))
-  return "You're welcome. Power Guard is using its free local smart assistant; no external AI service is connected.";
-
+ if(/thank|thanks/.test(q)) return "You're welcome. Power Guard is using its free local smart assistant; no external AI service is connected.";
  return "I could not match that question to a live Power Guard value. Try asking more specifically, for example: What is the voltage now? How much energy since reset? Why is the system in alert? Is the MAIN relay ON? What does power factor mean?";
 }
 
 function enterRole(r){
- role=r;
- $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
+ role=r; $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
  $("adminActions").classList.toggle("hidden",r!=="admin");
  $("consumerRooms").classList.toggle("hidden",r==="admin");
- show("dashboard");
- if(r==="consumer")renderRooms();
- startLive();
+ show("dashboard"); if(r==="consumer")renderRooms(); startLive();
 }
-
 function renderRooms(){
- $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" disabled onchange="void(0)"><span class="track"></span></label></div>`).join("");
+ $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" ${role!=="admin"?"disabled":""} disabled onchange="void(0)"><span class="track"></span></label></div>`).join("");
 }
-
 function startLive(){
  if(liveRef)liveRef.off();
  liveRef=db.ref(LIVE);
  liveRef.on("value",snap=>{
-  const d=snap.val();
-  if(!d){
-   $("connection").textContent="No data at "+LIVE+". Check the ESP32 Firebase connection.";
-   $("systemStatus").textContent="SYSTEM STATUS · WAITING FOR ESP32 DATA";
-   return;
-  }
-  latest=d;
-  $("connection").textContent="LIVE · Firebase data received";
-  $("connection").className="muted ok";
+  const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the ESP32 Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR ESP32 DATA";return;}
+  latest=d; $("connection").textContent="LIVE · Firebase data received"; $("connection").className="muted ok";
   update(d);
- },e=>{
-  $("connection").textContent="Firebase read error: "+e.message;
-  $("connection").className="status bad";
- });
+ },e=>{$("connection").textContent="Firebase read error: "+e.message;$("connection").className="status bad";});
 }
-
 function update(d){
- addChartPoint(d);
- updateBill(d);
- makeAIInsight(d);
-
- $("voltage").textContent=fmt(d.voltage,1)+" V";
- $("current").textContent=fmt(d.current,2)+" A";
- $("power").textContent=fmt(d.power,1)+" W";
- $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
- $("pf").textContent=fmt(d.powerFactor,2);
- $("frequency").textContent=fmt(d.frequency,2)+" Hz";
- $("energy").textContent=fmt(d.energyWh,3)+" Wh";
- $("cost").textContent="₹"+fmt(d.cost,6);
- $("load").textContent=bool(d.loadOn??d.relayOn??d.supplyOn);
-
- const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(),rate=Number(d.tariffRate);
+ addChartPoint(d); updateBill(d);
+ $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
+ $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
+ $("pf").textContent=fmt(d.powerFactor,2); $("frequency").textContent=fmt(d.frequency,2)+" Hz";
+ $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,6);
+ $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
+ const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(), rate=KSEB_TOD_RATES[zone];
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
-  (Number.isFinite(rate)&&rate>0?" · ₹"+rate.toFixed(2)+"/kWh":" · Waiting for ESP32 tariff rate");
-
+  (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
  let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
  if(d.gasDetected===true)status="GAS ALERT · CHECK SYSTEM";
  else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
  else if(d.overload===true)status="OVERLOAD ALERT";
  else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
-
  $("systemStatus").textContent="SYSTEM STATUS · "+status;
  $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
-
  const mainOn=(d.relayOn===true);
- if($("mainRelaySwitch")){
-  $("mainRelaySwitch").checked=mainOn;
-  $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true;
- }
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
-
- if(role==="consumer"){
-  for(let i=1;i<=6;i++){
-   const val=d["relay"+i+"On"]===true||(i===1&&d.relayOn===true);
-   const sw=$("r"+i),label=$("r"+i+"State");
-   if(sw)sw.checked=val;
-   if(label)label.textContent=val?"ON":"OFF";
-  }
- }
+ if(role==="consumer"){for(let i=1;i<=6;i++){
+  const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
+  const sw=$("r"+i), label=$("r"+i+"State"); if(sw)sw.checked=val; if(label)label.textContent=val?"ON":"OFF";
+ }}
 }
-
 async function setMainRelay(on){
  if(role!=="admin")return;
- if(!on&&!confirm("Turn the MAIN relay OFF?")){
-  update(latest);
-  return;
- }
+ if(!on&&!confirm("Turn the MAIN relay OFF?")){update(latest);return;}
  await sendCommand({[on?"restorePower":"cutPower"]:true},"MAIN relay "+(on?"ON":"OFF"));
 }
-
 async function resetEnergyCost(on){
  if(!on)return;
- if(!confirm("Reset accumulated energy and cost?")){
-  $("resetEnergySwitch").checked=false;
-  return;
- }
+ if(!confirm("Reset accumulated energy and cost?")){$("resetEnergySwitch").checked=false;return;}
  await sendCommand({resetEnergy:true,resetCost:true},"Energy and cost reset");
  setTimeout(()=>{$("resetEnergySwitch").checked=false;},700);
 }
-
 async function sendCommand(payload,label){
- if(commandBusy)return;
- commandBusy=true;
- try{
-  await db.ref(COMMANDS).update(payload);
-  $("relayMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
-  $("adminMessage").textContent=label+" command sent.";
- }catch(e){
-  $("relayMessage").textContent="Command failed: "+e.message;
-  $("adminMessage").textContent="Command failed: "+e.message;
- }finally{
-  commandBusy=false;
- }
+ if(commandBusy)return; commandBusy=true;
+ try{await db.ref(COMMANDS).update(payload); $("relayMessage").textContent=label+" command sent. Waiting for ESP32 confirmation."; $("adminMessage").textContent=label+" command sent.";}
+ catch(e){$("relayMessage").textContent="Command failed: "+e.message;$("adminMessage").textContent="Command failed: "+e.message;}
+ finally{commandBusy=false;}
 }
-
-async function returnToRoles(){
- if(liveRef){liveRef.off();liveRef=null;}
- latest={};
- $("rolePassword").value="";
- $("rolePasswordArea").classList.add("hidden");
- $("passError").textContent="";
- show(auth.currentUser?"roleScreen":"loginScreen");
-}
-
-async function logout(){
- await returnToRoles();
-}
-
-auth.onAuthStateChanged(user=>{
- if(!user&&liveRef){
-  liveRef.off();
-  liveRef=null;
- }
-});
+async function returnToRoles(){if(liveRef){liveRef.off();liveRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
+async function logout(){await returnToRoles();}
+auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
 </script>
 </body>
 </html>
