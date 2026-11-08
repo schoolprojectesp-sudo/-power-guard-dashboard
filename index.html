@@ -360,17 +360,6 @@ body.dark-theme #rolePasswordArea{background:#142236!important;border-color:#405
 body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#647b91!important}
 
 
-/* Equalizer-style voltage selector with fixed 5 V marks */
-.eq-meter{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:5px;align-items:end;margin:18px 0 8px;padding:14px 10px 10px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
-.eq-step{appearance:none;border:0;background:transparent;padding:0 1px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--muted);cursor:pointer}
-.eq-bars{height:92px;width:100%;display:flex;align-items:end;justify-content:center;gap:2px}
-.eq-bars i{display:block;width:27%;max-width:8px;border-radius:4px 4px 1px 1px;background:#c5d2ca;transition:background .15s,opacity .15s}
-.eq-step:nth-child(odd) .eq-bars i{height:78%}.eq-step:nth-child(even) .eq-bars i{height:58%}
-.eq-step.active .eq-bars i{background:#21865b}.eq-step.active .eq-label{color:var(--text);font-weight:900}
-.eq-step.active .eq-bars i:nth-child(2){opacity:.65}
-.eq-label{font-size:clamp(9px,1.8vw,12px);font-weight:700;white-space:nowrap}
-.eq-step:disabled{cursor:not-allowed;opacity:.48}
-body.dark-theme .eq-meter{background:#0b1725;border-color:#35485d}body.dark-theme .eq-bars i{background:#45586a}body.dark-theme .eq-step.active .eq-bars i{background:#45b987}
 </style>
 </head>
 <body><main class="wrap">
@@ -420,15 +409,16 @@ body.dark-theme .eq-meter{background:#0b1725;border-color:#35485d}body.dark-them
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
- <div class="card" id="voltageSetpointCard">
-  <h2>VOLTAGE REFERENCE</h2>
+ <div class="card" id="physicalPotCard">
+  <h2>PHYSICAL VOLTAGE POTENTIOMETER</h2>
   <div class="voltage-control">
-   <div class="voltage-control-head"><div><div class="muted">REFERENCE SETPOINT</div><div class="voltage-setpoint"><span id="voltageSetpointValue">220</span> V</div></div><button id="voltageSetpointToggle" type="button" class="secondary" onclick="toggleVoltageSetpoint()">TURN ON</button></div>
-   <div class="eq-meter" id="voltageEqualizer" aria-label="Voltage selector from 190 to 240 volts"></div>
-   <input id="voltageSetpointSlider" type="range" min="190" max="240" step="5" value="220" disabled oninput="updateVoltageSetpoint()" onchange="sendVoltageSetpoint()" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" aria-label="Voltage demonstration setpoint">
-   <div class="voltage-limits"><span>LOW · 190 V</span><span>HIGH · 240 V</span></div>
-   <div id="voltageSetpointState" class="voltage-state">OFF · Reference control disabled</div>
-   <p class="voltage-note">DEMO CONTROL · OFF uses the sensor reading. ON substitutes this selected demonstration value for voltage display and voltage-fault logic. This does not adjust a physical supply.</p>
+   <div class="voltage-control-head">
+    <div><div class="muted">PHYSICAL KNOB CONTROL</div><div class="voltage-setpoint" id="physicalPotMode">OFF</div></div>
+    <button id="physicalPotToggle" type="button" class="secondary" onclick="togglePhysicalPot()">TURN ON</button>
+   </div>
+   <div class="voltage-limits"><span>MIN · 180 V</span><span>MAX · 240 V</span></div>
+   <div id="physicalPotState" class="voltage-state">OFF · Pushbutton mode; voltage sensor reading is used</div>
+   <p class="voltage-note">ON selects the physical 10 kΩ potentiometer on GPIO32 (180–240 V demonstration scale). Before turning ON, disconnect the pushbutton wire from GPIO32 and connect the potentiometer wiper. OFF selects pushbutton mode: disconnect the potentiometer wiper and reconnect the pushbutton to GPIO32. Only one device may be connected to GPIO32 at a time. This changes only the low-voltage demonstration reference, never the actual supply voltage.</p>
   </div>
  </div>
  <div class="card">
@@ -710,7 +700,7 @@ function enterRole(r){
  role=r; $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
  $("adminActions").classList.toggle("hidden",r!=="admin");
  $("consumerRooms").classList.toggle("hidden",r==="admin");
- $("voltageSetpointCard").classList.toggle("hidden",r!=="consumer");
+ $("physicalPotCard").classList.toggle("hidden",r!=="consumer");
  show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); initCharts(); startHistory(); startLive(); startLiveChartSampling();
 }
 function renderRooms(){
@@ -758,16 +748,12 @@ function updateLatestUpdateTime(){
 }
 function update(d){
  updateBill(d);
- if(role==="consumer" && Number.isFinite(Number(d.voltageSetpoint))){
-  const sv=Math.max(190,Math.min(240,Number(d.voltageSetpoint)));
-  $("voltageSetpointSlider").value=String(sv);
-  $("voltageSetpointValue").textContent=String(Math.round(sv)); renderVoltageEqualizer();
- }
- if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("voltageSetpointToggle"))){
-  voltageSetpointEnabled=d.knobOn;
-  $("voltageSetpointSlider").disabled=!d.knobOn;
-  $("voltageSetpointToggle").textContent=d.knobOn?"TURN OFF":"TURN ON";
-  renderVoltageEqualizer();
+ if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("physicalPotToggle"))){
+  physicalPotEnabled=d.knobOn;
+  $("physicalPotToggle").textContent=d.knobOn?"TURN OFF":"TURN ON";
+  $("physicalPotToggle").classList.toggle("secondary",!d.knobOn);
+  $("physicalPotMode").textContent=d.knobOn?"ON · PHYSICAL POT ACTIVE":"OFF · PUSHBUTTON MODE";
+  $("physicalPotState").textContent=d.knobOn?"ON · ESP32 reads the physical potentiometer on GPIO32 (180–240 V demo scale)":"OFF · GPIO32 pushbutton mode; ZMPT voltage sensor is used";
  }
  $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
  $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
@@ -780,12 +766,13 @@ function update(d){
  let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
  if(d.gasDetected===true)status="GAS ALERT · CHECK SYSTEM";
  else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
+ else if(d.underVoltage===true)status="UNDERVOLTAGE ALERT";
  else if(d.overload===true)status="OVERLOAD ALERT";
  else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
  $("systemStatus").textContent="SYSTEM STATUS · "+status;
- $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
+ $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
  const mainOn=(d.relayOn===true);
- if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true; }
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
   const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
@@ -841,51 +828,24 @@ function toggleEye(inputId, button){
 }
 auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
 
-// Firebase-backed consumer voltage reference. This is a display/reference value only.
-let voltageSetpointEnabled=false;
-function renderVoltageEqualizer(){
- const host=$("voltageEqualizer"), slider=$("voltageSetpointSlider");
- if(!host)return;
- const value=Number(slider.value), enabled=voltageSetpointEnabled;
- const marks=[190,195,200,205,210,215,220,225,230,235,240];
- host.innerHTML=marks.map(v=>`<button type="button" class="eq-step ${v===value?"active":""}" data-voltage="${v}" ${enabled?"":"disabled"} aria-label="Select ${v} volts"><span class="eq-bars"><i></i><i></i><i></i></span><span class="eq-label">${v}</span></button>`).join("");
-}
-$("voltageEqualizer").addEventListener("click",ev=>{
- const step=ev.target.closest("[data-voltage]");
- if(!step||!voltageSetpointEnabled)return;
- $("voltageSetpointSlider").value=step.dataset.voltage;
- updateVoltageSetpoint(); sendVoltageSetpoint();
-});
-renderVoltageEqualizer();
-function updateVoltageSetpoint(){
- const slider=$("voltageSetpointSlider"), value=Number(slider.value);
- $("voltageSetpointValue").textContent=String(value); renderVoltageEqualizer();
- const state=$("voltageSetpointState");
- if(value<200)state.textContent="REFERENCE · Below 200 V marker";
- else if(value>215)state.textContent="REFERENCE · Above 215 V marker";
- else state.textContent="REFERENCE · Within 200–215 V marker range";
-}
-async function sendVoltageSetpoint(){
- if(role!=="consumer"||!voltageSetpointEnabled)return;
- const value=Math.max(190,Math.min(240,Number($("voltageSetpointSlider").value)));
- try{
-  await db.ref(COMMANDS).update({voltageSetpoint:value});
-  $("voltageSetpointState").textContent="SENT · "+value+" V reference";
- }catch(e){$("voltageSetpointState").textContent="SEND FAILED · "+e.message;}
-}
-async function toggleVoltageSetpoint(){
+// Consumer switch enables the physical ESP32 potentiometer; no digital setpoint remains.
+let physicalPotEnabled=false;
+async function togglePhysicalPot(){
  if(role!=="consumer")return;
- const next=!voltageSetpointEnabled, button=$("voltageSetpointToggle"), slider=$("voltageSetpointSlider");
+ const next=!physicalPotEnabled, button=$("physicalPotToggle");
+ const reminder = next
+  ? "Before enabling potentiometer mode, disconnect the pushbutton wire from GPIO32 and connect only the potentiometer wiper to GPIO32. Have you changed the connection?"
+  : "Before disabling potentiometer mode, disconnect the potentiometer wiper from GPIO32 and reconnect only the pushbutton to GPIO32. Have you changed the connection?";
+ if(!confirm(reminder)) return;
  button.disabled=true;
  try{
   await db.ref(COMMANDS).update(next?{knobOn:true}:{knobOff:true});
-  voltageSetpointEnabled=next; slider.disabled=!next;
+  physicalPotEnabled=next;
   button.textContent=next?"TURN OFF":"TURN ON";
-  renderVoltageEqualizer();
   button.classList.toggle("secondary",!next);
-  if(next){updateVoltageSetpoint();await sendVoltageSetpoint();}
-  else $("voltageSetpointState").textContent="OFF · Reference control disabled";
- }catch(e){$("voltageSetpointState").textContent="COMMAND FAILED · "+e.message;}
+  $("physicalPotMode").textContent=next?"ON · PHYSICAL POT ACTIVE":"OFF · PUSHBUTTON MODE";
+  $("physicalPotState").textContent=next?"ON · ESP32 reads the physical potentiometer on GPIO32 (180–240 V demo scale)":"OFF · GPIO32 pushbutton mode; ZMPT voltage sensor is used";
+ }catch(e){$("physicalPotState").textContent="COMMAND FAILED · "+e.message;}
  finally{button.disabled=false;}
 }
 
