@@ -21,7 +21,7 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}.pill{border:1px solid var(--line);border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px;white-space:nowrap}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{background:#07182a;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}.metric small{color:var(--muted)}.metric strong{display:block;font-size:25px;margin-top:8px;overflow-wrap:anywhere}
 .tariff{font-size:12px;color:var(--cyan);margin-top:8px;line-height:1.5}.status{border:1px solid var(--line);background:#07182a;border-radius:11px;padding:12px;color:var(--muted);font-size:13px}.ok{color:var(--green)!important}.bad{color:var(--red)!important}.warn{color:var(--amber)!important}
-.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:.2s}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:.2s}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
+.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:none}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:none}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
 .rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.role{padding:22px;border:1px solid var(--line);background:#07182a;border-radius:12px;text-align:center;cursor:pointer}.role:hover{border-color:var(--cyan);transform:translateY(-2px)}.role{transition:.2s;background:linear-gradient(145deg,#153c59,#252448)}.role:nth-child(2){background:linear-gradient(145deg,#45305f,#26304d)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}.actions button{flex:1;min-width:160px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 @media(min-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.analytics{grid-template-columns:1fr 1fr}.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:24px}.brand{font-size:32px}}@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:500px){body{padding:10px}.card{padding:15px}.grid,.rooms,.rolegrid{grid-template-columns:1fr}.brand{font-size:23px}.metric strong{font-size:22px}}
@@ -409,22 +409,10 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
- <div class="card" id="physicalPotCard">
-  <h2>PHYSICAL VOLTAGE POTENTIOMETER</h2>
-  <div class="voltage-control">
-   <div class="voltage-control-head">
-    <div><div class="muted">PHYSICAL KNOB CONTROL</div><div class="voltage-setpoint" id="physicalPotMode">OFF</div></div>
-    <button id="physicalPotToggle" type="button" class="secondary" onclick="togglePhysicalPot()">TURN ON</button>
-   </div>
-   <div class="voltage-limits"><span>MIN · 180 V</span><span>MAX · 240 V</span></div>
-   <div id="physicalPotState" class="voltage-state">OFF · Pushbutton mode; voltage sensor reading is used</div>
-   <p class="voltage-note">ON selects the physical 10 kΩ potentiometer on GPIO32 (180–240 V demonstration scale). Before turning ON, disconnect the pushbutton wire from GPIO32 and connect the potentiometer wiper. OFF selects pushbutton mode: disconnect the potentiometer wiper and reconnect the pushbutton to GPIO32. Only one device may be connected to GPIO32 at a time. This changes only the low-voltage demonstration reference, never the actual supply voltage.</p>
-  </div>
- </div>
  <div class="card">
   <h2>CONSUMPTION HISTORY</h2>
   <div class="analytics">
-   <div class="chartbox"><h3>Voltage & Current</h3><canvas id="viChart"></canvas></div>
+   <div class="chartbox"><h3>Voltage & Current <span style="color:#ff9f43;font-size:11px;font-weight:700">(separate scales)</span></h3><canvas id="viChart"></canvas></div>
    <div class="chartbox"><h3>Active Power</h3><canvas id="powerChart"></canvas></div>
   </div>
   <p id="historyStatus" class="muted">Loading saved Firebase history…</p>
@@ -465,6 +453,9 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
   <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
   <div class="room"><div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label></div>
   <p id="adminMessage" class="muted"></p>
+ </div>
+ <div class="card" id="physicalPotCard">
+  <div class="actions" style="justify-content:center"><button id="physicalPotToggle" type="button" class="secondary" onclick="togglePhysicalPot()">TURN ON PHYSICAL POTENTIOMETER</button></div>
  </div>
  <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
@@ -510,9 +501,9 @@ function initCharts(){
    y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid},border:{display:false}}}};
  const vctx=$("viChart").getContext("2d"),pctx=$("powerChart").getContext("2d");
  viChart=new Chart(vctx,{type:"line",data:{labels:[],datasets:[
-  {label:"Voltage (V)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(vctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true,yAxisID:"y",order:2},
-  {label:"Current (A)",data:[],borderColor:"#8ca4b7",backgroundColor:chartGradient(vctx,"rgba(140,164,183,.32)","rgba(140,164,183,.015)"),pointBackgroundColor:"#8ca4b7",borderDash:[5,4],fill:true,yAxisID:"y1",order:1}
- ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:c.text}},y1:{beginAtZero:true,position:"right",ticks:{color:c.text},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:c.text}}}}});
+  {label:"Voltage (V)",data:[],borderColor:"#398bff",backgroundColor:chartGradient(vctx,"rgba(57,139,255,.30)","rgba(57,139,255,.015)"),pointBackgroundColor:"#398bff",pointBorderColor:"#ffffff",pointBorderWidth:1,pointRadius:1.5,fill:true,yAxisID:"y",borderWidth:2.6,order:2},
+  {label:"Current (A)",data:[],borderColor:"#ff9f43",backgroundColor:"transparent",pointBackgroundColor:"#ff9f43",pointBorderColor:"#fff1df",pointBorderWidth:1,pointRadius:2.5,pointHoverRadius:6,borderDash:[7,4],borderWidth:3,fill:false,yAxisID:"y1",order:1}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:"#398bff"},ticks:{...common.scales.y.ticks,color:"#398bff"}},y1:{beginAtZero:true,position:"right",ticks:{color:"#ff9f43"},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:"#ff9f43"}}}}});
  powerChart=new Chart(pctx,{type:"line",data:{labels:[],datasets:[
   {label:"Active power (W)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(pctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true}
  ]},options:common});
@@ -750,10 +741,8 @@ function update(d){
  updateBill(d);
  if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("physicalPotToggle"))){
   physicalPotEnabled=d.knobOn;
-  $("physicalPotToggle").textContent=d.knobOn?"TURN OFF":"TURN ON";
+  $("physicalPotToggle").textContent=d.knobOn?"TURN OFF PHYSICAL POTENTIOMETER":"TURN ON PHYSICAL POTENTIOMETER";
   $("physicalPotToggle").classList.toggle("secondary",!d.knobOn);
-  $("physicalPotMode").textContent=d.knobOn?"ON · PHYSICAL POT ACTIVE":"OFF · PUSHBUTTON MODE";
-  $("physicalPotState").textContent=d.knobOn?"ON · ESP32 reads the physical potentiometer on GPIO32 (180–240 V demo scale)":"OFF · GPIO32 pushbutton mode; ZMPT voltage sensor is used";
  }
  $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
  $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
@@ -764,13 +753,15 @@ function update(d){
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
   (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
  let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
- if(d.gasDetected===true)status="GAS ALERT · CHECK SYSTEM";
- else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
- else if(d.underVoltage===true)status="UNDERVOLTAGE ALERT";
- else if(d.overload===true)status="OVERLOAD ALERT";
+ const faultActive=(d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true);
+ if(d.gasDetected===true)status="GAS LEAKAGE DETECTED";
+ else if(d.overVoltage===true)status="OVER VOLTAGE";
+ else if(d.underVoltage===true)status="UNDER VOLTAGE";
+ else if(d.overload===true)status="OVERLOAD";
  else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
  $("systemStatus").textContent="SYSTEM STATUS · "+status;
- $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
+ $("systemStatus").style.borderLeftColor=faultActive?"var(--red)":"var(--green)";
+ $("systemStatus").style.color=faultActive?"var(--red)":"var(--green)";
  const mainOn=(d.relayOn===true);
  if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
@@ -841,11 +832,9 @@ async function togglePhysicalPot(){
  try{
   await db.ref(COMMANDS).update(next?{knobOn:true}:{knobOff:true});
   physicalPotEnabled=next;
-  button.textContent=next?"TURN OFF":"TURN ON";
+  button.textContent=next?"TURN OFF PHYSICAL POTENTIOMETER":"TURN ON PHYSICAL POTENTIOMETER";
   button.classList.toggle("secondary",!next);
-  $("physicalPotMode").textContent=next?"ON · PHYSICAL POT ACTIVE":"OFF · PUSHBUTTON MODE";
-  $("physicalPotState").textContent=next?"ON · ESP32 reads the physical potentiometer on GPIO32 (180–240 V demo scale)":"OFF · GPIO32 pushbutton mode; ZMPT voltage sensor is used";
- }catch(e){$("physicalPotState").textContent="COMMAND FAILED · "+e.message;}
+ }catch(e){alert("Potentiometer command failed: "+e.message);}
  finally{button.disabled=false;}
 }
 
