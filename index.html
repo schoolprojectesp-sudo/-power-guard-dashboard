@@ -492,6 +492,8 @@ function chartGradient(ctx,top,bottom){
 }
 function initCharts(){
  if(!window.Chart)return;
+ if(viChart){viChart.destroy();viChart=null;}
+ if(powerChart){powerChart.destroy();powerChart=null;}
  const c=chartTheme();
  const common={responsive:true,maintainAspectRatio:false,animation:{duration:250},interaction:{mode:"index",intersect:false},
   elements:{line:{tension:.42,borderWidth:2.4},point:{radius:0,hoverRadius:4,hitRadius:12}},
@@ -762,7 +764,7 @@ function update(d){
  $("systemStatus").textContent="SYSTEM STATUS · "+status;
  $("systemStatus").style.borderLeftColor=faultActive?"var(--red)":"var(--green)";
  $("systemStatus").style.color=faultActive?"var(--red)":"var(--green)";
- const mainOn=(d.relayOn===true);
+ const mainOn=(d.relayOn===true||d.relay1On===true);
  if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
@@ -774,7 +776,7 @@ async function setMainRelay(on){
  if(role!=="admin")return;
  const sw=$("mainRelaySwitch");
  if(sw.dataset.pending==="true")return;
- if(on&&(latest.gasDetected===true||latest.overload===true||latest.overVoltage===true)){
+ if(on&&(latest.gasDetected===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true)){
   sw.checked=false;
   $("adminMessage").textContent="Power restoration blocked while a protection alert is active.";
   return;
@@ -785,7 +787,7 @@ async function setMainRelay(on){
  const ok=await sendCommand({restorePower:on,cutPower:!on,ksebCutActive:!on},"MAIN relay "+(on?"ON":"OFF"));
  sw.dataset.pending="false";
  if(!ok)sw.checked=!on;
- sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true;
+ sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true;
 }
 async function resetEnergyCost(on){
  if(!on)return;
