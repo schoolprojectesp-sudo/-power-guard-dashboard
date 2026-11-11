@@ -805,4 +805,42 @@ async function sendCommand(payload,label){
   return false;
  }
 }
-async function returnToRoles(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$
+async function returnToRoles(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
+async function logout(){await returnToRoles();}
+function toggleEye(inputId, button){
+  const field=document.getElementById(inputId);
+  if(!field) return;
+  const show=field.type==='password';
+  field.type=show?'text':'password';
+  if(button){
+    button.setAttribute('aria-label',show?'Hide password':'Show password');
+    button.setAttribute('aria-pressed',show?'true':'false');
+  }
+}
+auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
+
+// Consumer switch enables the physical ESP32 potentiometer; no digital setpoint remains.
+let physicalPotEnabled=false;
+async function togglePhysicalPot(){
+ if(role!=="consumer")return;
+ const next=!physicalPotEnabled, button=$("physicalPotToggle");
+ const reminder = next
+  ? "Before enabling potentiometer mode, disconnect the pushbutton wire from GPIO32 and connect only the potentiometer wiper to GPIO32. Have you changed the connection?"
+  : "Before disabling potentiometer mode, disconnect the potentiometer wiper from GPIO32 and reconnect only the pushbutton to GPIO32. Have you changed the connection?";
+ if(!confirm(reminder)) return;
+ button.disabled=true;
+ try{
+  await db.ref(COMMANDS).update(next?{knobOn:true}:{knobOff:true});
+  physicalPotEnabled=next;
+  button.textContent=next?"TURN OFF PHYSICAL POTENTIOMETER":"TURN ON PHYSICAL POTENTIOMETER";
+  button.classList.toggle("secondary",!next);
+ }catch(e){alert("Potentiometer command failed: "+e.message);}
+ finally{button.disabled=false;}
+}
+
+let savedTheme="light";
+try{savedTheme=localStorage.getItem("powerGuardTheme")==="dark"?"dark":"light";}catch(e){}
+applyTheme(savedTheme);
+updateTariffClock();setInterval(updateTariffClock,1000);
+</script>
+</body></html>
