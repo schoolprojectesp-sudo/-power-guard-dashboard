@@ -21,7 +21,7 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}.pill{border:1px solid var(--line);border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px;white-space:nowrap}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{background:#07182a;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}.metric small{color:var(--muted)}.metric strong{display:block;font-size:25px;margin-top:8px;overflow-wrap:anywhere}
 .tariff{font-size:12px;color:var(--cyan);margin-top:8px;line-height:1.5}.status{border:1px solid var(--line);background:#07182a;border-radius:11px;padding:12px;color:var(--muted);font-size:13px}.ok{color:var(--green)!important}.bad{color:var(--red)!important}.warn{color:var(--amber)!important}
-.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:none}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:none}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
+.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:.2s}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:.2s}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
 .rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.role{padding:22px;border:1px solid var(--line);background:#07182a;border-radius:12px;text-align:center;cursor:pointer}.role:hover{border-color:var(--cyan);transform:translateY(-2px)}.role{transition:.2s;background:linear-gradient(145deg,#153c59,#252448)}.role:nth-child(2){background:linear-gradient(145deg,#45305f,#26304d)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}.actions button{flex:1;min-width:160px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 @media(min-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.analytics{grid-template-columns:1fr 1fr}.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:24px}.brand{font-size:32px}}@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:500px){body{padding:10px}.card{padding:15px}.grid,.rooms,.rolegrid{grid-template-columns:1fr}.brand{font-size:23px}.metric strong{font-size:22px}}
@@ -217,149 +217,6 @@ body:not(.dark-theme) button:not(.secondary){background:linear-gradient(135deg,#
 body.dark-theme .chartbox{height:290px;min-height:260px}
 @media(max-width:600px){.chartbox{height:270px;min-height:250px}.chartbox canvas{height:200px!important;max-height:200px!important}}
 
-
-/* FINAL MOBILE WIDTH + PASSWORD EYE + CHART FIXES */
-*{box-sizing:border-box}
-.tariff-current,.tariff-schedule,.analytics{width:100%;min-width:0}
-.tariff-current>div,.tariff-slot,.chartbox{min-width:0;max-width:100%;overflow:hidden}
-.tariff-current{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.tariff-current>div{padding:12px 10px}
-.tariff-current small{font-size:clamp(10px,2.7vw,12px);overflow-wrap:break-word}
-.tariff-current strong{font-size:clamp(15px,4vw,23px);line-height:1.25;overflow-wrap:anywhere;word-break:normal}
-.tariff-schedule{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.tariff-slot{padding:11px 9px;gap:7px}
-.tariff-slot span{font-size:clamp(9px,2.65vw,12px);line-height:1.35;overflow-wrap:anywhere}
-.tariff-slot b{font-size:clamp(11px,3vw,13px);letter-spacing:.35px}
-.tariff-slot strong{font-size:clamp(12px,3.35vw,17px);line-height:1.3;overflow-wrap:anywhere;word-break:normal}
-.chartbox{height:280px;min-height:250px;width:100%;position:relative;overflow:hidden}
-.analytics{grid-template-columns:minmax(0,1fr);}
-.chartbox canvas{display:block!important;width:100%!important;height:210px!important;max-height:210px!important}
-/* Password visibility control: plain neutral icon, no green button box */
-body:not(.dark-theme) .eye-btn,body:not(.dark-theme) .eye-btn:hover{
- background:transparent!important;border:0!important;box-shadow:none!important;color:#657383!important;
-}
-body:not(.dark-theme) .eye-btn svg{stroke:#657383!important}
-body.dark-theme .eye-btn,body.dark-theme .eye-btn:hover{background:transparent!important;border:0!important;box-shadow:none!important;color:#b7c8d9!important}
-body.dark-theme .eye-btn svg{stroke:#b7c8d9!important}
-@media(min-width:700px){.analytics{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:380px){.tariff-current,.tariff-schedule{gap:6px}.tariff-current>div{padding:10px 8px}.tariff-slot{padding:9px 7px}.tariff-slot strong{font-size:12px}}
-
-
-/* TARIFF CARDS: LONG FULL-WIDTH ROWS ON MOBILE */
-.tariff-current{
-  grid-template-columns:minmax(0,1fr)!important;
-  gap:10px!important;
-}
-.tariff-current>div{
-  width:100%;min-height:112px;padding:18px 20px!important;
-  display:flex;flex-direction:column;justify-content:center;gap:8px;
-}
-.tariff-current small{font-size:clamp(13px,3.5vw,16px)!important;line-height:1.4}
-.tariff-current strong{font-size:clamp(22px,5.5vw,29px)!important;line-height:1.25;overflow-wrap:anywhere}
-.tariff-schedule{
-  grid-template-columns:minmax(0,1fr)!important;
-  gap:10px!important;
-}
-.tariff-slot{
-  width:100%;min-height:112px;padding:16px 20px!important;
-  display:grid!important;grid-template-columns:minmax(0,1fr) auto;
-  grid-template-areas:"time time" "name rate";
-  align-items:center;column-gap:12px;row-gap:8px;
-}
-.tariff-slot span{grid-area:time;font-size:clamp(13px,3.5vw,16px)!important;line-height:1.35}
-.tariff-slot b{grid-area:name;font-size:clamp(14px,3.8vw,17px)!important;letter-spacing:.6px}
-.tariff-slot strong{grid-area:rate;text-align:right;font-size:clamp(19px,5vw,25px)!important;white-space:nowrap;overflow-wrap:normal}
-.tariff-slot.active{border-width:2px!important}
-/* Eye icon: transparent hit area, no box/border, soft green icon */
-.password-wrap .eye-btn,
-.password-wrap .eye-btn:hover,
-.password-wrap .eye-btn:focus,
-.password-wrap .eye-btn:active{
-  background:transparent!important;border:0!important;outline:0!important;
-  box-shadow:none!important;color:#9bcbb4!important;
-}
-.password-wrap .eye-btn svg{stroke:#9bcbb4!important;fill:none!important}
-.password-wrap .eye-btn:focus-visible{outline:2px solid #9bcbb4!important;outline-offset:2px;border-radius:50%}
-@media(max-width:380px){
- .tariff-current>div{min-height:100px;padding:14px 16px!important}
- .tariff-slot{min-height:100px;padding:13px 16px!important}
- .tariff-slot strong{font-size:18px!important}
-}
-
-
-/* FINAL PASSWORD EYE + GREEN ROLE LOGIN POLISH */
-.password-wrap{position:relative!important;width:100%!important}
-.password-wrap input{width:100%!important;padding-right:54px!important}
-.password-wrap .eye-btn,
-.password-wrap .eye-btn:hover,
-.password-wrap .eye-btn:focus,
-.password-wrap .eye-btn:active{
-  position:absolute!important;right:6px!important;top:50%!important;transform:translateY(-50%)!important;
-  width:38px!important;height:38px!important;padding:8px!important;
-  display:grid!important;place-items:center!important;
-  color:#79b99a!important;background:transparent!important;border:0!important;
-  outline:0!important;box-shadow:none!important;border-radius:50%!important;
-  cursor:pointer!important;z-index:5!important;
-}
-.password-wrap .eye-btn svg{width:21px!important;height:21px!important;stroke:#79b99a!important;fill:none!important;pointer-events:none!important}
-body.dark-theme .password-wrap .eye-btn,
-body.dark-theme .password-wrap .eye-btn:hover,
-body.dark-theme .password-wrap .eye-btn:focus,
-body.dark-theme .password-wrap .eye-btn:active{color:#8fd0aa!important;background:transparent!important;border:0!important;box-shadow:none!important}
-body.dark-theme .password-wrap .eye-btn svg{stroke:#8fd0aa!important}
-/* Second login / role selection: subtle green accent in both themes */
-body:not(.dark-theme) #roleScreen{background:linear-gradient(145deg,#ffffff 0%,#f1f8f4 100%)!important;border-color:#c8dfd1!important}
-body:not(.dark-theme) #roleScreen h2{color:#187b60!important}
-body:not(.dark-theme) #roleScreen .role{background:linear-gradient(135deg,#f0f8f3,#e5f2e9)!important;border:1px solid #bcd9c7!important;box-shadow:0 3px 12px #1b684512!important}
-body:not(.dark-theme) #roleScreen .role h3{color:#205b43!important}
-body:not(.dark-theme) #roleScreen .role p{color:#587365!important}
-body:not(.dark-theme) #rolePasswordArea{background:#edf7f0!important;border:1px solid #c5dfcd!important;border-radius:12px;padding:14px!important}
-body.dark-theme #roleScreen{background:linear-gradient(145deg,#102b28,#10243b 75%)!important;border-color:#28634f!important}
-body.dark-theme #roleScreen h2{color:#8fd0aa!important}
-body.dark-theme #roleScreen .role{background:linear-gradient(135deg,#123b32,#15334a)!important;border:1px solid #34765e!important;box-shadow:0 4px 15px #0004!important}
-body.dark-theme #roleScreen .role h3{color:#c4f0d4!important}
-body.dark-theme #roleScreen .role p{color:#b4d0c2!important}
-body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid #34765e!important;border-radius:12px;padding:14px!important}
-
-
-/* Final polish: narrower tariff cards, premium theme switch, larger navy charts */
-.tariff-current,.tariff-schedule{width:94%!important;max-width:900px!important;margin-left:auto!important;margin-right:auto!important}
-.tariff-current>div,.tariff-slot{border-radius:18px!important}
-.theme-toggle{min-width:112px!important;padding:10px 16px!important;border-radius:999px!important;border:1px solid #c8d5dc!important;background:linear-gradient(180deg,#ffffff,#edf2f5)!important;color:#294052!important;box-shadow:0 2px 7px #18304412!important;font-weight:700!important;letter-spacing:.2px}
-.theme-toggle:hover{background:#e7f2ed!important;border-color:#9bcbb4!important}
-body.dark-theme .theme-toggle{background:linear-gradient(180deg,#1d3449,#10243a)!important;color:#d8eee5!important;border-color:#42647b!important;box-shadow:0 2px 8px #0004!important}
-body.dark-theme .theme-toggle:hover{background:#1b463e!important;border-color:#5ba88d!important}
-.chartbox{height:430px!important;min-height:400px!important;padding:18px!important;border-radius:18px!important}
-.chartbox canvas{height:340px!important;max-height:340px!important}
-@media(max-width:600px){.chartbox{height:390px!important;min-height:370px!important}.chartbox canvas{height:300px!important;max-height:300px!important}.tariff-current,.tariff-schedule{width:92%!important}}
-@media(max-width:380px){.chartbox{height:360px!important;min-height:340px!important}.chartbox canvas{height:270px!important;max-height:270px!important}}
-/* Reference-inspired navy blue gradient area charts */
-
-body:not(.dark-theme) .password-wrap .eye-btn,body:not(.dark-theme) .password-wrap .eye-btn:hover,body:not(.dark-theme) .password-wrap .eye-btn:focus,body:not(.dark-theme) .password-wrap .eye-btn:active{background:transparent!important;border:0!important;box-shadow:none!important;color:#23845f!important}
-body:not(.dark-theme) .password-wrap .eye-btn svg{stroke:#23845f!important}
-
-/* Voltage setpoint interface — display-only simulator; no mains control output */
-.voltage-control{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--metric-bg);}
-.voltage-control-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.voltage-setpoint{font-size:clamp(30px,5vw,42px);font-weight:850;color:var(--text);letter-spacing:-1px}
-.voltage-slider{width:100%;accent-color:#25845f;margin:18px 0 8px}
-.voltage-limits{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px}
-.voltage-control .voltage-state{margin-top:12px;padding:11px 13px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:13px}
-.voltage-control .voltage-note{margin:10px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
-.voltage-control button{min-width:130px}
-body.dark-theme .voltage-control{background:#101d2d!important;border-color:#35485d!important}
-body.dark-theme .voltage-control .voltage-state{background:#0b1725!important;border-color:#35485d!important}
-/* Neutralize green-tinted surfaces in dark theme */
-body.dark-theme .ai-msg.bot{background:#172638!important;color:#dce7f2!important;border-color:#34495e!important}
-body.dark-theme .airesult{background:#172638!important;color:#dce7f2!important;border-color:#34495e!important;border-left-color:#6b8ba8!important}
-body.dark-theme #roleScreen{background:linear-gradient(145deg,#142236,#101b2b 75%)!important;border-color:#35485d!important}
-body.dark-theme #roleScreen .role{background:linear-gradient(135deg,#1a2c40,#172338)!important;border-color:#40536a!important;box-shadow:0 4px 15px #0004!important}
-body.dark-theme #roleScreen .role h3{color:#e0e9f2!important}
-body.dark-theme #roleScreen .role p{color:#aebdcd!important}
-body.dark-theme #rolePasswordArea{background:#142236!important;border-color:#40536a!important}
-body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#647b91!important}
-
-
 </style>
 </head>
 <body><main class="wrap">
@@ -396,7 +253,7 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
   <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><div class="header-actions"><span class="pill" id="rolePill">CONSUMER</span><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div></div>
   <div id="systemStatus" class="status" style="margin-top:16px;border-left:5px solid var(--amber);font-size:16px;font-weight:800">SYSTEM STATUS · CONNECTING…</div>
   <p id="connection" class="muted" style="margin-top:8px">Connecting to Firebase…</p>
-  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for device data…</strong></p>
+  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for ESP32 data…</strong></p>
   <div class="grid" style="margin-top:13px">
    <div class="metric"><small>VOLTAGE</small><strong id="voltage">— V</strong></div>
    <div class="metric"><small>CURRENT</small><strong id="current">— A</strong></div>
@@ -405,7 +262,7 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
    <div class="metric"><small>POWER FACTOR</small><strong id="pf">—</strong></div>
    <div class="metric"><small>FREQUENCY</small><strong id="frequency">— Hz</strong></div>
    <div class="metric"><small>ENERGY CONSUMED</small><strong id="energy">— Wh</strong></div>
-   <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong><div id="tariff" class="tariff">Tariff: waiting for device…</div></div>
+   <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong><div id="tariff" class="tariff">Tariff: waiting for ESP32…</div></div>
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
@@ -421,7 +278,7 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
   <h2>KSEB TIME-OF-DAY TARIFF & BILL ESTIMATE</h2>
   <div class="tariff-current">
    <div><small>ACTIVE TARIFF ZONE</small><strong id="billZone">—</strong></div>
-   <div class="esp32-rate-card"><small>TARIFF RATE</small><strong id="billRate">—</strong></div>
+   <div class="esp32-rate-card"><small>ESP32 TARIFF RATE</small><strong id="billRate">—</strong></div>
    <div><small>CURRENT IST TIME</small><strong id="tariffClock">—</strong></div>
   </div>
   <div class="tariff-schedule">
@@ -450,12 +307,9 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
  </div>
  <div id="adminActions" class="card hidden">
   <h2>KSEB ADMIN CONTROLS</h2>
-  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
+  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
   <div class="room"><div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label></div>
   <p id="adminMessage" class="muted"></p>
- </div>
- <div class="card" id="physicalPotCard">
-  <div class="actions" style="justify-content:center"><button id="physicalPotToggle" type="button" class="secondary" onclick="togglePhysicalPot()">TURN ON PHYSICAL POTENTIOMETER</button></div>
  </div>
  <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
@@ -478,9 +332,8 @@ const LIVE="powerGuard/live", COMMANDS="powerGuard/commands";
 const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
 
 let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false;
-let viChart=null, powerChart=null, historyRows=[], liveChartRows=[];
-const HISTORY_LIMIT=60, LIVE_CHART_LIMIT=120;
-let liveChartTimer=null;
+let viChart=null, powerChart=null, historyRows=[];
+const HISTORY_LIMIT=60;
 function chartTheme(){
  const dark=document.body.classList.contains("dark-theme");
  return dark
@@ -492,8 +345,6 @@ function chartGradient(ctx,top,bottom){
 }
 function initCharts(){
  if(!window.Chart)return;
- if(viChart){viChart.destroy();viChart=null;}
- if(powerChart){powerChart.destroy();powerChart=null;}
  const c=chartTheme();
  const common={responsive:true,maintainAspectRatio:false,animation:{duration:250},interaction:{mode:"index",intersect:false},
   elements:{line:{tension:.42,borderWidth:2.4},point:{radius:0,hoverRadius:4,hitRadius:12}},
@@ -503,12 +354,12 @@ function initCharts(){
    y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid},border:{display:false}}}};
  const vctx=$("viChart").getContext("2d"),pctx=$("powerChart").getContext("2d");
  viChart=new Chart(vctx,{type:"line",data:{labels:[],datasets:[
-  {label:"Voltage (V)",data:[],borderColor:"#36454F",backgroundColor:chartGradient(vctx,"rgba(54,69,79,.34)","rgba(54,69,79,.025)"),pointBackgroundColor:"#36454F",pointBorderColor:"#ffffff",pointBorderWidth:1,pointRadius:1.5,fill:true,yAxisID:"y",borderWidth:3,order:2},
-  {label:"Current (A)",data:[],borderColor:"#9AA7B2",backgroundColor:chartGradient(vctx,"rgba(154,167,178,.38)","rgba(154,167,178,.025)"),pointBackgroundColor:"#9AA7B2",pointBorderColor:"#ffffff",pointBorderWidth:1,pointRadius:2.5,pointHoverRadius:6,borderWidth:3.2,fill:true,yAxisID:"y1",order:1}
- ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:"#36454F"},ticks:{...common.scales.y.ticks,color:"#36454F"}},y1:{beginAtZero:true,position:"right",ticks:{color:"#9AA7B2"},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:"#9AA7B2"}}}}});
+  {label:"Voltage (V)",data:[],borderColor:"#347fbd",backgroundColor:chartGradient(vctx,"rgba(52,127,189,.38)","rgba(52,127,189,.015)"),pointBackgroundColor:"#347fbd",fill:true,yAxisID:"y",order:2},
+  {label:"Current (A)",data:[],borderColor:"#d99a45",backgroundColor:chartGradient(vctx,"rgba(217,154,69,.24)","rgba(217,154,69,.01)"),pointBackgroundColor:"#d99a45",fill:true,yAxisID:"y1",order:1}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:c.text}},y1:{beginAtZero:true,max:2,position:"right",ticks:{color:c.text},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:c.text}}}}});
  powerChart=new Chart(pctx,{type:"line",data:{labels:[],datasets:[
-  {label:"Active power (W)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(pctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true}
- ]},options:common});
+  {label:"Active power (W)",data:[],borderColor:"#278b70",backgroundColor:chartGradient(pctx,"rgba(39,139,112,.38)","rgba(39,139,112,.015)"),pointBackgroundColor:"#278b70",fill:true}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,max:200}}}});
 }
 function refreshChartTheme(){
  if(!viChart||!powerChart)return;
@@ -548,7 +399,7 @@ function renderHistory(){
  powerChart.data.datasets[0].data=rows.map(r=>r.power);
  viChart.update();powerChart.update();
  requestAnimationFrame(()=>{viChart.resize();powerChart.resize();});
- $("historyStatus").textContent=(rows.length?"Saved Firebase history: "+rows.length+" records. ":"No saved Firebase history records yet. ")+"Live chart samples update every 1 second while this dashboard is open.";
+ $("historyStatus").textContent=rows.length?"Showing "+rows.length+" saved Firebase history records (oldest to newest).":"No valid records found at powerGuard/history yet.";
 }
 function startHistory(){
  if(historyRef)historyRef.off();
@@ -561,28 +412,9 @@ function startHistory(){
    const timestamp=historyTimestamp(d||{});
    return {_key:key,timestamp,voltage:historyNumber(d||{},"voltage","voltageV","v"),current:historyNumber(d||{},"current","currentA","amps","i"),power:historyNumber(d||{},"power","activePower","watts","p")};
   }).filter(r=>Number.isFinite(r.timestamp)).sort((a,b)=>a.timestamp-b.timestamp);
-  requestAnimationFrame(()=>{renderHistory();});
+  renderHistory();
  },e=>{$("historyStatus").textContent="Firebase history error: "+e.message;});
 }
-function startLiveChartSampling(){
- if(liveChartTimer)clearInterval(liveChartTimer);
- liveChartRows=[];
- liveChartTimer=setInterval(()=>{
-  if(!latest||!Object.keys(latest).length||!viChart||!powerChart)return;
-  const voltage=historyNumber(latest,"voltage","voltageV","v");
-  const current=historyNumber(latest,"current","currentA","amps","i");
-  const power=historyNumber(latest,"power","activePower","watts","p");
-  if(voltage===null&&current===null&&power===null)return;
-  const now=Date.now();
-  liveChartRows.push({timestamp:now,voltage,current,power});
-  if(liveChartRows.length>LIVE_CHART_LIMIT)liveChartRows.shift();
-  const labels=liveChartRows.map(r=>new Intl.DateTimeFormat("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(new Date(r.timestamp)));
-  viChart.data.labels=labels;viChart.data.datasets[0].data=liveChartRows.map(r=>r.voltage);viChart.data.datasets[1].data=liveChartRows.map(r=>r.current);
-  powerChart.data.labels=labels;powerChart.data.datasets[0].data=liveChartRows.map(r=>r.power);
-  viChart.update("none");powerChart.update("none");
- },1000);
-}
-
 const KSEB_TOD_RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
 function updateTariffClock(){
  const now=new Date();
@@ -641,7 +473,7 @@ function verifyRolePassword(){
  if($("rolePassword").value!==expected){$("passError").textContent="Incorrect "+(role==="admin"?"KSEB ADMIN":"CONSUMER")+" password. Check the spelling and try again.";return;}
  enterRole(role);
 }
-async function emailLogout(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(historyRef){historyRef.off();historyRef=null;}await auth.signOut();$("emailPassword").value="";$("emailError").textContent="";show("loginScreen");}
+async function emailLogout(){if(liveRef){liveRef.off();liveRef=null;}if(historyRef){historyRef.off();historyRef=null;}await auth.signOut();$("emailPassword").value="";$("emailError").textContent="";show("loginScreen");}
 
 
 // Free local assistant: all responses are generated in this browser from live Firebase readings.
@@ -660,12 +492,11 @@ function sendAIQuestion(){
 function answerPowerGuardQuestion(question,d){
  const q=question.toLowerCase();
  const num=(v,n=2)=>v===null||v===undefined||v===""||!Number.isFinite(Number(v))?"not available":Number(v).toFixed(n);
- const gas=d.gasDetected===true, overload=d.overload===true, ov=d.overVoltage===true, uv=d.underVoltage===true;
+ const gas=d.gasDetected===true, overload=d.overload===true, ov=d.overVoltage===true;
  if(/hello|hi\b|hey|good morning/.test(q)) return "Hello! I can check your latest Power Guard readings, explain alerts and identify which dashboard controls do what. Try: What is the system status? How much energy is recorded? Is MAIN ON?";
  if(/help|what can you do|commands|questions/.test(q)) return "Ask me about live voltage, current, active/apparent power, power factor, frequency, energy, estimated cost, tariff zone, gas sensor, overload, overvoltage, system status or relay states. I can also explain whether a reading is current or accumulated.";
  if(/gas|mq.?6|leak/.test(q)) return "Gas sensor status: "+(gas?"ALERT reported":""+(d.gasDetected===false?"Normal according to the current sensor flag":"not available"))+". MQ-6 raw reading: "+(d.gasRaw??"not available")+". This MQ-6 prototype is not a certified gas alarm; do not use it as a substitute for a certified detector.";
- if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your device firmware.";
- if(/under.?voltage|low voltage/.test(q)) return "Undervoltage flag: "+(uv?"ACTIVE":d.underVoltage===false?"not active":"not available")+". Voltage: "+num(d.voltage,1)+" V.";
+ if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your ESP32 code.";
  if(/over.?voltage|high voltage|voltage fault/.test(q)) return "Overvoltage flag: "+(ov?"ACTIVE":d.overVoltage===false?"not active":"not available")+". Measured voltage: "+num(d.voltage,1)+" V.";
  if(/voltage|volt/.test(q)) return "Latest voltage reading: "+num(d.voltage,1)+" V.";
  if(/current|amp|ampere/.test(q)) return "Latest current reading: "+num(d.current)+" A.";
@@ -673,17 +504,17 @@ function answerPowerGuardQuestion(question,d){
  if(/frequency|hertz|hz/.test(q)) return "Latest frequency reading: "+num(d.frequency)+" Hz.";
  if(/apparent power|\bva\b/.test(q)) return "Latest apparent power: "+num(d.apparentPower)+" VA.";
  if(/watt|active power|\bpower\b/.test(q)) return "Latest active power: "+num(d.power)+" W.";
- if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /energy|consum|unit|kwh|use|used|usage/.test(q)) { if(d.dailyEnergyWh!==undefined) return "Energy recorded today: "+num(d.dailyEnergyWh,3)+" Wh ("+(Number(d.dailyEnergyWh)/1000).toFixed(6)+" kWh)."; return "The dashboard currently receives accumulated energy ("+num(d.energyWh,3)+" Wh), not a separate daily counter. This value is since the last energy reset or firmware counter start; it does not prove the total for today unless the device resets it daily."; }
- if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the device counter, usually since its last reset.";
- if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const z=String(d.tariffZone||"").toUpperCase(),r=KSEB_TOD_RATES[z];return "Calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(z||"not available")+". Display tariff rate: "+(r!==undefined?"₹"+r.toFixed(2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill. The device firmware must use the same rates for the accumulated cost to match.";}
+ if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /energy|consum|unit|kwh|use|used|usage/.test(q)) { if(d.dailyEnergyWh!==undefined) return "Energy recorded today: "+num(d.dailyEnergyWh,3)+" Wh ("+(Number(d.dailyEnergyWh)/1000).toFixed(6)+" kWh)."; return "The dashboard currently receives accumulated energy ("+num(d.energyWh,3)+" Wh), not a separate daily counter. This value is since the last energy reset or firmware counter start; it does not prove the total for today unless the ESP32 resets it daily."; }
+ if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the ESP32 counter, usually since its last reset.";
+ if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const z=String(d.tariffZone||"").toUpperCase(),r=KSEB_TOD_RATES[z];return "ESP32-calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(z||"not available")+". Display tariff rate: "+(r!==undefined?"₹"+r.toFixed(2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill. The ESP32 firmware must use the same rates for the accumulated cost to match.";}
  if(/main relay|main switch|main output|room switch|which switch|relay|room|load|supply/.test(q)){
   const main=(d.relay1On===true||d.relayOn===true)?"ON":(d.relay1On===false||d.relayOn===false)?"OFF":"not reported";
   if(/kseb|admin|main switch|main relay|which switch/.test(q))return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). The RESET ENERGY & COST switch sends the energy/cost reset command. Individual room switches are not shown in the KSEB dashboard.";
-  return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the device publishes them. These are reported states, not independent proof of physical contact position.";
+  return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the ESP32 publishes them. These are reported states, not independent proof of physical contact position.";
  }
  if(/status|condition|healthy|normal|problem|alert/.test(q)){
-  const issues=[]; if(gas)issues.push("gas alert"); if(ov)issues.push("overvoltage"); if(uv)issues.push("undervoltage"); if(overload)issues.push("overload");
-  return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the device has not published that field.";
+  const issues=[]; if(gas)issues.push("gas alert"); if(overload)issues.push("overload"); if(ov)issues.push("overvoltage");
+  return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the ESP32 has not published that field.";
  }
  if(/thank|thanks/.test(q)) return "You're welcome. Power Guard is using its free local smart assistant; no external AI service is connected.";
  return "I could not match that question to a live Power Guard value. Try asking more specifically, for example: What is the voltage now? How much energy since reset? Why is the system in alert? Is the MAIN relay ON? What does power factor mean?";
@@ -693,11 +524,10 @@ function enterRole(r){
  role=r; $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
  $("adminActions").classList.toggle("hidden",r!=="admin");
  $("consumerRooms").classList.toggle("hidden",r==="admin");
- $("physicalPotCard").classList.toggle("hidden",r!=="consumer");
- show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); initCharts(); startHistory(); startLive(); startLiveChartSampling();
+ show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); startHistory(); startLive();
 }
 function renderRooms(){
- $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label></div>`).join("");
+ $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for ESP32…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label></div>`).join("");
  updateConsumerRelayLock();
 }
 function updateConsumerRelayLock(){
@@ -728,7 +558,7 @@ function startLive(){
  if(liveRef)liveRef.off();
  liveRef=db.ref(LIVE);
  liveRef.on("value",snap=>{
-  const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the device Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR DEVICE DATA";return;}
+  const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the ESP32 Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR ESP32 DATA";return;}
   latest=d; $("connection").textContent="LIVE · Firebase data received"; $("connection").className="muted ok";
   updateLatestUpdateTime();
   update(d);
@@ -741,11 +571,6 @@ function updateLatestUpdateTime(){
 }
 function update(d){
  updateBill(d);
- if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("physicalPotToggle"))){
-  physicalPotEnabled=d.knobOn;
-  $("physicalPotToggle").textContent=d.knobOn?"TURN OFF PHYSICAL POTENTIOMETER":"TURN ON PHYSICAL POTENTIOMETER";
-  $("physicalPotToggle").classList.toggle("secondary",!d.knobOn);
- }
  $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
  $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
  $("pf").textContent=fmt(d.powerFactor,2); $("frequency").textContent=fmt(d.frequency,2)+" Hz";
@@ -755,17 +580,14 @@ function update(d){
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
   (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
  let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
- const faultActive=(d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true);
- if(d.gasDetected===true)status="GAS LEAKAGE DETECTED";
- else if(d.overVoltage===true)status="OVER VOLTAGE";
- else if(d.underVoltage===true)status="UNDER VOLTAGE";
- else if(d.overload===true)status="OVERLOAD";
+ if(d.gasDetected===true)status="GAS ALERT · CHECK SYSTEM";
+ else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
+ else if(d.overload===true)status="OVERLOAD ALERT";
  else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
  $("systemStatus").textContent="SYSTEM STATUS · "+status;
- $("systemStatus").style.borderLeftColor=faultActive?"var(--red)":"var(--green)";
- $("systemStatus").style.color=faultActive?"var(--red)":"var(--green)";
- const mainOn=(d.relayOn===true||d.relay1On===true);
- if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true; }
+ $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
+ const mainOn=(d.relayOn===true);
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
   const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
@@ -776,7 +598,7 @@ async function setMainRelay(on){
  if(role!=="admin")return;
  const sw=$("mainRelaySwitch");
  if(sw.dataset.pending==="true")return;
- if(on&&(latest.gasDetected===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true)){
+ if(on&&(latest.gasDetected===true||latest.overload===true||latest.overVoltage===true)){
   sw.checked=false;
   $("adminMessage").textContent="Power restoration blocked while a protection alert is active.";
   return;
@@ -787,7 +609,7 @@ async function setMainRelay(on){
  const ok=await sendCommand({restorePower:on,cutPower:!on,ksebCutActive:!on},"MAIN relay "+(on?"ON":"OFF"));
  sw.dataset.pending="false";
  if(!ok)sw.checked=!on;
- sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true;
+ sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true;
 }
 async function resetEnergyCost(on){
  if(!on)return;
@@ -798,8 +620,8 @@ async function resetEnergyCost(on){
 async function sendCommand(payload,label){
  try{
   await db.ref(COMMANDS).update(payload);
-  if($("relayMessage"))$("relayMessage").textContent=label+" command sent. Waiting for device confirmation.";
-  if($("adminMessage"))$("adminMessage").textContent=label+" command sent. Waiting for device confirmation.";
+  if($("relayMessage"))$("relayMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
+  if($("adminMessage"))$("adminMessage").textContent=label+" command sent. Waiting for ESP32 confirmation.";
   return true;
  }catch(e){
   if($("relayMessage"))$("relayMessage").textContent="Command failed: "+e.message;
@@ -807,39 +629,9 @@ async function sendCommand(payload,label){
   return false;
  }
 }
-async function returnToRoles(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
+async function returnToRoles(){if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
 async function logout(){await returnToRoles();}
-function toggleEye(inputId, button){
-  const field=document.getElementById(inputId);
-  if(!field) return;
-  const show=field.type==='password';
-  field.type=show?'text':'password';
-  if(button){
-    button.setAttribute('aria-label',show?'Hide password':'Show password');
-    button.setAttribute('aria-pressed',show?'true':'false');
-  }
-}
 auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
-
-// Consumer switch enables the physical ESP32 potentiometer; no digital setpoint remains.
-let physicalPotEnabled=false;
-async function togglePhysicalPot(){
- if(role!=="consumer")return;
- const next=!physicalPotEnabled, button=$("physicalPotToggle");
- const reminder = next
-  ? "Before enabling potentiometer mode, disconnect the pushbutton wire from GPIO32 and connect only the potentiometer wiper to GPIO32. Have you changed the connection?"
-  : "Before disabling potentiometer mode, disconnect the potentiometer wiper from GPIO32 and reconnect only the pushbutton to GPIO32. Have you changed the connection?";
- if(!confirm(reminder)) return;
- button.disabled=true;
- try{
-  await db.ref(COMMANDS).update(next?{knobOn:true}:{knobOff:true});
-  physicalPotEnabled=next;
-  button.textContent=next?"TURN OFF PHYSICAL POTENTIOMETER":"TURN ON PHYSICAL POTENTIOMETER";
-  button.classList.toggle("secondary",!next);
- }catch(e){alert("Potentiometer command failed: "+e.message);}
- finally{button.disabled=false;}
-}
-
 let savedTheme="light";
 try{savedTheme=localStorage.getItem("powerGuardTheme")==="dark"?"dark":"light";}catch(e){}
 applyTheme(savedTheme);
