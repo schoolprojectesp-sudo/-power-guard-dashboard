@@ -448,6 +448,10 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
   <div class="top"><h2 style="margin:0">ROOM RELAYS</h2></div>
   <div id="roomControls" class="rooms" style="margin-top:13px"></div>
    <div class="room" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
+    <div><b>GAS SENSOR RESET</b><small id="gasResetState">Available when a gas alert is active</small></div>
+    <button id="gasResetButton" type="button" class="secondary" onclick="requestGasReset()">RESET GAS</button>
+   </div>
+   <div class="room" style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
     <b>VOLTAGE DEMO</b>
     <label class="switch"><input type="checkbox" id="physicalPotToggle" onchange="togglePhysicalPot()"><span class="track"></span></label>
    </div>
@@ -753,6 +757,9 @@ function update(d){
  $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,2);
  $("costBaseline").textContent="Cost baseline: "+fmt(Number(d.costBaselineWh)||0,3)+" Wh";
  $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
+  const gasBtn=$("gasResetButton");
+  if(gasBtn)gasBtn.disabled=!(d.gasDetected===true);
+  if($("gasResetState"))$("gasResetState").textContent=d.gasDetected===true?"Gas alert active · reset after checking the sensor":"No active gas alert";
  const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(), rate=KSEB_TOD_RATES[zone];
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
   (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
@@ -765,14 +772,12 @@ function update(d){
  $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
  protectionLock=(d.gasDetected===true||d.overload===true||d.overVoltage===true||d.underVoltage===true);
   if(role==="consumer")updateConsumerRelayLock();
-  protectionLock=(d.gasDetected===true||d.overload===true||d.overVoltage===true||d.underVoltage===true);
-  if(role==="consumer")updateConsumerRelayLock();
   const mainOn=(d.relayOn===true);
  if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
   const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
-  const sw=$("r"+i), label=$("r"+i+"State"); if(sw){if(sw.dataset.pending!=="true")sw.checked=val;sw.disabled=ksebCutActive||sw.dataset.pending==="true";} if(label)label.textContent=val?"ON":"OFF";
+  const sw=$("r"+i), label=$("r"+i+"State"); if(sw){if(sw.dataset.pending!=="true")sw.checked=val;sw.disabled=ksebCutActive||protectionLock||sw.dataset.pending==="true";} if(label)label.textContent=val?"ON":"OFF";
  }}
 }
 async function setMainRelay(on){
@@ -830,6 +835,18 @@ auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}})
 
 // Consumer switch enables the physical ESP32 potentiometer; no digital setpoint remains.
 let physicalPotEnabled=false;
+async function requestGasReset(){
+ if(role!=="consumer")return;
+ const b=$("gasResetButton"); if(b)b.disabled=true;
+ try{
+  await db.ref(COMMANDS).update({gasReset:true});
+  if($("gasResetState"))$("gasResetState").textContent="Reset request sent · waiting for sensor-clear confirmation";
+ }catch(e){
+  if($("gasResetState"))$("gasResetState").textContent="Could not send reset request: "+e.message;
+  if(b)b.disabled=false;
+ }
+}
+
 async function togglePhysicalPot(){
  if(role!=="consumer")return;
  const button=$("physicalPotToggle"), next=button.checked;
