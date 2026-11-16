@@ -447,11 +447,11 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
  <div id="consumerRooms" class="card">
   <div class="top"><h2 style="margin:0">ROOM RELAYS</h2></div>
   <div id="roomControls" class="rooms" style="margin-top:13px"></div>
-   <div class="room" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
-    <div><b>GAS SENSOR RESET</b><small id="gasResetState">Available when a gas alert is active</small></div>
-    <button id="gasResetButton" type="button" class="secondary" onclick="requestGasReset()">RESET GAS</button>
+   <div class="room" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div><b>GAS SENSOR RESET</b><small id="gasResetState">Acknowledge alert; output stays OFF until sensor is stable</small></div>
+    <button class="secondary" id="gasResetButton" type="button" onclick="requestGasReset()">RESET GAS</button>
    </div>
-   <div class="room" style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
+   <div class="room" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
     <b>VOLTAGE DEMO</b>
     <label class="switch"><input type="checkbox" id="physicalPotToggle" onchange="togglePhysicalPot()"><span class="track"></span></label>
    </div>
@@ -484,7 +484,7 @@ const auth=firebase.auth(), db=firebase.database();
 const LIVE="powerGuard/live", COMMANDS="powerGuard/commands";
 const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
 
-let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false, protectionLock=false;
+let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false;
 let viChart=null, powerChart=null, historyRows=[], liveChartRows=[];
 const HISTORY_LIMIT=60, LIVE_CHART_LIMIT=120;
 let liveChartTimer=null;
@@ -707,8 +707,8 @@ function renderRooms(){
  updateConsumerRelayLock();
 }
 function updateConsumerRelayLock(){
- for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive||protectionLock);}
- if($("relayMessage"))$("relayMessage").textContent=protectionLock?"CONTROLS LOCKED · PROTECTION FAULT ACTIVE":(ksebCutActive?"KSEB ADMIN has disconnected the main supply. Consumer relay controls are locked until KSEB restores power.":"Consumer relay controls are available.");
+ for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive);}
+ $("relayMessage").textContent=ksebCutActive?"KSEB ADMIN has disconnected the main supply. Consumer relay controls are locked until KSEB restores power.":"Consumer relay controls are available.";
 }
 function watchKsebCutState(){
  if(cutRef)cutRef.off();
@@ -716,7 +716,7 @@ function watchKsebCutState(){
  cutRef.on("value",snap=>{ksebCutActive=snap.val()===true;updateConsumerRelayLock();});
 }
 async function setConsumerRelay(channel,on){
- if(role!=="consumer"||ksebCutActive||channel<1||channel>6||(protectionLock&&on))return;
+ if(role!=="consumer"||ksebCutActive||channel<1||channel>6)return;
  const sw=$("r"+channel);
  if(!sw||sw.dataset.pending==="true")return;
  sw.dataset.pending="true";
@@ -757,34 +757,32 @@ function update(d){
  $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,2);
  $("costBaseline").textContent="Cost baseline: "+fmt(Number(d.costBaselineWh)||0,3)+" Wh";
  $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
-  const gasBtn=$("gasResetButton");
-  if(gasBtn)gasBtn.disabled=!(d.gasDetected===true);
-  if($("gasResetState"))$("gasResetState").textContent=d.gasDetected===true?"Gas alert active · reset after checking the sensor":"No active gas alert";
  const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(), rate=KSEB_TOD_RATES[zone];
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
   (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
  let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
- if(d.gasDetected===true)status="GAS ALERT · CHECK SYSTEM";
+ if(d.gasDetected===true || d.gasAcknowledged===true)status="GAS ALERT · CHECK SYSTEM";
  else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
+ else if(d.underVoltage===true)status="UNDERVOLTAGE ALERT";
  else if(d.overload===true)status="OVERLOAD ALERT";
  else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
  $("systemStatus").textContent="SYSTEM STATUS · "+status;
- $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
- protectionLock=(d.gasDetected===true||d.overload===true||d.overVoltage===true||d.underVoltage===true);
-  if(role==="consumer")updateConsumerRelayLock();
-  const mainOn=(d.relayOn===true);
- if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
+ $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.gasAcknowledged===true||d.overVoltage===true||d.underVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
+ const gasBtn=$("gasResetButton"); if(gasBtn){gasBtn.disabled=!(d.gasDetected===true);gasBtn.textContent=d.gasAcknowledged===true?"WAIT CLEAR":(d.gasDetected===true?"RESET GAS":"GAS CLEAR");}
+ const gasState=$("gasResetState"); if(gasState)gasState.textContent=d.gasDetected===true?"Gas alert active · acknowledge to begin stable-clear check":(d.gasAcknowledged===true?"Acknowledged · waiting for stable sensor clear":"No active gas alert");
+ const mainOn=(d.relayOn===true);
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.gasAcknowledged===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
   const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
-  const sw=$("r"+i), label=$("r"+i+"State"); if(sw){if(sw.dataset.pending!=="true")sw.checked=val;sw.disabled=ksebCutActive||protectionLock||sw.dataset.pending==="true";} if(label)label.textContent=val?"ON":"OFF";
+  const sw=$("r"+i), label=$("r"+i+"State"); if(sw){if(sw.dataset.pending!=="true")sw.checked=val;sw.disabled=ksebCutActive||sw.dataset.pending==="true";} if(label)label.textContent=val?"ON":"OFF";
  }}
 }
 async function setMainRelay(on){
  if(role!=="admin")return;
  const sw=$("mainRelaySwitch");
  if(sw.dataset.pending==="true")return;
- if(on&&(latest.gasDetected===true||latest.overload===true||latest.overVoltage===true)){
+ if(on&&(latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true)){
   sw.checked=false;
   $("adminMessage").textContent="Power restoration blocked while a protection alert is active.";
   return;
@@ -795,7 +793,7 @@ async function setMainRelay(on){
  const ok=await sendCommand({restorePower:on,cutPower:!on,ksebCutActive:!on},"MAIN relay "+(on?"ON":"OFF"));
  sw.dataset.pending="false";
  if(!ok)sw.checked=!on;
- sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true;
+ sw.disabled=latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true;
 }
 async function resetEnergyOnly(on){
  if(!on)return;
@@ -808,6 +806,14 @@ async function resetCostOnly(on){
  if(!confirm("Reset cost to ₹0 while keeping the energy reading unchanged? New cost is calculated only from energy used after this reset.")){$("resetCostSwitch").checked=false;return;}
  await sendCommand({resetCost:true},"Cost reset");
  setTimeout(()=>{$("resetCostSwitch").checked=false;},700);
+}
+async function requestGasReset(){
+ if(role!=="consumer")return;
+ const b=$("gasResetButton"); if(!b || b.disabled)return;
+ if(!confirm("Acknowledge the gas alert? The MAIN output will remain OFF until the sensor reports a stable clear condition."))return;
+ b.disabled=true; b.textContent="SENDING…";
+ const ok=await sendCommand({gasReset:true},"Gas sensor reset");
+ if(!ok){b.disabled=false;b.textContent="RESET GAS";}
 }
 async function sendCommand(payload,label){
  try{
@@ -835,18 +841,6 @@ auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}})
 
 // Consumer switch enables the physical ESP32 potentiometer; no digital setpoint remains.
 let physicalPotEnabled=false;
-async function requestGasReset(){
- if(role!=="consumer")return;
- const b=$("gasResetButton"); if(b)b.disabled=true;
- try{
-  await db.ref(COMMANDS).update({gasReset:true});
-  if($("gasResetState"))$("gasResetState").textContent="Reset request sent · waiting for sensor-clear confirmation";
- }catch(e){
-  if($("gasResetState"))$("gasResetState").textContent="Could not send reset request: "+e.message;
-  if(b)b.disabled=false;
- }
-}
-
 async function togglePhysicalPot(){
  if(role!=="consumer")return;
  const button=$("physicalPotToggle"), next=button.checked;
