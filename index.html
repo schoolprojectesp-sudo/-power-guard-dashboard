@@ -480,7 +480,7 @@ const auth=firebase.auth(), db=firebase.database();
 const LIVE="powerGuard/live", COMMANDS="powerGuard/commands";
 const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
 
-let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false;
+let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false, protectionLock=false;
 let viChart=null, powerChart=null, historyRows=[], liveChartRows=[];
 const HISTORY_LIMIT=60, LIVE_CHART_LIMIT=120;
 let liveChartTimer=null;
@@ -703,8 +703,8 @@ function renderRooms(){
  updateConsumerRelayLock();
 }
 function updateConsumerRelayLock(){
- for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive);}
- $("relayMessage").textContent=ksebCutActive?"KSEB ADMIN has disconnected the main supply. Consumer relay controls are locked until KSEB restores power.":"Consumer relay controls are available.";
+ for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive||protectionLock);}
+ if($("relayMessage"))$("relayMessage").textContent=protectionLock?"CONTROLS LOCKED · PROTECTION FAULT ACTIVE":(ksebCutActive?"KSEB ADMIN has disconnected the main supply. Consumer relay controls are locked until KSEB restores power.":"Consumer relay controls are available.");
 }
 function watchKsebCutState(){
  if(cutRef)cutRef.off();
@@ -712,7 +712,7 @@ function watchKsebCutState(){
  cutRef.on("value",snap=>{ksebCutActive=snap.val()===true;updateConsumerRelayLock();});
 }
 async function setConsumerRelay(channel,on){
- if(role!=="consumer"||ksebCutActive||channel<1||channel>6)return;
+ if(role!=="consumer"||ksebCutActive||channel<1||channel>6||(protectionLock&&on))return;
  const sw=$("r"+channel);
  if(!sw||sw.dataset.pending==="true")return;
  sw.dataset.pending="true";
@@ -763,8 +763,12 @@ function update(d){
  else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
  $("systemStatus").textContent="SYSTEM STATUS · "+status;
  $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
- const mainOn=(d.relayOn===true);
- if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true; }
+ protectionLock=(d.gasDetected===true||d.overload===true||d.overVoltage===true||d.underVoltage===true);
+  if(role==="consumer")updateConsumerRelayLock();
+  protectionLock=(d.gasDetected===true||d.overload===true||d.overVoltage===true||d.underVoltage===true);
+  if(role==="consumer")updateConsumerRelayLock();
+  const mainOn=(d.relayOn===true);
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
   const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
