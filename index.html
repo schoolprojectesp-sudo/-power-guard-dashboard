@@ -405,15 +405,12 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
    <div class="metric"><small>POWER FACTOR</small><strong id="pf">—</strong></div>
    <div class="metric"><small>FREQUENCY</small><strong id="frequency">— Hz</strong></div>
    <div class="metric"><small>ENERGY CONSUMED</small><strong id="energy">— Wh</strong></div>
-   <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong><div id="tariff" class="tariff">Tariff: waiting for device…</div></div>
+   <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong>
+<small id="costBaseline" class="muted">Cost calculated since last reset</small><div id="tariff" class="tariff">Tariff: waiting for device…</div></div>
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
- <div class="card" id="physicalPotCard">
-  <h2>PHYSICAL VOLTAGE POTENTIOMETER</h2>
-  <div class="voltage-control">
-   <div class="voltage-control-head">
-    <div><div class="muted">PHYSICAL KNOB CONTROL</div><div class="voltage-setpoint" id="physicalPotMode">OFF</div></div>
+ 
     <button id="physicalPotToggle" type="button" class="secondary" onclick="togglePhysicalPot()">TURN ON</button>
    </div>
    <div class="voltage-limits"><span>MIN · 180 V</span><span>MAX · 240 V</span></div>
@@ -427,7 +424,7 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
    <div class="chartbox"><h3>Voltage & Current</h3><canvas id="viChart"></canvas></div>
    <div class="chartbox"><h3>Active Power</h3><canvas id="powerChart"></canvas></div>
   </div>
-  <p id="historyStatus" class="muted">Loading saved Firebase history…</p>
+  <p id="historyStatus" style="display:none" class="muted">Loading saved Firebase history…</p>
  </div>
  <div class="card">
   <h2>KSEB TIME-OF-DAY TARIFF & BILL ESTIMATE</h2>
@@ -458,17 +455,32 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
  <div id="consumerRooms" class="card">
   <div class="top"><h2 style="margin:0">ROOM RELAYS</h2></div>
   <div id="roomControls" class="rooms" style="margin-top:13px"></div>
-  <p id="relayMessage" class="muted"></p>
+  <p id="relayMessage" style="display:none" class="muted"></p>
  </div>
  <div id="adminActions" class="card hidden">
   <h2>KSEB ADMIN CONTROLS</h2>
+  <div class="room" style="display:block;margin-bottom:12px">
+   <b>CONSUMER ROOM RELAY STATUS</b>
+   <div class="muted" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+    <span>Bedroom: <strong id="ksebR2">—</strong></span>
+    <span>Kitchen: <strong id="ksebR3">—</strong></span>
+    <span>Hall: <strong id="ksebR4">—</strong></span>
+    <span>Bathroom: <strong id="ksebR5">—</strong></span>
+    <span>Sit-out: <strong id="ksebR6">—</strong></span>
+   </div>
+  </div>
   <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
-  <div class="room"><div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label></div>
-  <p id="adminMessage" class="muted"></p>
+  <div class="room"><div><b>RESET ENERGY</b><small>Reset total energy and cost counters</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyOnly(this.checked)"><span class="track"></span></label></div>
+<div class="room"><div><b>RESET COST</b><small>Keep total energy; calculate new cost from the current Wh reading</small></div><label class="switch"><input type="checkbox" id="resetCostSwitch" onchange="resetCostOnly(this.checked)"><span class="track"></span></label></div>
+  <p id="adminMessage" style="display:none" class="muted"></p>
  </div>
  <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
 <div class="footer">POWER GUARD · by hassaneeeyy</div>
+<div class="card" id="physicalPotCard">
+  <h2>VOLTAGE DEMO</h2>
+  <div class="room"><div><b>Potentiometer control</b></div><label class="switch"><input type="checkbox" id="physicalPotToggle" onchange="togglePhysicalPot()"><span class="track"></span></label></div>
+ </div>
 </main>
 <script>
 // Firebase web configuration and database paths from your supplied Power Guard details.
@@ -543,9 +555,9 @@ function historyNumber(d,...keys){
  return null;
 }
 function renderHistory(){
- if(!window.Chart){$("historyStatus").textContent="Chart.js could not load. Check your internet connection and reload.";return;}
+ if(!window.Chart){$("historyStatus").textContent="";return;}
  if(!viChart)initCharts();
- if(!viChart||!powerChart){$("historyStatus").textContent="Charts could not be initialized.";return;}
+ if(!viChart||!powerChart){$("historyStatus").textContent="";return;}
  const rows=historyRows.slice(-HISTORY_LIMIT);
  const labels=rows.map(r=>new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",hour12:true}).format(new Date(r.timestamp)));
  viChart.data.labels=labels;
@@ -555,13 +567,13 @@ function renderHistory(){
  powerChart.data.datasets[0].data=rows.map(r=>r.power);
  viChart.update();powerChart.update();
  requestAnimationFrame(()=>{viChart.resize();powerChart.resize();});
- $("historyStatus").textContent=(rows.length?"Saved Firebase history: "+rows.length+" records. ":"No saved Firebase history records yet. ")+"Live chart samples update every 1 second while this dashboard is open.";
+ $("historyStatus").textContent="";
 }
 function startHistory(){
  if(historyRef)historyRef.off();
  historyRows=[];
  historyRef=db.ref("powerGuard/history").limitToLast(HISTORY_LIMIT);
- $("historyStatus").textContent="Loading saved Firebase history…";
+ $("historyStatus").textContent="";
  historyRef.on("value",snap=>{
   const data=snap.val()||{};
   historyRows=Object.entries(data).map(([key,d])=>{
@@ -569,7 +581,7 @@ function startHistory(){
    return {_key:key,timestamp,voltage:historyNumber(d||{},"voltage","voltageV","v"),current:historyNumber(d||{},"current","currentA","amps","i"),power:historyNumber(d||{},"power","activePower","watts","p")};
   }).filter(r=>Number.isFinite(r.timestamp)).sort((a,b)=>a.timestamp-b.timestamp);
   requestAnimationFrame(()=>{renderHistory();});
- },e=>{$("historyStatus").textContent="Firebase history error: "+e.message;});
+ },e=>{$("historyStatus").textContent="";});
 }
 function startLiveChartSampling(){
  if(liveChartTimer)clearInterval(liveChartTimer);
@@ -685,7 +697,7 @@ function answerPowerGuardQuestion(question,d){
  if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const z=String(d.tariffZone||"").toUpperCase(),r=KSEB_TOD_RATES[z];return "Calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(z||"not available")+". Display tariff rate: "+(r!==undefined?"₹"+r.toFixed(2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill. The device firmware must use the same rates for the accumulated cost to match.";}
  if(/main relay|main switch|main output|room switch|which switch|relay|room|load|supply/.test(q)){
   const main=(d.relay1On===true||d.relayOn===true)?"ON":(d.relay1On===false||d.relayOn===false)?"OFF":"not reported";
-  if(/kseb|admin|main switch|main relay|which switch/.test(q))return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). The RESET ENERGY & COST switch sends the energy/cost reset command. Individual room switches are not shown in the KSEB dashboard.";
+  if(/kseb|admin|main switch|main relay|which switch/.test(q))return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). RESET ENERGY clears both counters; RESET COST keeps total Wh and starts a new cost calculation. Individual room switches are not shown in the KSEB dashboard.";
   return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the device publishes them. These are reported states, not independent proof of physical contact position.";
  }
  if(/status|condition|healthy|normal|problem|alert/.test(q)){
@@ -704,7 +716,7 @@ function enterRole(r){
  show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); initCharts(); startHistory(); startLive(); startLiveChartSampling();
 }
 function renderRooms(){
- $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label></div>`).join("");
+ $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label><small class="muted" style="display:block">Before maintenance, isolate the circuit using its MCB/RCCB.</small></div>`).join("");
  updateConsumerRelayLock();
 }
 function updateConsumerRelayLock(){
@@ -724,8 +736,8 @@ async function setConsumerRelay(channel,on){
  sw.disabled=true;
  const key="relay"+channel;
  const payload={};
- payload[key+"On"]=!on; // HTML command inversion for reversed relay response
- payload[key+"Off"]=on;
+ payload[key+"On"]=on;
+ payload[key+"Off"]=!on;
  const ok=await sendCommand(payload,names[channel-1]+" relay "+(on?"ON":"OFF"));
  sw.dataset.pending="false";
  if(!ok)sw.checked=!on;
@@ -750,16 +762,18 @@ function update(d){
  updateBill(d);
  if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("physicalPotToggle"))){
   physicalPotEnabled=d.knobOn;
-  $("physicalPotToggle").textContent=d.knobOn?"TURN OFF":"TURN ON";
-  $("physicalPotToggle").classList.toggle("secondary",!d.knobOn);
-  $("physicalPotMode").textContent=d.knobOn?"ON · PHYSICAL KNOB ACTIVE":"OFF · SENSOR MODE";
-  $("physicalPotState").textContent=d.knobOn?"ON · ESP32 reads the physical potentiometer (180 V to available measured voltage demo scale)":"OFF · ZMPT voltage sensor reading is used";
+  $("physicalPotToggle").checked=d.knobOn;
  }
  $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
  $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
  $("pf").textContent=fmt(d.powerFactor,2); $("frequency").textContent=fmt(d.frequency,2)+" Hz";
- $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,6);
+ $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,2);
+ $("costBaseline").textContent="Cost calculated from "+fmt(Math.max(0,(Number(d.energyWh)||0)-(Number(d.costBaselineWh)||0)),3)+" Wh since last cost reset";
  $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
+ ["ksebR2","ksebR3","ksebR4","ksebR5","ksebR6"].forEach((id,j)=>{
+  const v=d["relay"+(j+2)+"On"];
+  const el=$(id); if(el)el.textContent=v===true?"ON":v===false?"OFF":"—";
+ });
  const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(), rate=KSEB_TOD_RATES[zone];
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
   (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
@@ -795,17 +809,21 @@ async function setMainRelay(on){
  if(!ok)sw.checked=!on;
  sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true;
 }
-async function resetEnergyCost(on){
+async function resetEnergyOnly(on){
  if(!on)return;
- if(!confirm("Reset accumulated energy and cost?")){$("resetEnergySwitch").checked=false;return;}
- await sendCommand({resetEnergy:true,resetCost:true},"Energy and cost reset");
+ if(!confirm("Reset energy and cost counters to zero?")){$("resetEnergySwitch").checked=false;return;}
+ await sendCommand({resetEnergy:true},"Energy reset");
  setTimeout(()=>{$("resetEnergySwitch").checked=false;},700);
+}
+async function resetCostOnly(on){
+ if(!on)return;
+ if(!confirm("Reset cost to ₹0 while keeping the energy reading unchanged? New cost is calculated only from energy used after this reset.")){$("resetCostSwitch").checked=false;return;}
+ await sendCommand({resetCost:true},"Cost reset");
+ setTimeout(()=>{$("resetCostSwitch").checked=false;},700);
 }
 async function sendCommand(payload,label){
  try{
   await db.ref(COMMANDS).update(payload);
-  if($("relayMessage"))$("relayMessage").textContent=label+" command sent. Waiting for device confirmation.";
-  if($("adminMessage"))$("adminMessage").textContent=label+" command sent. Waiting for device confirmation.";
   return true;
  }catch(e){
   if($("relayMessage"))$("relayMessage").textContent="Command failed: "+e.message;
@@ -831,16 +849,12 @@ auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}})
 let physicalPotEnabled=false;
 async function togglePhysicalPot(){
  if(role!=="consumer")return;
- const next=!physicalPotEnabled, button=$("physicalPotToggle");
+ const button=$("physicalPotToggle"), next=button.checked;
  button.disabled=true;
  try{
   await db.ref(COMMANDS).update(next?{knobOn:true}:{knobOff:true});
   physicalPotEnabled=next;
-  button.textContent=next?"TURN OFF":"TURN ON";
-  button.classList.toggle("secondary",!next);
-  $("physicalPotMode").textContent=next?"ON · PHYSICAL KNOB ACTIVE":"OFF · SENSOR MODE";
-  $("physicalPotState").textContent=next?"ON · ESP32 reads the physical potentiometer (180 V to available measured voltage demo scale)":"OFF · ZMPT voltage sensor reading is used";
- }catch(e){$("physicalPotState").textContent="COMMAND FAILED · "+e.message;}
+ }catch(e){button.checked=!next;}
  finally{button.disabled=false;}
 }
 
