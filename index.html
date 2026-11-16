@@ -410,14 +410,6 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
- 
-    <button id="physicalPotToggle" type="button" class="secondary" onclick="togglePhysicalPot()">TURN ON</button>
-   </div>
-   <div class="voltage-limits"><span>MIN · 180 V</span><span>MAX · 240 V</span></div>
-   <div id="physicalPotState" class="voltage-state">OFF · Voltage sensor reading is used</div>
-   <p class="voltage-note">ON enables the physical potentiometer connected to the ESP32. Its scale starts at 180 V and rises up to the available measured voltage (maximum 240 V). This is a demonstration reference for display and voltage-fault logic only; it does not change the actual supply voltage. OFF returns to the ZMPT sensor reading.</p>
-  </div>
- </div>
  <div class="card">
   <h2>CONSUMPTION HISTORY</h2>
   <div class="analytics">
@@ -455,6 +447,10 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
  <div id="consumerRooms" class="card">
   <div class="top"><h2 style="margin:0">ROOM RELAYS</h2></div>
   <div id="roomControls" class="rooms" style="margin-top:13px"></div>
+   <div class="room" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
+    <b>VOLTAGE DEMO</b>
+    <label class="switch"><input type="checkbox" id="physicalPotToggle" onchange="togglePhysicalPot()"><span class="track"></span></label>
+   </div>
   <p id="relayMessage" style="display:none" class="muted"></p>
  </div>
  <div id="adminActions" class="card hidden">
@@ -477,11 +473,7 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
  <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
 <div class="footer">POWER GUARD · by hassaneeeyy</div>
-<div class="card" id="physicalPotCard">
-  <h2>VOLTAGE DEMO</h2>
-  <div class="room"><div><b>Potentiometer control</b></div><label class="switch"><input type="checkbox" id="physicalPotToggle" onchange="togglePhysicalPot()"><span class="track"></span></label></div>
- </div>
-</main>
+ </main>
 <script>
 // Firebase web configuration and database paths from your supplied Power Guard details.
 const firebaseConfig={
@@ -712,11 +704,12 @@ function enterRole(r){
  role=r; $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
  $("adminActions").classList.toggle("hidden",r!=="admin");
  $("consumerRooms").classList.toggle("hidden",r==="admin");
- $("physicalPotCard").classList.toggle("hidden",r!=="consumer");
+ $("physicalPotToggle").checked=physicalPotEnabled;
+  $("consumerRooms").classList.toggle("hidden",r!=="consumer");
  show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); initCharts(); startHistory(); startLive(); startLiveChartSampling();
 }
 function renderRooms(){
- $("roomControls").innerHTML=names.map((name,i)=>`<div class="room"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label><small class="muted" style="display:block">Before maintenance, isolate the circuit using its MCB/RCCB.</small></div>`).join("");
+ $("roomControls").innerHTML=names.map((name,i)=>`<div class="room" style="display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label><small class="muted" style="grid-column:1/-1;display:block;margin-top:6px">Before maintenance, isolate the circuit using its MCB/RCCB.</small></div>`).join("");
  updateConsumerRelayLock();
 }
 function updateConsumerRelayLock(){
