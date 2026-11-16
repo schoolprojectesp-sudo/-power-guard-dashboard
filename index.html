@@ -751,7 +751,7 @@ function update(d){
  $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
  $("pf").textContent=fmt(d.powerFactor,2); $("frequency").textContent=fmt(d.frequency,2)+" Hz";
  $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,2);
- $("costBaseline").textContent="Cost calculated from "+fmt(Math.max(0,(Number(d.energyWh)||0)-(Number(d.costBaselineWh)||0)),3)+" Wh since last cost reset";
+ $("costBaseline").textContent="Cost baseline: "+fmt(Number(d.costBaselineWh)||0,3)+" Wh";
  $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
  const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(), rate=KSEB_TOD_RATES[zone];
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
