@@ -455,14 +455,14 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
     <b>VOLTAGE DEMO</b>
     <label class="switch"><input type="checkbox" id="physicalPotToggle" onchange="togglePhysicalPot()"><span class="track"></span></label>
    </div>
-  <p id="relayMessage" style="display:none" class="muted"></p>
+  <p id="relayMessage" class="muted" style="display:block;margin-top:10px"></p>
  </div>
  <div id="adminActions" class="card hidden">
   <h2>KSEB ADMIN CONTROLS</h2>
-  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
+  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for device…</small><small id="adminCutOwnerText" class="muted" style="display:block;margin-top:5px">Main relay control status loading…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
   <div class="room"><div><b>RESET ENERGY</b><small>Reset total energy and cost counters</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyOnly(this.checked)"><span class="track"></span></label></div>
 <div class="room"><div><b>RESET COST</b><small>Keep total energy; calculate new cost from the current Wh reading</small></div><label class="switch"><input type="checkbox" id="resetCostSwitch" onchange="resetCostOnly(this.checked)"><span class="track"></span></label></div>
-  <p id="adminMessage" style="display:none" class="muted"></p>
+  <p id="adminMessage" class="muted" style="display:block;margin-top:10px"></p>
  </div>
  <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
@@ -708,11 +708,13 @@ function renderRooms(){
 }
 function updateConsumerRelayLock(){
  for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive||mainCutOwner==="kseb");}
- const t=$("mainCutOwnerText");
- if(t)t.textContent=mainCutOwner==="consumer"?"CONSUMER CUT OFF THE POWER · KSEB restore is locked; consumer must restore.":mainCutOwner==="kseb"?"KSEB CUT OFF THE POWER · Consumer controls are locked until KSEB restores.":"Main relay is not manually cut off.";
- const a=$("mainRelaySwitch"); if(a&&role==="admin"&&mainCutOwner==="consumer")a.disabled=true;
- const m=$("adminMessage"); if(m&&role==="admin"&&mainCutOwner==="consumer")m.textContent="Consumer cut off the power. KSEB cannot restore it; the consumer must restore the main relay.";
- $("relayMessage").textContent=ksebCutActive?"KSEB cut off the power. Consumer relay controls are locked until KSEB restores power.":mainCutOwner==="consumer"?"Consumer cut off the main power. KSEB restoration is locked.":"Consumer relay controls are available.";
+ const consumerText=mainCutOwner==="consumer"?"CONSUMER CUT OFF THE MAIN SUPPLY · KSEB switch is locked; only the consumer can restore.":mainCutOwner==="kseb"?"KSEB CUT OFF THE MAIN SUPPLY · Consumer switch is locked until KSEB restores.":"Main supply control is available.";
+ const adminText=mainCutOwner==="consumer"?"CONSUMER CUT OFF THE MAIN SUPPLY · KSEB main switch is LOCKED.":mainCutOwner==="kseb"?"KSEB CUT OFF THE MAIN SUPPLY · KSEB control owns this cut-off.":"No manual cut-off is active.";
+ const t=$("mainCutOwnerText"); if(t)t.textContent=consumerText;
+ const at=$("adminCutOwnerText"); if(at)at.textContent=adminText;
+ const a=$("mainRelaySwitch"); if(a)a.disabled=(role!=="admin"||mainCutOwner==="consumer"||latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true);
+ const m=$("adminMessage"); if(m)m.textContent=mainCutOwner==="consumer"?"Consumer cut off the main supply. KSEB cannot restore it; the consumer switch is the only control allowed to restore it.":mainCutOwner==="kseb"?"KSEB cut off the main supply. The consumer dashboard switch is locked until KSEB restores it.":"KSEB main relay control is available.";
+ const rm=$("relayMessage"); if(rm)rm.textContent=mainCutOwner==="kseb"?"KSEB CUT OFF THE MAIN SUPPLY · Consumer main switch is LOCKED until KSEB restores.":mainCutOwner==="consumer"?"CONSUMER CUT OFF THE MAIN SUPPLY · KSEB main switch is LOCKED; use the consumer switch to restore.":"Consumer relay controls are available.";
 }
 function watchMainCutOwner(){if(ownerRef)ownerRef.off();ownerRef=db.ref("powerGuard/controlState/mainCutOwner");ownerRef.on("value",snap=>{mainCutOwner=snap.val()||"none";updateConsumerRelayLock();});}
 function watchKsebCutState(){
@@ -778,7 +780,8 @@ function update(d){
  const gasBtn=$("gasResetButton"); if(gasBtn){gasBtn.disabled=!(d.gasDetected===true);gasBtn.textContent=d.gasAcknowledged===true?"WAIT CLEAR":(d.gasDetected===true?"RESET GAS":"GAS CLEAR");}
  const gasState=$("gasResetState"); if(gasState)gasState.textContent=d.gasDetected===true?"Gas alert active · acknowledge to begin stable-clear check":(d.gasAcknowledged===true?"Acknowledged · waiting for stable sensor clear":"No active gas alert");
  const mainOn=(d.relayOn===true);
- if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=mainCutOwner==="consumer"||d.gasDetected===true||d.gasAcknowledged===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=role!=="admin"||mainCutOwner==="consumer"||d.gasDetected===true||d.gasAcknowledged===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
+ updateConsumerRelayLock();
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
   const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
