@@ -21,7 +21,7 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}.pill{border:1px solid var(--line);border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px;white-space:nowrap}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{background:#07182a;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}.metric small{color:var(--muted)}.metric strong{display:block;font-size:25px;margin-top:8px;overflow-wrap:anywhere}
 .tariff{font-size:12px;color:var(--cyan);margin-top:8px;line-height:1.5}.status{border:1px solid var(--line);background:#07182a;border-radius:11px;padding:12px;color:var(--muted);font-size:13px}.ok{color:var(--green)!important}.bad{color:var(--red)!important}.warn{color:var(--amber)!important}
-.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:none}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:none}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
+.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:.2s}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:.2s}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
 .rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.role{padding:22px;border:1px solid var(--line);background:#07182a;border-radius:12px;text-align:center;cursor:pointer}.role:hover{border-color:var(--cyan);transform:translateY(-2px)}.role{transition:.2s;background:linear-gradient(145deg,#153c59,#252448)}.role:nth-child(2){background:linear-gradient(145deg,#45305f,#26304d)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}.actions button{flex:1;min-width:160px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 @media(min-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.analytics{grid-template-columns:1fr 1fr}.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:24px}.brand{font-size:32px}}@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:500px){body{padding:10px}.card{padding:15px}.grid,.rooms,.rolegrid{grid-template-columns:1fr}.brand{font-size:23px}.metric strong{font-size:22px}}
@@ -66,6 +66,7 @@ button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
 .track{background:#c45a68}.switch input:checked+.track{background:#27845d}
 .footer{color:#758391}
 
+
 /* Power Guard dashboard refinements */
 .header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
 .tariff-current{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
@@ -85,6 +86,7 @@ body{background:var(--page);color:var(--text);transition:background .2s,color .2
 .metric strong,.chartbox h3{color:var(--text)}
 .chartbox{padding:14px;background:var(--card);box-shadow:0 2px 10px #102a4308;position:relative;height:290px;min-height:260px}
 .chartbox canvas{display:block;width:100%!important;height:220px!important;max-height:220px!important}
+
 
 /* WHITE THEME ONLY — consistent readable text */
 :root{color-scheme:light;--page:#f2f5f8;--card:#ffffff;--metric-bg:#f7f9fb;--text:#1c2b39;--muted:#647383;--line:#d9e1e8;--accent:#147d78;--active-bg:#e6f4f1}
@@ -107,6 +109,7 @@ input::placeholder{color:#8794a2!important}
 .ai-msg.bot{background:#eaf4f0!important;color:#244b3c!important;border-color:#c6dfd2!important}
 .chartbox{background:#ffffff!important}
 .chartbox canvas{display:block;width:100%!important}
+
 
 /* OPTIONAL DARK MODE — white remains the default */
 body.dark-theme{
@@ -151,6 +154,7 @@ body.dark-theme .chartbox canvas{color:#d7e5f2}
 body.dark-theme .footer{color:#a9bdd0!important}
 .theme-toggle{min-width:92px}
 
+
 /* White-theme green accents and visible password eye controls */
 body:not(.dark-theme) .tariff-current>div{
   border-color:#c9e4dc!important;
@@ -193,6 +197,7 @@ body:not(.dark-theme) .eye-btn:hover{
   background:#d8eee7!important;
 }
 
+
 /* Refined compact green-tinted white theme */
 body:not(.dark-theme){--green-soft:#eff8f4;--green-border:#cfe5da;--green-strong:#187b60}
 body:not(.dark-theme) .card{background:linear-gradient(145deg,#ffffff 0%,#f8fcfa 100%)!important;border-color:#d3e6dc!important}
@@ -211,6 +216,7 @@ body:not(.dark-theme) .eye-btn svg{stroke:#176b50!important}
 body:not(.dark-theme) button:not(.secondary){background:linear-gradient(135deg,#167b60,#26956f)!important;color:white!important}
 body.dark-theme .chartbox{height:290px;min-height:260px}
 @media(max-width:600px){.chartbox{height:270px;min-height:250px}.chartbox canvas{height:200px!important;max-height:200px!important}}
+
 
 /* FINAL MOBILE WIDTH + PASSWORD EYE + CHART FIXES */
 *{box-sizing:border-box}
@@ -237,6 +243,7 @@ body.dark-theme .eye-btn,body.dark-theme .eye-btn:hover{background:transparent!i
 body.dark-theme .eye-btn svg{stroke:#b7c8d9!important}
 @media(min-width:700px){.analytics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:380px){.tariff-current,.tariff-schedule{gap:6px}.tariff-current>div{padding:10px 8px}.tariff-slot{padding:9px 7px}.tariff-slot strong{font-size:12px}}
+
 
 /* TARIFF CARDS: LONG FULL-WIDTH ROWS ON MOBILE */
 .tariff-current{
@@ -279,6 +286,7 @@ body.dark-theme .eye-btn svg{stroke:#b7c8d9!important}
  .tariff-slot strong{font-size:18px!important}
 }
 
+
 /* FINAL PASSWORD EYE + GREEN ROLE LOGIN POLISH */
 .password-wrap{position:relative!important;width:100%!important}
 .password-wrap input{width:100%!important;padding-right:54px!important}
@@ -312,6 +320,7 @@ body.dark-theme #roleScreen .role{background:linear-gradient(135deg,#123b32,#153
 body.dark-theme #roleScreen .role h3{color:#c4f0d4!important}
 body.dark-theme #roleScreen .role p{color:#b4d0c2!important}
 body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid #34765e!important;border-radius:12px;padding:14px!important}
+
 
 /* Final polish: narrower tariff cards, premium theme switch, larger navy charts */
 .tariff-current,.tariff-schedule{width:94%!important;max-width:900px!important;margin-left:auto!important;margin-right:auto!important}
@@ -349,6 +358,7 @@ body.dark-theme #roleScreen .role h3{color:#e0e9f2!important}
 body.dark-theme #roleScreen .role p{color:#aebdcd!important}
 body.dark-theme #rolePasswordArea{background:#142236!important;border-color:#40536a!important}
 body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#647b91!important}
+
 
 </style>
 </head>
@@ -399,6 +409,18 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
    <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
   </div>
  </div>
+ <div class="card" id="physicalPotCard">
+  <h2>PHYSICAL VOLTAGE POTENTIOMETER</h2>
+  <div class="voltage-control">
+   <div class="voltage-control-head">
+    <div><div class="muted">PHYSICAL KNOB CONTROL</div><div class="voltage-setpoint" id="physicalPotMode">OFF</div></div>
+    <button id="physicalPotToggle" type="button" class="secondary" onclick="togglePhysicalPot()">TURN ON</button>
+   </div>
+   <div class="voltage-limits"><span>MIN · 180 V</span><span>MAX · 240 V</span></div>
+   <div id="physicalPotState" class="voltage-state">OFF · Voltage sensor reading is used</div>
+   <p class="voltage-note">ON enables the physical potentiometer connected to the ESP32. Its scale starts at 180 V and rises up to the available measured voltage (maximum 240 V). This is a demonstration reference for display and voltage-fault logic only; it does not change the actual supply voltage. OFF returns to the ZMPT sensor reading.</p>
+  </div>
+ </div>
  <div class="card">
   <h2>CONSUMPTION HISTORY</h2>
   <div class="analytics">
@@ -444,9 +466,6 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
   <div class="room"><div><b>RESET ENERGY & COST</b><small>Turn on to send a reset command</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyCost(this.checked)"><span class="track"></span></label></div>
   <p id="adminMessage" class="muted"></p>
  </div>
- <div class="card" id="physicalPotCard">
-  <div class="actions" style="justify-content:center"><button id="physicalPotToggle" type="button" class="secondary" onclick="togglePhysicalPot()">TURN ON PHYSICAL POTENTIOMETER</button></div>
- </div>
  <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
 </section>
 <div class="footer">POWER GUARD · by hassaneeeyy</div>
@@ -482,8 +501,6 @@ function chartGradient(ctx,top,bottom){
 }
 function initCharts(){
  if(!window.Chart)return;
- if(viChart){viChart.destroy();viChart=null;}
- if(powerChart){powerChart.destroy();powerChart=null;}
  const c=chartTheme();
  const common={responsive:true,maintainAspectRatio:false,animation:{duration:250},interaction:{mode:"index",intersect:false},
   elements:{line:{tension:.42,borderWidth:2.4},point:{radius:0,hoverRadius:4,hitRadius:12}},
@@ -493,12 +510,12 @@ function initCharts(){
    y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid},border:{display:false}}}};
  const vctx=$("viChart").getContext("2d"),pctx=$("powerChart").getContext("2d");
  viChart=new Chart(vctx,{type:"line",data:{labels:[],datasets:[
-  {label:"Voltage (V)",data:[],borderColor:"#36454F",backgroundColor:chartGradient(vctx,"rgba(54,69,79,.34)","rgba(54,69,79,.025)"),pointBackgroundColor:"#36454F",pointBorderColor:"#ffffff",pointBorderWidth:1,pointRadius:1.5,fill:true,yAxisID:"y",borderWidth:3,order:2},
-  {label:"Current (A)",data:[],borderColor:"#9AA7B2",backgroundColor:chartGradient(vctx,"rgba(154,167,178,.38)","rgba(154,167,178,.025)"),pointBackgroundColor:"#9AA7B2",pointBorderColor:"#ffffff",pointBorderWidth:1,pointRadius:2.5,pointHoverRadius:6,borderWidth:3.2,fill:true,yAxisID:"y1",order:1}
- ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:"#36454F"},ticks:{...common.scales.y.ticks,color:"#36454F"}},y1:{beginAtZero:true,position:"right",ticks:{color:"#9AA7B2"},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:"#9AA7B2"}}}}});
+  {label:"Voltage (V)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(vctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true,yAxisID:"y",order:2},
+  {label:"Current (A)",data:[],borderColor:"#8ca4b7",backgroundColor:chartGradient(vctx,"rgba(140,164,183,.32)","rgba(140,164,183,.015)"),pointBackgroundColor:"#8ca4b7",borderDash:[5,4],fill:true,yAxisID:"y1",order:1}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:c.text}},y1:{beginAtZero:true,max:2,position:"right",ticks:{color:c.text},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:c.text}}}}});
  powerChart=new Chart(pctx,{type:"line",data:{labels:[],datasets:[
   {label:"Active power (W)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(pctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true}
- ]},options:common});
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,max:200}}}});
 }
 function refreshChartTheme(){
  if(!viChart||!powerChart)return;
@@ -633,6 +650,7 @@ function verifyRolePassword(){
 }
 async function emailLogout(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(historyRef){historyRef.off();historyRef=null;}await auth.signOut();$("emailPassword").value="";$("emailError").textContent="";show("loginScreen");}
 
+
 // Free local assistant: all responses are generated in this browser from live Firebase readings.
 function addAIMessage(text, who){
  const log=$("aiChatLog"), node=document.createElement("div");
@@ -706,8 +724,8 @@ async function setConsumerRelay(channel,on){
  sw.disabled=true;
  const key="relay"+channel;
  const payload={};
- payload[key+"On"]=on;
- payload[key+"Off"]=!on;
+ payload[key+"On"]=!on; // HTML command inversion for reversed relay response
+ payload[key+"Off"]=on;
  const ok=await sendCommand(payload,names[channel-1]+" relay "+(on?"ON":"OFF"));
  sw.dataset.pending="false";
  if(!ok)sw.checked=!on;
@@ -732,8 +750,10 @@ function update(d){
  updateBill(d);
  if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("physicalPotToggle"))){
   physicalPotEnabled=d.knobOn;
-  $("physicalPotToggle").textContent=d.knobOn?"TURN OFF PHYSICAL POTENTIOMETER":"TURN ON PHYSICAL POTENTIOMETER";
+  $("physicalPotToggle").textContent=d.knobOn?"TURN OFF":"TURN ON";
   $("physicalPotToggle").classList.toggle("secondary",!d.knobOn);
+  $("physicalPotMode").textContent=d.knobOn?"ON · PHYSICAL KNOB ACTIVE":"OFF · SENSOR MODE";
+  $("physicalPotState").textContent=d.knobOn?"ON · ESP32 reads the physical potentiometer (180 V to available measured voltage demo scale)":"OFF · ZMPT voltage sensor reading is used";
  }
  $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
  $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
@@ -744,17 +764,14 @@ function update(d){
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
   (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
  let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
- const faultActive=(d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true);
- if(d.gasDetected===true)status="GAS LEAKAGE DETECTED";
- else if(d.overVoltage===true)status="OVER VOLTAGE";
- else if(d.underVoltage===true)status="UNDER VOLTAGE";
- else if(d.overload===true)status="OVERLOAD";
+ if(d.gasDetected===true)status="GAS ALERT · CHECK SYSTEM";
+ else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
+ else if(d.overload===true)status="OVERLOAD ALERT";
  else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
  $("systemStatus").textContent="SYSTEM STATUS · "+status;
- $("systemStatus").style.borderLeftColor=faultActive?"var(--red)":"var(--green)";
- $("systemStatus").style.color=faultActive?"var(--red)":"var(--green)";
- const mainOn=(d.relayOn===true||d.relay1On===true);
- if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overVoltage===true||d.underVoltage===true||d.overload===true; }
+ $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.overVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
+ const mainOn=(d.relayOn===true);
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.overload===true||d.overVoltage===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
   const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
@@ -765,7 +782,7 @@ async function setMainRelay(on){
  if(role!=="admin")return;
  const sw=$("mainRelaySwitch");
  if(sw.dataset.pending==="true")return;
- if(on&&(latest.gasDetected===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true)){
+ if(on&&(latest.gasDetected===true||latest.overload===true||latest.overVoltage===true)){
   sw.checked=false;
   $("adminMessage").textContent="Power restoration blocked while a protection alert is active.";
   return;
@@ -776,7 +793,7 @@ async function setMainRelay(on){
  const ok=await sendCommand({restorePower:on,cutPower:!on,ksebCutActive:!on},"MAIN relay "+(on?"ON":"OFF"));
  sw.dataset.pending="false";
  if(!ok)sw.checked=!on;
- sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true;
+ sw.disabled=latest.gasDetected===true||latest.overload===true||latest.overVoltage===true;
 }
 async function resetEnergyCost(on){
  if(!on)return;
@@ -815,17 +832,15 @@ let physicalPotEnabled=false;
 async function togglePhysicalPot(){
  if(role!=="consumer")return;
  const next=!physicalPotEnabled, button=$("physicalPotToggle");
- const reminder = next
-  ? "Before enabling potentiometer mode, disconnect the pushbutton wire from GPIO32 and connect only the potentiometer wiper to GPIO32. Have you changed the connection?"
-  : "Before disabling potentiometer mode, disconnect the potentiometer wiper from GPIO32 and reconnect only the pushbutton to GPIO32. Have you changed the connection?";
- if(!confirm(reminder)) return;
  button.disabled=true;
  try{
   await db.ref(COMMANDS).update(next?{knobOn:true}:{knobOff:true});
   physicalPotEnabled=next;
-  button.textContent=next?"TURN OFF PHYSICAL POTENTIOMETER":"TURN ON PHYSICAL POTENTIOMETER";
+  button.textContent=next?"TURN OFF":"TURN ON";
   button.classList.toggle("secondary",!next);
- }catch(e){alert("Potentiometer command failed: "+e.message);}
+  $("physicalPotMode").textContent=next?"ON · PHYSICAL KNOB ACTIVE":"OFF · SENSOR MODE";
+  $("physicalPotState").textContent=next?"ON · ESP32 reads the physical potentiometer (180 V to available measured voltage demo scale)":"OFF · ZMPT voltage sensor reading is used";
+ }catch(e){$("physicalPotState").textContent="COMMAND FAILED · "+e.message;}
  finally{button.disabled=false;}
 }
 
