@@ -484,7 +484,7 @@ const auth=firebase.auth(), db=firebase.database();
 const LIVE="powerGuard/live", COMMANDS="powerGuard/commands";
 const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
 
-let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false;
+let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false, mainCutOwner="none", ownerRef=null;
 let viChart=null, powerChart=null, historyRows=[], liveChartRows=[];
 const HISTORY_LIMIT=60, LIVE_CHART_LIMIT=120;
 let liveChartTimer=null;
@@ -700,23 +700,29 @@ function enterRole(r){
  $("consumerRooms").classList.toggle("hidden",r==="admin");
  $("physicalPotToggle").checked=physicalPotEnabled;
   $("consumerRooms").classList.toggle("hidden",r!=="consumer");
- show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); initCharts(); startHistory(); startLive(); startLiveChartSampling();
+ show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); watchMainCutOwner(); initCharts(); startHistory(); startLive(); startLiveChartSampling();
 }
 function renderRooms(){
- $("roomControls").innerHTML=names.map((name,i)=>`<div class="room" style="display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label><small class="muted" style="grid-column:1/-1;display:block;margin-top:6px">Before maintenance, isolate the circuit using its MCB/RCCB.</small></div>`).join("");
+ $("roomControls").innerHTML=names.map((name,i)=>`<div class="room" style="display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small>${i===0?'<small id="mainCutOwnerText" class="muted" style="display:block;margin-top:5px">Main relay control status loading…</small>':''}</div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label><small class="muted" style="grid-column:1/-1;display:block;margin-top:6px">Before maintenance, isolate the circuit using its MCB/RCCB.</small></div>`).join("");
  updateConsumerRelayLock();
 }
 function updateConsumerRelayLock(){
- for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive);}
- $("relayMessage").textContent=ksebCutActive?"KSEB ADMIN has disconnected the main supply. Consumer relay controls are locked until KSEB restores power.":"Consumer relay controls are available.";
+ for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive||mainCutOwner==="kseb");}
+ const t=$("mainCutOwnerText");
+ if(t)t.textContent=mainCutOwner==="consumer"?"CONSUMER CUT OFF THE POWER · KSEB restore is locked; consumer must restore.":mainCutOwner==="kseb"?"KSEB CUT OFF THE POWER · Consumer controls are locked until KSEB restores.":"Main relay is not manually cut off.";
+ const a=$("mainRelaySwitch"); if(a&&role==="admin"&&mainCutOwner==="consumer")a.disabled=true;
+ const m=$("adminMessage"); if(m&&role==="admin"&&mainCutOwner==="consumer")m.textContent="Consumer cut off the power. KSEB cannot restore it; the consumer must restore the main relay.";
+ $("relayMessage").textContent=ksebCutActive?"KSEB cut off the power. Consumer relay controls are locked until KSEB restores power.":mainCutOwner==="consumer"?"Consumer cut off the main power. KSEB restoration is locked.":"Consumer relay controls are available.";
 }
+function watchMainCutOwner(){if(ownerRef)ownerRef.off();ownerRef=db.ref("powerGuard/controlState/mainCutOwner");ownerRef.on("value",snap=>{mainCutOwner=snap.val()||"none";updateConsumerRelayLock();});}
 function watchKsebCutState(){
  if(cutRef)cutRef.off();
  cutRef=db.ref(COMMANDS+"/ksebCutActive");
  cutRef.on("value",snap=>{ksebCutActive=snap.val()===true;updateConsumerRelayLock();});
 }
 async function setConsumerRelay(channel,on){
- if(role!=="consumer"||ksebCutActive||channel<1||channel>6)return;
+ if(role!=="consumer"||ksebCutActive||mainCutOwner==="kseb"||channel<1||channel>6)return;
+ if(channel===1&&on&&mainCutOwner==="kseb")return;
  const sw=$("r"+channel);
  if(!sw||sw.dataset.pending==="true")return;
  sw.dataset.pending="true";
@@ -726,9 +732,10 @@ async function setConsumerRelay(channel,on){
  payload[key+"On"]=on;
  payload[key+"Off"]=!on;
  const ok=await sendCommand(payload,names[channel-1]+" relay "+(on?"ON":"OFF"));
+ if(ok&&channel===1){try{await db.ref("powerGuard/controlState/mainCutOwner").set(on?"none":"consumer");}catch(e){$("relayMessage").textContent="Relay command sent, but cut-owner status could not be saved: "+e.message;}}
  sw.dataset.pending="false";
  if(!ok)sw.checked=!on;
- sw.disabled=(role!=="consumer"||ksebCutActive);
+ sw.disabled=(role!=="consumer"||ksebCutActive||mainCutOwner==="kseb");
 }
 function startLive(){
  if(liveRef)liveRef.off();
@@ -771,16 +778,17 @@ function update(d){
  const gasBtn=$("gasResetButton"); if(gasBtn){gasBtn.disabled=!(d.gasDetected===true);gasBtn.textContent=d.gasAcknowledged===true?"WAIT CLEAR":(d.gasDetected===true?"RESET GAS":"GAS CLEAR");}
  const gasState=$("gasResetState"); if(gasState)gasState.textContent=d.gasDetected===true?"Gas alert active · acknowledge to begin stable-clear check":(d.gasAcknowledged===true?"Acknowledged · waiting for stable sensor clear":"No active gas alert");
  const mainOn=(d.relayOn===true);
- if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=d.gasDetected===true||d.gasAcknowledged===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=mainCutOwner==="consumer"||d.gasDetected===true||d.gasAcknowledged===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
  if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
  if(role==="consumer"){for(let i=1;i<=6;i++){
   const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
-  const sw=$("r"+i), label=$("r"+i+"State"); if(sw){if(sw.dataset.pending!=="true")sw.checked=val;sw.disabled=ksebCutActive||sw.dataset.pending==="true";} if(label)label.textContent=val?"ON":"OFF";
+  const sw=$("r"+i), label=$("r"+i+"State"); if(sw){if(sw.dataset.pending!=="true")sw.checked=val;sw.disabled=ksebCutActive||mainCutOwner==="kseb"||sw.dataset.pending==="true";} if(label)label.textContent=val?"ON":"OFF";
  }}
 }
 async function setMainRelay(on){
  if(role!=="admin")return;
  const sw=$("mainRelaySwitch");
+ if(on&&mainCutOwner==="consumer"){sw.checked=false;$("adminMessage").textContent="Consumer cut off the power. KSEB cannot restore it; the consumer must restore.";return;}
  if(sw.dataset.pending==="true")return;
  if(on&&(latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true)){
   sw.checked=false;
@@ -791,9 +799,10 @@ async function setMainRelay(on){
  sw.dataset.pending="true";
  sw.disabled=true;
  const ok=await sendCommand({restorePower:on,cutPower:!on,ksebCutActive:!on},"MAIN relay "+(on?"ON":"OFF"));
+ if(ok){try{await db.ref("powerGuard/controlState/mainCutOwner").set(on?"none":"kseb");}catch(e){$("adminMessage").textContent="Relay command sent, but cut-owner status could not be saved: "+e.message;}}
  sw.dataset.pending="false";
  if(!ok)sw.checked=!on;
- sw.disabled=latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true;
+ sw.disabled=mainCutOwner==="consumer"||latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true;
 }
 async function resetEnergyOnly(on){
  if(!on)return;
