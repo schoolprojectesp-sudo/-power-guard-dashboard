@@ -455,16 +455,6 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
  </div>
  <div id="adminActions" class="card hidden">
   <h2>KSEB ADMIN CONTROLS</h2>
-  <div class="room" style="display:block;margin-bottom:12px">
-   <b>CONSUMER ROOM RELAY STATUS</b>
-   <div class="muted" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-    <span>Bedroom: <strong id="ksebR2">—</strong></span>
-    <span>Kitchen: <strong id="ksebR3">—</strong></span>
-    <span>Hall: <strong id="ksebR4">—</strong></span>
-    <span>Bathroom: <strong id="ksebR5">—</strong></span>
-    <span>Sit-out: <strong id="ksebR6">—</strong></span>
-   </div>
-  </div>
   <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for device…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
   <div class="room"><div><b>RESET ENERGY</b><small>Reset total energy and cost counters</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyOnly(this.checked)"><span class="track"></span></label></div>
 <div class="room"><div><b>RESET COST</b><small>Keep total energy; calculate new cost from the current Wh reading</small></div><label class="switch"><input type="checkbox" id="resetCostSwitch" onchange="resetCostOnly(this.checked)"><span class="track"></span></label></div>
@@ -510,7 +500,7 @@ function initCharts(){
   elements:{line:{tension:.42,borderWidth:2.4},point:{radius:0,hoverRadius:4,hitRadius:12}},
   plugins:{legend:{position:"bottom",labels:{color:c.text,usePointStyle:true,pointStyle:"circle",padding:16,font:{size:11}}},
    tooltip:{backgroundColor:c.tooltip,titleColor:c.text,bodyColor:c.text,borderColor:c.border,borderWidth:1,padding:11,displayColors:true}},
-  scales:{x:{ticks:{color:c.text,maxTicksLimit:6,autoSkip:true,maxRotation:0,minRotation:0,font:{size:10},padding:4},grid:{display:false},border:{color:c.border}},
+  scales:{x:{ticks:{color:c.text,maxTicksLimit:3,autoSkip:true,maxRotation:0,minRotation:0,font:{size:10},padding:6,callback:function(value,index,ticks){return (index===0||index===Math.floor((ticks.length-1)/2)||index===ticks.length-1)?this.getLabelForValue(value):"";}},grid:{display:false},border:{color:c.border}},
    y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid},border:{display:false}}}};
  const vctx=$("viChart").getContext("2d"),pctx=$("powerChart").getContext("2d");
  viChart=new Chart(vctx,{type:"line",data:{labels:[],datasets:[
@@ -763,10 +753,6 @@ function update(d){
  $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,2);
  $("costBaseline").textContent="Cost calculated from "+fmt(Math.max(0,(Number(d.energyWh)||0)-(Number(d.costBaselineWh)||0)),3)+" Wh since last cost reset";
  $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
- ["ksebR2","ksebR3","ksebR4","ksebR5","ksebR6"].forEach((id,j)=>{
-  const v=d["relay"+(j+2)+"On"];
-  const el=$(id); if(el)el.textContent=v===true?"ON":v===false?"OFF":"—";
- });
  const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(), rate=KSEB_TOD_RATES[zone];
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
   (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
