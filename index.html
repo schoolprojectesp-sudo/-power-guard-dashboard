@@ -396,20 +396,19 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
  <div class="card">
   <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><div class="header-actions"><span class="pill" id="rolePill">CONSUMER</span><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div></div>
   <div id="systemStatus" class="status" style="margin-top:16px;border-left:5px solid var(--amber);font-size:16px;font-weight:800">SYSTEM STATUS · CONNECTING…</div>
+  <p id="connection" class="muted" style="margin-top:8px">Connecting to Firebase…</p>
+  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for device data…</strong></p>
   <div id="systemCheckPanel" class="system-check-panel">
    <div class="system-check-title"><span>SYSTEM CHECKING</span><span id="systemCheckOverall" class="check-warn">WAITING FOR DEVICE</span></div>
    <div class="system-check-grid">
     <div class="system-check-item"><b>FIREBASE LINK</b><span id="checkFirebase" class="check-warn">WAITING</span></div>
     <div class="system-check-item"><b>VOLTAGE SENSOR</b><span id="checkVoltage" class="check-warn">WAITING</span></div>
     <div class="system-check-item"><b>CURRENT SENSOR</b><span id="checkCurrent" class="check-warn">WAITING</span></div>
-    <div class="system-check-item"><b>OLED DISPLAY</b><span id="checkOled" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>RELAY STATUS</b><span id="checkRelay" class="check-warn">WAITING</span></div>
     <div class="system-check-item"><b>GAS MONITOR</b><span id="checkGas" class="check-warn">WAITING</span></div>
     <div class="system-check-item"><b>PROTECTION STATUS</b><span id="checkProtection" class="check-warn">WAITING</span></div>
    </div>
-   <p class="muted" id="systemCheckNote" style="margin:9px 0 0;font-size:11px">Checks are based on the latest device data received by the dashboard.</p>
   </div>
-  <p id="connection" class="muted" style="margin-top:8px">Connecting to Firebase…</p>
-  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for device data…</strong></p>
   <div class="grid" style="margin-top:13px">
    <div class="metric"><small>VOLTAGE</small><strong id="voltage">— V</strong></div>
    <div class="metric"><small>CURRENT</small><strong id="current">— A</strong></div>
@@ -782,10 +781,11 @@ function updateSystemChecks(d){
  setCheck("checkFirebase","CONNECTED","ok");
  const voltageOk=d.voltageSensorOk===true;
  const currentOk=d.acsOk===true;
- const oledOk=d.oledOk===true;
+ const relayReported=typeof d.relayOn==="boolean"||typeof d.relay1On==="boolean";
+ const relayOn=typeof d.relay1On==="boolean"?d.relay1On:d.relayOn;
  setCheck("checkVoltage",voltageOk?"DATA OK":(d.voltageSensorOk===false?"SENSOR FAULT":"NO DATA"),voltageOk?"ok":(d.voltageSensorOk===false?"bad":"warn"));
  setCheck("checkCurrent",currentOk?"DATA OK":(d.acsOk===false?"SENSOR FAULT":"NO DATA"),currentOk?"ok":(d.acsOk===false?"bad":"warn"));
- setCheck("checkOled",oledOk?"DISPLAY OK":(d.oledOk===false?"DISPLAY FAULT":"NO DATA"),oledOk?"ok":(d.oledOk===false?"bad":"warn"));
+ setCheck("checkRelay",relayReported?(relayOn?"MAIN RELAY ON":"MAIN RELAY OFF"):"NO STATE DATA",relayReported?"ok":"warn");
  const gasActive=d.gasDetected===true||d.gasAcknowledged===true;
  const gasHasData=Number.isFinite(Number(d.gasRaw));
  setCheck("checkGas",gasActive?"GAS ALERT":(gasHasData?"DATA RECEIVED":"NO DATA"),gasActive?"bad":(gasHasData?"ok":"warn"));
@@ -795,13 +795,11 @@ function updateSystemChecks(d){
  if(d.underVoltage===true)faults.push("UNDER VOLTAGE");
  if(d.overload===true)faults.push("OVERLOAD");
  setCheck("checkProtection",faults.length?faults.join(" · "):"NO ACTIVE FLAGS",faults.length?"bad":"ok");
- const missing=!voltageOk||!currentOk||!oledOk||!gasHasData;
+ const missing=!voltageOk||!currentOk||!gasHasData||!relayReported;
  const overall=$("systemCheckOverall");
  if(faults.length){overall.textContent="ATTENTION REQUIRED";overall.className="check-bad";}
  else if(missing){overall.textContent="CHECKING · INCOMPLETE DATA";overall.className="check-warn";}
  else{overall.textContent="CHECK DATA RECEIVED";overall.className="check-ok";}
- const note=$("systemCheckNote");
- if(note)note.textContent=missing?"One or more device checks are missing or reporting a fault. Confirm sensor status on the device.":"Latest sensor and protection flags received. This dashboard check does not perform an electrical safety test.";
 }
 function update(d){
  updateBill(d);
