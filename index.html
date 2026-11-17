@@ -759,7 +759,9 @@ async function setConsumerRelay(channel,on){
  sw.disabled=(role!=="consumer"||ksebCutActive||mainCutOwner==="kseb");
 }
 function startLive(){
- if(liveRef)liveRef.off();
+ // Keep one continuous Firebase live listener for both dashboard roles.
+ // Re-entering a role must not detach and recreate the sensor-data stream.
+ if(liveRef)return;
  liveRef=db.ref(LIVE);
  liveRef.on("value",snap=>{
   const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the device Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR DEVICE DATA";return;}
@@ -899,7 +901,7 @@ async function sendCommand(payload,label){
   return false;
  }
 }
-async function returnToRoles(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}latest={};$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
+async function returnToRoles(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
 async function logout(){await returnToRoles();}
 function toggleEye(inputId, button){
   const field=document.getElementById(inputId);
