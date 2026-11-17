@@ -604,8 +604,8 @@ function updateTariffClock(){
 }
 function updateBill(d){
  const current=updateTariffClock();
- const zone=String(d.tariffZone||current.zone).toUpperCase();
- const rate=KSEB_TOD_RATES[zone]??current.rate;
+ const zone=current.zone;
+ const rate=current.rate;
  $("billZone").textContent=zone;
  $("billRate").textContent=rate!==undefined?"₹"+rate.toFixed(2)+"/kWh":"—";
  $("billEnergy").textContent=fmt(d.energyWh,3)+" Wh";
@@ -680,7 +680,7 @@ function answerPowerGuardQuestion(question,d){
  if(/watt|active power|\bpower\b/.test(q)) return "Latest active power: "+num(d.power)+" W.";
  if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /energy|consum|unit|kwh|use|used|usage/.test(q)) { if(d.dailyEnergyWh!==undefined) return "Energy recorded today: "+num(d.dailyEnergyWh,3)+" Wh ("+(Number(d.dailyEnergyWh)/1000).toFixed(6)+" kWh)."; return "The dashboard currently receives accumulated energy ("+num(d.energyWh,3)+" Wh), not a separate daily counter. This value is since the last energy reset or firmware counter start; it does not prove the total for today unless the device resets it daily."; }
  if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the device counter, usually since its last reset.";
- if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const z=String(d.tariffZone||"").toUpperCase(),r=KSEB_TOD_RATES[z];return "Calculated accumulated cost: ₹"+num(d.cost,2)+". Tariff zone: "+(z||"not available")+". Display tariff rate: "+(r!==undefined?"₹"+r.toFixed(2)+"/kWh":"not available")+". This is an estimate, not an official KSEB bill. The device firmware must use the same rates for the accumulated cost to match.";}
+ if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const liveTariff=updateTariffClock(),z=liveTariff.zone,r=liveTariff.rate;return "Calculated accumulated cost: ₹"+num(d.cost,2)+". Current IST tariff zone: "+z+". Current display tariff rate: ₹"+r.toFixed(2)+"/kWh. This is an estimate, not an official KSEB bill. The accumulated cost is calculated by the device firmware using the tariff active at each measurement.";}
  if(/main relay|main switch|main output|room switch|which switch|relay|room|load|supply/.test(q)){
   const main=(d.relay1On===true||d.relayOn===true)?"ON":(d.relay1On===false||d.relayOn===false)?"OFF":"not reported";
   if(/kseb|admin|main switch|main relay|which switch/.test(q))return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). RESET ENERGY clears both counters; RESET COST keeps total Wh and starts a new cost calculation. Individual room switches are not shown in the KSEB dashboard.";
@@ -766,7 +766,8 @@ function update(d){
  $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,2);
  $("costBaseline").textContent="Cost baseline: "+fmt(Number(d.costBaselineWh)||0,3)+" Wh";
  $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
- const zone=String(d.tariffZone||"NO CLOCK").toUpperCase(), rate=KSEB_TOD_RATES[zone];
+ const currentTariff=updateTariffClock();
+ const zone=currentTariff.zone, rate=currentTariff.rate;
  $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
   (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
  let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
@@ -828,9 +829,22 @@ async function requestGasReset(){
  if(!ok){b.disabled=false;b.textContent="RESET GAS";}
 }
 async function sendCommand(payload,label){
+ const commandKeys=Object.keys(payload).filter(key=>payload[key]===true && key!=="ksebCutActive");
  try{
   await db.ref(COMMANDS).update(payload);
-  return true;
+  if(commandKeys.length===0)return true;
+  // ESP32 acknowledges by clearing each handled command key to false.
+  const deadline=Date.now()+5000;
+  while(Date.now()<deadline){
+   await new Promise(resolve=>setTimeout(resolve,250));
+   const snap=await db.ref(COMMANDS).once("value");
+   const state=snap.val()||{};
+   if(commandKeys.every(key=>state[key]!==true))return true;
+  }
+  const message=(label||"Command")+" was saved to Firebase, but the ESP32 did not acknowledge it within 5 seconds. Check the device Wi-Fi/Firebase connection.";
+  if($("relayMessage"))$("relayMessage").textContent=message;
+  if($("adminMessage"))$("adminMessage").textContent=message;
+  return false;
  }catch(e){
   if($("relayMessage"))$("relayMessage").textContent="Command failed: "+e.message;
   if($("adminMessage"))$("adminMessage").textContent="Command failed: "+e.message;
