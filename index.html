@@ -20,7 +20,8 @@ button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--lin
 .hidden{display:none!important}.error{color:var(--red);min-height:18px}.muted{color:var(--muted);font-size:12px;line-height:1.55}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}.pill{border:1px solid var(--line);border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px;white-space:nowrap}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{background:#07182a;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}.metric small{color:var(--muted)}.metric strong{display:block;font-size:25px;margin-top:8px;overflow-wrap:anywhere}
-.tariff{font-size:12px;color:var(--cyan);margin-top:8px;line-height:1.5}.status{border:1px solid var(--line);background:#07182a;border-radius:11px;padding:12px;color:var(--muted);font-size:13px}.ok{color:var(--green)!important}.bad{color:var(--red)!important}.warn{color:var(--amber)!important}
+.tariff{font-size:12px;color:var(--cyan);margin-top:8px;line-height:1.5}.system-check-panel{margin-top:12px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--metric-bg)}.system-check-title{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;margin-bottom:10px}.system-check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px}.system-check-item{padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--card-bg,#fff);font-size:12px}.system-check-item b{display:block;font-size:11px;letter-spacing:.3px;margin-bottom:4px}.system-check-item span{font-weight:800}.check-ok{color:var(--green)!important}.check-warn{color:var(--amber)!important}.check-bad{color:var(--red)!important}
+.status{border:1px solid var(--line);background:#07182a;border-radius:11px;padding:12px;color:var(--muted);font-size:13px}.ok{color:var(--green)!important}.bad{color:var(--red)!important}.warn{color:var(--amber)!important}
 .rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:.2s}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:.2s}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
 .rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.role{padding:22px;border:1px solid var(--line);background:#07182a;border-radius:12px;text-align:center;cursor:pointer}.role:hover{border-color:var(--cyan);transform:translateY(-2px)}.role{transition:.2s;background:linear-gradient(145deg,#153c59,#252448)}.role:nth-child(2){background:linear-gradient(145deg,#45305f,#26304d)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}.actions button{flex:1;min-width:160px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
@@ -395,6 +396,18 @@ body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#6
  <div class="card">
   <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><div class="header-actions"><span class="pill" id="rolePill">CONSUMER</span><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div></div>
   <div id="systemStatus" class="status" style="margin-top:16px;border-left:5px solid var(--amber);font-size:16px;font-weight:800">SYSTEM STATUS · CONNECTING…</div>
+  <div id="systemCheckPanel" class="system-check-panel">
+   <div class="system-check-title"><span>SYSTEM CHECKING</span><span id="systemCheckOverall" class="check-warn">WAITING FOR DEVICE</span></div>
+   <div class="system-check-grid">
+    <div class="system-check-item"><b>FIREBASE LINK</b><span id="checkFirebase" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>VOLTAGE SENSOR</b><span id="checkVoltage" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>CURRENT SENSOR</b><span id="checkCurrent" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>OLED DISPLAY</b><span id="checkOled" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>GAS MONITOR</b><span id="checkGas" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>PROTECTION STATUS</b><span id="checkProtection" class="check-warn">WAITING</span></div>
+   </div>
+   <p class="muted" id="systemCheckNote" style="margin:9px 0 0;font-size:11px">Checks are based on the latest device data received by the dashboard.</p>
+  </div>
   <p id="connection" class="muted" style="margin-top:8px">Connecting to Firebase…</p>
   <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for device data…</strong></p>
   <div class="grid" style="margin-top:13px">
@@ -761,8 +774,38 @@ function updateLatestUpdateTime(){
  const formatted=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now);
  $("latestUpdateTime").textContent=formatted+" IST (last received)";
 }
+function setCheck(id,label,state){
+ const el=$(id); if(!el)return; el.textContent=label;
+ el.className=state==="ok"?"check-ok":state==="bad"?"check-bad":"check-warn";
+}
+function updateSystemChecks(d){
+ setCheck("checkFirebase","CONNECTED","ok");
+ const voltageOk=d.voltageSensorOk===true;
+ const currentOk=d.acsOk===true;
+ const oledOk=d.oledOk===true;
+ setCheck("checkVoltage",voltageOk?"DATA OK":(d.voltageSensorOk===false?"SENSOR FAULT":"NO DATA"),voltageOk?"ok":(d.voltageSensorOk===false?"bad":"warn"));
+ setCheck("checkCurrent",currentOk?"DATA OK":(d.acsOk===false?"SENSOR FAULT":"NO DATA"),currentOk?"ok":(d.acsOk===false?"bad":"warn"));
+ setCheck("checkOled",oledOk?"DISPLAY OK":(d.oledOk===false?"DISPLAY FAULT":"NO DATA"),oledOk?"ok":(d.oledOk===false?"bad":"warn"));
+ const gasActive=d.gasDetected===true||d.gasAcknowledged===true;
+ const gasHasData=Number.isFinite(Number(d.gasRaw));
+ setCheck("checkGas",gasActive?"GAS ALERT":(gasHasData?"DATA RECEIVED":"NO DATA"),gasActive?"bad":(gasHasData?"ok":"warn"));
+ const faults=[];
+ if(gasActive)faults.push("GAS");
+ if(d.overVoltage===true)faults.push("OVER VOLTAGE");
+ if(d.underVoltage===true)faults.push("UNDER VOLTAGE");
+ if(d.overload===true)faults.push("OVERLOAD");
+ setCheck("checkProtection",faults.length?faults.join(" · "):"NO ACTIVE FLAGS",faults.length?"bad":"ok");
+ const missing=!voltageOk||!currentOk||!oledOk||!gasHasData;
+ const overall=$("systemCheckOverall");
+ if(faults.length){overall.textContent="ATTENTION REQUIRED";overall.className="check-bad";}
+ else if(missing){overall.textContent="CHECKING · INCOMPLETE DATA";overall.className="check-warn";}
+ else{overall.textContent="CHECK DATA RECEIVED";overall.className="check-ok";}
+ const note=$("systemCheckNote");
+ if(note)note.textContent=missing?"One or more device checks are missing or reporting a fault. Confirm sensor status on the device.":"Latest sensor and protection flags received. This dashboard check does not perform an electrical safety test.";
+}
 function update(d){
  updateBill(d);
+ updateSystemChecks(d);
  if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("physicalPotToggle"))){
   physicalPotEnabled=d.knobOn;
   $("physicalPotToggle").checked=d.knobOn;
