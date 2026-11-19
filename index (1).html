@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POWER GUARD | Live Dashboard</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#081321">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Power Guard">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#081321;--panel:#10243b;--panel2:#172f4c;--line:#315575;--cyan:#62dff2;--blue:#55a8ff;--text:#f2f7ff;--muted:#a8bbd0;--green:#45d6a2;--red:#ff6b83;--amber:#ffd166;--purple:#b69cff;--pink:#ff8db5;--orange:#ffb36b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#24456d 0,transparent 35%),radial-gradient(ellipse at 95% 15%,#422b62 0,transparent 30%),linear-gradient(135deg,#081321,#101d34 55%,#211a37);color:var(--text);font-family:Inter,Arial,sans-serif;padding:22px;min-height:100vh}
+.wrap{max-width:1420px;margin:auto}.card{backdrop-filter:blur(8px)}.card{background:linear-gradient(145deg,#193653,#11243c 58%,#20213f);border:1px solid var(--line);border-radius:17px;padding:20px;margin:0 0 16px;box-shadow:0 12px 30px #0003}
+.brand{text-align:center;color:var(--cyan);font-size:28px;font-weight:900;letter-spacing:2px}.by{text-align:center;color:var(--muted);font-size:12px;letter-spacing:1px;margin-top:5px}.sub{text-align:center;color:var(--muted);margin:12px 0 18px}
+h2{font-size:17px;color:var(--cyan);margin:0 0 15px}h3{font-size:15px;margin:0 0 6px}label{display:block;color:var(--muted);font-size:13px;margin:12px 0 6px}
+input[type=email],input[type=password],input[type=text]{width:100%;padding:14px;border-radius:10px;border:1px solid var(--line);background:#061426;color:white;font-size:15px}.password-wrap{position:relative;display:block}.password-wrap input{width:100%;padding-right:52px}.eye-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:40px;height:38px;padding:8px;background:transparent;color:#9bdcff;border:0;display:grid;place-items:center}.eye-btn:hover{background:#ffffff12}
+button{border:0;border-radius:10px;padding:12px 15px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,#1688e8,#4dbbff);color:#061426}
+button.secondary{background:#1a3854;color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}
+.hidden{display:none!important}.error{color:var(--red);min-height:18px}.muted{color:var(--muted);font-size:12px;line-height:1.55}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}.pill{border:1px solid var(--line);border-radius:30px;padding:7px 11px;color:var(--cyan);font-size:12px;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{background:#07182a;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}.metric small{color:var(--muted)}.metric strong{display:block;font-size:25px;margin-top:8px;overflow-wrap:anywhere}
+.tariff{font-size:12px;color:var(--cyan);margin-top:8px;line-height:1.5}.system-check-panel{margin-top:12px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--metric-bg)}.system-check-title{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;margin-bottom:10px}.system-check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px}.system-check-item{padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--card-bg,#fff);font-size:12px}.system-check-item b{display:block;font-size:11px;letter-spacing:.3px;margin-bottom:4px}.system-check-item span{font-weight:800}.check-ok{color:var(--green)!important}.check-warn{color:var(--amber)!important}.check-bad{color:var(--red)!important}
+.status{border:1px solid var(--line);background:#07182a;border-radius:11px;padding:12px;color:var(--muted);font-size:13px}.ok{color:var(--green)!important}.bad{color:var(--red)!important}.warn{color:var(--amber)!important}
+.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:13px}.room small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:54px;height:30px;flex:none}.switch input{opacity:0;width:0;height:0}.track{position:absolute;inset:0;border-radius:30px;background:#793344;cursor:pointer;transition:.2s}.track:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:white;transition:.2s}.switch input:checked+.track{background:#167b61}.switch input:checked+.track:before{transform:translateX(24px)}.switch input:disabled+.track{opacity:.45;cursor:not-allowed}
+.rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.role{padding:22px;border:1px solid var(--line);background:#07182a;border-radius:12px;text-align:center;cursor:pointer}.role:hover{border-color:var(--cyan);transform:translateY(-2px)}.role{transition:.2s;background:linear-gradient(145deg,#153c59,#252448)}.role:nth-child(2){background:linear-gradient(145deg,#45305f,#26304d)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.actions button{flex:1;min-width:160px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.analytics{grid-template-columns:1fr 1fr}.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:24px}.brand{font-size:32px}}@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:500px){body{padding:10px}.card{padding:15px}.grid,.rooms,.rolegrid{grid-template-columns:1fr}.brand{font-size:23px}.metric strong{font-size:22px}}
+
+.analytics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chartbox{background:#07182a;border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.chartbox{background:linear-gradient(145deg,#101d38,#182b48);border-color:#466b92}.chartbox canvas{width:100%;max-height:290px}.chartbox h3{color:#f2f7ff;margin:2px 0 12px}.role:nth-child(1){background:linear-gradient(135deg,#087e8b,#164d77 60%,#272d5a);color:white}.role:nth-child(2){background:linear-gradient(135deg,#7041a5,#3c397e 60%,#243a68);color:white}.role{box-shadow:0 10px 25px #0003}.role:hover{filter:brightness(1.15)}
+.billgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.aihead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.airesult{background:#07182a;border:1px solid var(--line);border-left:3px solid var(--green);border-radius:10px;padding:14px;line-height:1.6;white-space:pre-wrap}
+@media(max-width:650px){.analytics{grid-template-columns:1fr}.billgrid{grid-template-columns:1fr 1fr}}
+
+.ai-chat{display:flex;flex-direction:column;gap:10px}
+.ai-log{min-height:180px;max-height:360px;overflow:auto;display:flex;flex-direction:column;gap:9px;background:#07182a;border:1px solid var(--line);border-radius:12px;padding:12px}
+.ai-msg{max-width:92%;padding:10px 12px;border-radius:12px;white-space:pre-wrap;line-height:1.5;font-size:14px}
+.ai-msg.user{align-self:flex-end;background:#16466b}
+.ai-msg.bot{align-self:flex-start;background:#123a35;border:1px solid #246b59}
+.ai-entry{display:flex;gap:8px}.ai-entry input{flex:1;min-width:0}
+
+/* Professional neutral theme */
+:root{--bg:#f3f5f7;--panel:#ffffff;--panel2:#f8fafb;--line:#d7dee5;--cyan:#176b70;--blue:#285d82;--text:#202b36;--muted:#647383;--green:#18794e;--red:#b42336;--amber:#9a6700;--purple:#6656a5;--pink:#a84e70;--orange:#a65b18}
+body{background:#f3f5f7;color:#202b36;padding:22px;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.card{background:#fff;border:1px solid #dce2e8;box-shadow:0 3px 14px #1525360d;border-radius:14px;backdrop-filter:none}
+.brand{color:#173f5f}.by,.sub,.muted{color:#647383}
+h2{color:#176b70}
+.pill{color:#176b70;border-color:#c9dadd;background:#f4f9f9}
+.metric,.status,.room,.chartbox,.ai-log{background:#f8fafb;border-color:#dce3e9;color:#202b36}
+.metric small,.room small{color:#647383}
+.metric strong{color:#1d3448}
+input[type=email],input[type=password],input[type=text]{background:#fff;color:#202b36;border-color:#cbd5df}
+input::placeholder{color:#8794a2}
+button{background:#176b70;color:#fff}
+button.secondary{background:#edf2f5;color:#263746;border-color:#d2dbe3}
+.eye-btn{color:#176b70}.eye-btn:hover{background:#e8f1f2}
+.role,.role:nth-child(1),.role:nth-child(2){background:#f7fafb;color:#203344;border:1px solid #d8e1e8;box-shadow:0 2px 8px #172b3a0b}
+.role:hover{background:#edf5f5;border-color:#8ab7b8;filter:none}
+.ai-msg.user{background:#e3eef7;color:#183b57}
+.ai-msg.bot{background:#eaf4f0;color:#244b3c;border-color:#c6dfd2}
+.airesult{background:#f8fafb;color:#263746;border-color:#dce3e9;border-left-color:#27845d}
+.chartbox{background:#fff;border-color:#dce3e9}
+.chartbox h3{color:#263746}
+.track{background:#c45a68}.switch input:checked+.track{background:#27845d}
+.footer{color:#758391}
+
+
+/* Power Guard dashboard refinements */
+.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.tariff-current{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.tariff-current>div{padding:15px;border:1px solid var(--line);border-radius:12px;background:var(--metric-bg);min-width:0}
+.tariff-current small{display:block;color:var(--muted);font-size:12px;line-height:1.4}
+.tariff-current strong{display:block;color:var(--text);font-size:clamp(18px,3vw,25px);margin-top:8px;overflow-wrap:anywhere}
+.tariff-schedule{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 16px}
+.tariff-slot{display:flex;flex-direction:column;gap:7px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--metric-bg);color:var(--text)}
+.tariff-slot span{font-size:12px;color:var(--muted)}
+.tariff-slot b{font-size:13px;text-transform:uppercase;letter-spacing:.7px}
+.tariff-slot strong{font-size:19px}
+.tariff-slot.active{border:2px solid var(--accent);background:var(--active-bg);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 13%,transparent)}
+:root{--page:#f2f5f8;--card:#fff;--metric-bg:#f7f9fb;--text:#1c2b39;--muted:#68798a;--line:#d9e1e8;--accent:#147d78;--active-bg:#e6f4f1}
+body{background:var(--page);color:var(--text);transition:background .2s,color .2s}
+.card{background:var(--card);border-color:var(--line);box-shadow:0 5px 22px #102a430d}
+.metric,.status,.room,.chartbox,.ai-log{background:var(--metric-bg);border-color:var(--line);color:var(--text)}
+.metric strong,.chartbox h3{color:var(--text)}
+.chartbox{padding:14px;background:var(--card);box-shadow:0 2px 10px #102a4308;position:relative;height:290px;min-height:260px}
+.chartbox canvas{display:block;width:100%!important;height:220px!important;max-height:220px!important}
+
+
+/* WHITE THEME ONLY — consistent readable text */
+:root{color-scheme:light;--page:#f2f5f8;--card:#ffffff;--metric-bg:#f7f9fb;--text:#1c2b39;--muted:#647383;--line:#d9e1e8;--accent:#147d78;--active-bg:#e6f4f1}
+html,body{background:#f2f5f8!important;color:#1c2b39!important}
+.card{background:#ffffff!important;color:#1c2b39!important;border-color:#d9e1e8!important;box-shadow:0 3px 14px #1525360d!important}
+h1,h2,h3,h4,p,small,label,strong,b,span{ text-shadow:none }
+h2{color:#176b70!important}
+.brand{color:#173f5f!important}
+.by,.sub,.muted,.metric small,.room small,.tariff-slot span{color:#647383!important}
+.metric,.status,.room,.chartbox,.ai-log,.tariff-current>div,.tariff-slot{background:#f7f9fb!important;color:#1c2b39!important;border-color:#d9e1e8!important}
+.metric strong,.tariff-current strong,.tariff-slot strong,.chartbox h3{color:#1c2b39!important}
+.role,.role:nth-child(1),.role:nth-child(2),#roleScreen .role{background:#f7fafb!important;color:#203344!important;border:1px solid #d8e1e8!important;box-shadow:0 2px 8px #172b3a0b!important}
+#roleScreen .role h3{color:#203344!important}
+#roleScreen .role p{color:#647383!important}
+button{color:#ffffff}
+button.secondary{background:#edf2f5!important;color:#263746!important;border-color:#d2dbe3!important}
+input[type=email],input[type=password],input[type=text],.ai-entry input{background:#ffffff!important;color:#202b36!important;border-color:#cbd5df!important}
+input::placeholder{color:#8794a2!important}
+.ai-msg.user{background:#e3eef7!important;color:#183b57!important}
+.ai-msg.bot{background:#eaf4f0!important;color:#244b3c!important;border-color:#c6dfd2!important}
+.chartbox{background:#ffffff!important}
+.chartbox canvas{display:block;width:100%!important}
+
+
+/* OPTIONAL DARK MODE — white remains the default */
+body.dark-theme{
+ color-scheme:dark;
+ --page:#071321;--card:#10243b;--metric-bg:#0b1b2d;
+ --text:#edf5ff;--muted:#b7c8d9;--line:#294966;
+ --accent:#55c7c2;--active-bg:#123b3b;
+ background:radial-gradient(ellipse at 8% 0%,#173b5a 0,transparent 38%),linear-gradient(145deg,#06111f,#0b1b2e 58%,#101c32)!important;
+ color:#edf5ff!important;
+}
+body.dark-theme .card{background:linear-gradient(145deg,#142d47,#10243b 65%,#17243d)!important;color:#edf5ff!important;border-color:#294966!important;box-shadow:0 8px 26px #0005!important}
+body.dark-theme h1,body.dark-theme h2,body.dark-theme h3,body.dark-theme h4,
+body.dark-theme p,body.dark-theme small,body.dark-theme label,body.dark-theme strong,
+body.dark-theme b,body.dark-theme span{color:inherit}
+body.dark-theme h2{color:#8ee2df!important}
+body.dark-theme .brand{color:#a9d9f5!important}
+body.dark-theme .by,body.dark-theme .sub,body.dark-theme .muted,
+body.dark-theme .metric small,body.dark-theme .room small,
+body.dark-theme .tariff-slot span{color:#b7c8d9!important}
+body.dark-theme .metric,body.dark-theme .status,body.dark-theme .room,
+body.dark-theme .chartbox,body.dark-theme .ai-log,
+body.dark-theme .tariff-current>div,body.dark-theme .tariff-slot,
+body.dark-theme #rolePasswordArea{background:#0a1a2b!important;color:#edf5ff!important;border-color:#294966!important}
+body.dark-theme .metric strong,body.dark-theme .tariff-current strong,
+body.dark-theme .tariff-slot strong,body.dark-theme .chartbox h3{color:#edf5ff!important}
+body.dark-theme .role,body.dark-theme .role:nth-child(1),body.dark-theme .role:nth-child(2),
+body.dark-theme #roleScreen .role{background:linear-gradient(145deg,#123a50,#172c4a)!important;color:#f3f8ff!important;border:1px solid #345775!important;box-shadow:0 5px 16px #0003!important}
+body.dark-theme #roleScreen .role h3{color:#ffffff!important}
+body.dark-theme #roleScreen .role p{color:#c4d5e5!important}
+body.dark-theme input[type=email],body.dark-theme input[type=password],
+body.dark-theme input[type=text],body.dark-theme .ai-entry input{background:#071321!important;color:#edf5ff!important;border-color:#345775!important}
+body.dark-theme input::placeholder{color:#91a9c0!important}
+body.dark-theme button.secondary{background:#17334e!important;color:#edf5ff!important;border-color:#345775!important}
+body.dark-theme .pill{background:#102b40!important;color:#8ee2df!important;border-color:#35647a!important}
+body.dark-theme .ai-msg.user{background:#16466b!important;color:#ffffff!important}
+body.dark-theme .ai-msg.bot{background:#123a35!important;color:#f1faf5!important;border-color:#246b59!important}
+body.dark-theme .airesult{background:#0a1a2b!important;color:#edf5ff!important;border-color:#294966!important}
+body.dark-theme .track{background:#a44759}
+body.dark-theme .switch input:checked+.track{background:#168568}
+body.dark-theme .tariff-slot.active{background:#123b3b!important;border-color:#55c7c2!important}
+body.dark-theme .chartbox canvas{color:#d7e5f2}
+body.dark-theme .footer{color:#a9bdd0!important}
+.theme-toggle{min-width:92px}
+
+
+/* White-theme green accents and visible password eye controls */
+body:not(.dark-theme) .tariff-current>div{
+  border-color:#c9e4dc!important;
+  background:#f2faf7!important;
+}
+body:not(.dark-theme) .tariff-current .esp32-rate-card{
+  border:2px solid #198879!important;
+  background:#e8f5f1!important;
+}
+body:not(.dark-theme) .tariff-current .esp32-rate-card small{
+  color:#26786e!important;
+  font-weight:700;
+}
+body:not(.dark-theme) .tariff-slot.active{
+  border:2px solid #198879!important;
+  background:#e5f4ef!important;
+  box-shadow:0 0 0 3px rgba(25,136,121,.12)!important;
+}
+body:not(.dark-theme) .tariff-slot.active b,
+body:not(.dark-theme) .tariff-slot.active strong{
+  color:#176f63!important;
+}
+body:not(.dark-theme) .eye-btn{
+  color:#176b70!important;
+  background:#e8f5f1!important;
+  border:1px solid #c5e2d9!important;
+  opacity:1!important;
+  z-index:2;
+  width:42px!important;
+  height:40px!important;
+  padding:8px!important;
+}
+body:not(.dark-theme) .eye-btn svg{
+  display:block;
+  width:21px;
+  height:21px;
+  stroke:#176b70!important;
+}
+body:not(.dark-theme) .eye-btn:hover{
+  background:#d8eee7!important;
+}
+
+
+/* Refined compact green-tinted white theme */
+body:not(.dark-theme){--green-soft:#eff8f4;--green-border:#cfe5da;--green-strong:#187b60}
+body:not(.dark-theme) .card{background:linear-gradient(145deg,#ffffff 0%,#f8fcfa 100%)!important;border-color:#d3e6dc!important}
+body:not(.dark-theme) .metric,body:not(.dark-theme) .status,body:not(.dark-theme) .room,body:not(.dark-theme) .chartbox,body:not(.dark-theme) .ai-log,body:not(.dark-theme) .tariff-current>div,body:not(.dark-theme) .tariff-slot{background:#f1f8f4!important;border-color:#cfe3d8!important}
+body:not(.dark-theme) .metric strong,body:not(.dark-theme) .tariff-current strong{color:#205344!important}
+body:not(.dark-theme) input[type=email],body:not(.dark-theme) input[type=password],body:not(.dark-theme) input[type=text],body:not(.dark-theme) .ai-entry input{background:#f3faf6!important;border-color:#bcd9ca!important;color:#203c32!important;box-shadow:inset 0 1px 2px #1a6b4510}
+body:not(.dark-theme) input:focus{outline:2px solid #74b99b;outline-offset:1px}
+body:not(.dark-theme) .role{background:linear-gradient(145deg,#f1f8f4,#e8f4ed)!important;border-color:#c6dfd1!important}
+body:not(.dark-theme) .role h3{color:#205344!important}
+body:not(.dark-theme) .ai-msg.bot{background:#e8f4ed!important;border-color:#c3dfcf!important;color:#24533f!important}
+body:not(.dark-theme) .ai-msg.user{background:#e9f2f8!important}
+body:not(.dark-theme) .status{background:#eaf5ef!important;border-left-color:#23815f!important}
+body:not(.dark-theme) .pill{background:#eaf5ef!important;border-color:#c4dfd0!important;color:#176b50!important}
+body:not(.dark-theme) .eye-btn{background:#e1f1e8!important;border:1px solid #b9d9c7!important;color:#176b50!important}
+body:not(.dark-theme) .eye-btn svg{stroke:#176b50!important}
+body:not(.dark-theme) button:not(.secondary){background:linear-gradient(135deg,#167b60,#26956f)!important;color:white!important}
+body.dark-theme .chartbox{height:290px;min-height:260px}
+@media(max-width:600px){.chartbox{height:270px;min-height:250px}.chartbox canvas{height:200px!important;max-height:200px!important}}
+
+
+/* FINAL MOBILE WIDTH + PASSWORD EYE + CHART FIXES */
+*{box-sizing:border-box}
+.tariff-current,.tariff-schedule,.analytics{width:100%;min-width:0}
+.tariff-current>div,.tariff-slot,.chartbox{min-width:0;max-width:100%;overflow:hidden}
+.tariff-current{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tariff-current>div{padding:12px 10px}
+.tariff-current small{font-size:clamp(10px,2.7vw,12px);overflow-wrap:break-word}
+.tariff-current strong{font-size:clamp(15px,4vw,23px);line-height:1.25;overflow-wrap:anywhere;word-break:normal}
+.tariff-schedule{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tariff-slot{padding:11px 9px;gap:7px}
+.tariff-slot span{font-size:clamp(9px,2.65vw,12px);line-height:1.35;overflow-wrap:anywhere}
+.tariff-slot b{font-size:clamp(11px,3vw,13px);letter-spacing:.35px}
+.tariff-slot strong{font-size:clamp(12px,3.35vw,17px);line-height:1.3;overflow-wrap:anywhere;word-break:normal}
+.chartbox{height:280px;min-height:250px;width:100%;position:relative;overflow:hidden}
+.analytics{grid-template-columns:minmax(0,1fr);}
+.chartbox canvas{display:block!important;width:100%!important;height:210px!important;max-height:210px!important}
+/* Password visibility control: plain neutral icon, no green button box */
+body:not(.dark-theme) .eye-btn,body:not(.dark-theme) .eye-btn:hover{
+ background:transparent!important;border:0!important;box-shadow:none!important;color:#657383!important;
+}
+body:not(.dark-theme) .eye-btn svg{stroke:#657383!important}
+body.dark-theme .eye-btn,body.dark-theme .eye-btn:hover{background:transparent!important;border:0!important;box-shadow:none!important;color:#b7c8d9!important}
+body.dark-theme .eye-btn svg{stroke:#b7c8d9!important}
+@media(min-width:700px){.analytics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){.tariff-current,.tariff-schedule{gap:6px}.tariff-current>div{padding:10px 8px}.tariff-slot{padding:9px 7px}.tariff-slot strong{font-size:12px}}
+
+
+/* TARIFF CARDS: LONG FULL-WIDTH ROWS ON MOBILE */
+.tariff-current{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:10px!important;
+}
+.tariff-current>div{
+  width:100%;min-height:112px;padding:18px 20px!important;
+  display:flex;flex-direction:column;justify-content:center;gap:8px;
+}
+.tariff-current small{font-size:clamp(13px,3.5vw,16px)!important;line-height:1.4}
+.tariff-current strong{font-size:clamp(22px,5.5vw,29px)!important;line-height:1.25;overflow-wrap:anywhere}
+.tariff-schedule{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:10px!important;
+}
+.tariff-slot{
+  width:100%;min-height:112px;padding:16px 20px!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:"time time" "name rate";
+  align-items:center;column-gap:12px;row-gap:8px;
+}
+.tariff-slot span{grid-area:time;font-size:clamp(13px,3.5vw,16px)!important;line-height:1.35}
+.tariff-slot b{grid-area:name;font-size:clamp(14px,3.8vw,17px)!important;letter-spacing:.6px}
+.tariff-slot strong{grid-area:rate;text-align:right;font-size:clamp(19px,5vw,25px)!important;white-space:nowrap;overflow-wrap:normal}
+.tariff-slot.active{border-width:2px!important}
+/* Eye icon: transparent hit area, no box/border, soft green icon */
+.password-wrap .eye-btn,
+.password-wrap .eye-btn:hover,
+.password-wrap .eye-btn:focus,
+.password-wrap .eye-btn:active{
+  background:transparent!important;border:0!important;outline:0!important;
+  box-shadow:none!important;color:#9bcbb4!important;
+}
+.password-wrap .eye-btn svg{stroke:#9bcbb4!important;fill:none!important}
+.password-wrap .eye-btn:focus-visible{outline:2px solid #9bcbb4!important;outline-offset:2px;border-radius:50%}
+@media(max-width:380px){
+ .tariff-current>div{min-height:100px;padding:14px 16px!important}
+ .tariff-slot{min-height:100px;padding:13px 16px!important}
+ .tariff-slot strong{font-size:18px!important}
+}
+
+
+/* FINAL PASSWORD EYE + GREEN ROLE LOGIN POLISH */
+.password-wrap{position:relative!important;width:100%!important}
+.password-wrap input{width:100%!important;padding-right:54px!important}
+.password-wrap .eye-btn,
+.password-wrap .eye-btn:hover,
+.password-wrap .eye-btn:focus,
+.password-wrap .eye-btn:active{
+  position:absolute!important;right:6px!important;top:50%!important;transform:translateY(-50%)!important;
+  width:38px!important;height:38px!important;padding:8px!important;
+  display:grid!important;place-items:center!important;
+  color:#79b99a!important;background:transparent!important;border:0!important;
+  outline:0!important;box-shadow:none!important;border-radius:50%!important;
+  cursor:pointer!important;z-index:5!important;
+}
+.password-wrap .eye-btn svg{width:21px!important;height:21px!important;stroke:#79b99a!important;fill:none!important;pointer-events:none!important}
+body.dark-theme .password-wrap .eye-btn,
+body.dark-theme .password-wrap .eye-btn:hover,
+body.dark-theme .password-wrap .eye-btn:focus,
+body.dark-theme .password-wrap .eye-btn:active{color:#8fd0aa!important;background:transparent!important;border:0!important;box-shadow:none!important}
+body.dark-theme .password-wrap .eye-btn svg{stroke:#8fd0aa!important}
+/* Second login / role selection: subtle green accent in both themes */
+body:not(.dark-theme) #roleScreen{background:linear-gradient(145deg,#ffffff 0%,#f1f8f4 100%)!important;border-color:#c8dfd1!important}
+body:not(.dark-theme) #roleScreen h2{color:#187b60!important}
+body:not(.dark-theme) #roleScreen .role{background:linear-gradient(135deg,#f0f8f3,#e5f2e9)!important;border:1px solid #bcd9c7!important;box-shadow:0 3px 12px #1b684512!important}
+body:not(.dark-theme) #roleScreen .role h3{color:#205b43!important}
+body:not(.dark-theme) #roleScreen .role p{color:#587365!important}
+body:not(.dark-theme) #rolePasswordArea{background:#edf7f0!important;border:1px solid #c5dfcd!important;border-radius:12px;padding:14px!important}
+body.dark-theme #roleScreen{background:linear-gradient(145deg,#102b28,#10243b 75%)!important;border-color:#28634f!important}
+body.dark-theme #roleScreen h2{color:#8fd0aa!important}
+body.dark-theme #roleScreen .role{background:linear-gradient(135deg,#123b32,#15334a)!important;border:1px solid #34765e!important;box-shadow:0 4px 15px #0004!important}
+body.dark-theme #roleScreen .role h3{color:#c4f0d4!important}
+body.dark-theme #roleScreen .role p{color:#b4d0c2!important}
+body.dark-theme #rolePasswordArea{background:#102f2a!important;border:1px solid #34765e!important;border-radius:12px;padding:14px!important}
+
+
+/* Final polish: narrower tariff cards, premium theme switch, larger navy charts */
+.tariff-current,.tariff-schedule{width:94%!important;max-width:900px!important;margin-left:auto!important;margin-right:auto!important}
+.tariff-current>div,.tariff-slot{border-radius:18px!important}
+.theme-toggle{min-width:112px!important;padding:10px 16px!important;border-radius:999px!important;border:1px solid #c8d5dc!important;background:linear-gradient(180deg,#ffffff,#edf2f5)!important;color:#294052!important;box-shadow:0 2px 7px #18304412!important;font-weight:700!important;letter-spacing:.2px}
+.theme-toggle:hover{background:#e7f2ed!important;border-color:#9bcbb4!important}
+body.dark-theme .theme-toggle{background:linear-gradient(180deg,#1d3449,#10243a)!important;color:#d8eee5!important;border-color:#42647b!important;box-shadow:0 2px 8px #0004!important}
+body.dark-theme .theme-toggle:hover{background:#1b463e!important;border-color:#5ba88d!important}
+.chartbox{height:430px!important;min-height:400px!important;padding:18px!important;border-radius:18px!important}
+.chartbox canvas{height:340px!important;max-height:340px!important}
+@media(max-width:600px){.chartbox{height:390px!important;min-height:370px!important}.chartbox canvas{height:300px!important;max-height:300px!important}.tariff-current,.tariff-schedule{width:92%!important}}
+@media(max-width:380px){.chartbox{height:360px!important;min-height:340px!important}.chartbox canvas{height:270px!important;max-height:270px!important}}
+/* Reference-inspired navy blue gradient area charts */
+
+body:not(.dark-theme) .password-wrap .eye-btn,body:not(.dark-theme) .password-wrap .eye-btn:hover,body:not(.dark-theme) .password-wrap .eye-btn:focus,body:not(.dark-theme) .password-wrap .eye-btn:active{background:transparent!important;border:0!important;box-shadow:none!important;color:#23845f!important}
+body:not(.dark-theme) .password-wrap .eye-btn svg{stroke:#23845f!important}
+
+/* Voltage setpoint interface — display-only simulator; no mains control output */
+.voltage-control{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--metric-bg);}
+.voltage-control-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.voltage-setpoint{font-size:clamp(30px,5vw,42px);font-weight:850;color:var(--text);letter-spacing:-1px}
+.voltage-slider{width:100%;accent-color:#25845f;margin:18px 0 8px}
+.voltage-limits{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px}
+.voltage-control .voltage-state{margin-top:12px;padding:11px 13px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:13px}
+.voltage-control .voltage-note{margin:10px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+.voltage-control button{min-width:130px}
+body.dark-theme .voltage-control{background:#101d2d!important;border-color:#35485d!important}
+body.dark-theme .voltage-control .voltage-state{background:#0b1725!important;border-color:#35485d!important}
+/* Neutralize green-tinted surfaces in dark theme */
+body.dark-theme .ai-msg.bot{background:#172638!important;color:#dce7f2!important;border-color:#34495e!important}
+body.dark-theme .airesult{background:#172638!important;color:#dce7f2!important;border-color:#34495e!important;border-left-color:#6b8ba8!important}
+body.dark-theme #roleScreen{background:linear-gradient(145deg,#142236,#101b2b 75%)!important;border-color:#35485d!important}
+body.dark-theme #roleScreen .role{background:linear-gradient(135deg,#1a2c40,#172338)!important;border-color:#40536a!important;box-shadow:0 4px 15px #0004!important}
+body.dark-theme #roleScreen .role h3{color:#e0e9f2!important}
+body.dark-theme #roleScreen .role p{color:#aebdcd!important}
+body.dark-theme #rolePasswordArea{background:#142236!important;border-color:#40536a!important}
+body.dark-theme .theme-toggle:hover{background:#26384b!important;border-color:#647b91!important}
+
+
+</style>
+</head>
+<body><main class="wrap">
+<section id="loginScreen" class="card">
+ <div class="top" style="justify-content:flex-end"><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div>
+ <div class="brand">POWER GUARD</div><div class="by">by hassaneeeyy · SECURE SIGN IN</div><div class="sub">SMART ELECTRICAL MONITORING SYSTEM</div>
+ <h2>EMAIL LOGIN</h2>
+ <label for="emailInput">Email address</label>
+ <input id="emailInput" type="email" autocomplete="username" placeholder="Enter registered Firebase email">
+ <label for="emailPassword">Email password</label>
+ <div class="password-wrap"><input id="emailPassword" type="password" autocomplete="current-password" placeholder="Enter Firebase password"><button class="eye-btn" type="button" onclick="toggleEye('emailPassword',this)" aria-label="Show or hide password"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+ <button id="emailLoginBtn" style="width:100%;margin-top:15px" onclick="emailSignIn()">SIGN IN</button>
+ <p id="emailError" class="error"></p>
+ <p class="muted">Sign in with your registered Power Guard Firebase account.</p>
+</section>
+<section id="roleScreen" class="card hidden">
+ <div class="top" style="justify-content:flex-end"><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div>
+ <div class="brand">POWER GUARD</div><div class="by">by hassaneeeyy · SELECT DASHBOARD</div><div class="sub">CHOOSE YOUR ACCESS</div>
+ <div class="rolegrid" style="margin-top:20px">
+  <button class="role" onclick="chooseRole('consumer')"><h3>CONSUMER</h3><p class="muted">Live readings, energy usage and room status</p></button>
+  <button class="role" onclick="chooseRole('admin')"><h3>KSEB ADMIN</h3><p class="muted">System monitoring, main relay and reset</p></button>
+ </div>
+ <div id="rolePasswordArea" class="hidden" style="margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:14px;background:#07182a">
+  <h2 id="passRoleTitle">CONSUMER LOGIN</h2>
+  <label for="rolePassword">Dashboard password</label>
+  <div class="password-wrap"><input id="rolePassword" type="password" autocomplete="off" placeholder="Enter dashboard password" onkeydown="if(event.key==='Enter')verifyRolePassword()"><button class="eye-btn" type="button" onclick="toggleEye('rolePassword',this)" aria-label="Show or hide password"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+  <button id="roleContinue" style="width:100%;margin-top:13px" onclick="verifyRolePassword()">CONTINUE</button>
+  <p id="passError" class="error"></p>
+ </div>
+ <button class="secondary" style="width:100%;margin-top:14px" onclick="emailLogout()">LOG OUT</button>
+</section>
+<section id="dashboard" class="hidden">
+ <div class="card">
+  <div class="top"><div><div class="brand" style="text-align:left">POWER GUARD</div><div class="by" style="text-align:left">by hassaneeeyy · LIVE MONITORING</div></div><div class="header-actions"><span class="pill" id="rolePill">CONSUMER</span><button type="button" class="theme-toggle secondary" onclick="toggleTheme()">☾ Dark</button></div></div>
+  <div id="systemStatus" class="status" style="margin-top:16px;border-left:5px solid var(--amber);font-size:16px;font-weight:800">SYSTEM STATUS · CONNECTING…</div>
+  <p id="connection" class="muted" style="margin-top:8px">Connecting to Firebase…</p>
+  <p class="muted" style="margin-top:4px">LATEST DATA UPDATE: <strong id="latestUpdateTime">Waiting for device data…</strong></p>
+  <div id="notifBox" style="margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px">
+   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b style="font-size:13px">PUSH ALERTS</b><span id="notifState" class="muted">Checking…</span></div>
+   <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button id="notifEnableBtn" type="button" onclick="enableNotifications()">ENABLE ALERTS</button><button id="notifTestBtn" type="button" class="secondary hidden" onclick="sendTestNotification()">SEND TEST ALERT</button></div>
+   <p id="notifHelp" class="muted" style="margin-top:8px"></p>
+  </div>
+  <div id="systemCheckPanel" class="system-check-panel">
+   <div class="system-check-title"><span>SYSTEM CHECKING</span><span id="systemCheckOverall" class="check-warn">WAITING FOR DEVICE</span></div>
+   <div class="system-check-grid">
+    <div class="system-check-item"><b>FIREBASE LINK</b><span id="checkFirebase" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>VOLTAGE SENSOR</b><span id="checkVoltage" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>CURRENT SENSOR</b><span id="checkCurrent" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>RELAY STATUS</b><span id="checkRelay" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>GAS MONITOR</b><span id="checkGas" class="check-warn">WAITING</span></div>
+    <div class="system-check-item"><b>PROTECTION STATUS</b><span id="checkProtection" class="check-warn">WAITING</span></div>
+   </div>
+  </div>
+  <div class="grid" style="margin-top:13px">
+   <div class="metric"><small>VOLTAGE</small><strong id="voltage">— V</strong></div>
+   <div class="metric"><small>CURRENT</small><strong id="current">— A</strong></div>
+   <div class="metric"><small>ACTIVE POWER</small><strong id="power">— W</strong></div>
+   <div class="metric"><small>APPARENT POWER</small><strong id="apparent">— VA</strong></div>
+   <div class="metric"><small>POWER FACTOR</small><strong id="pf">—</strong></div>
+   <div class="metric"><small>FREQUENCY</small><strong id="frequency">— Hz</strong></div>
+   <div class="metric"><small>ENERGY CONSUMED</small><strong id="energy">— Wh</strong></div>
+   <div class="metric"><small>RUNNING COST</small><strong id="cost">— ₹</strong>
+<small id="costBaseline" class="muted">Cost calculated since last reset</small><div id="tariff" class="tariff">Tariff: waiting for device…</div></div>
+   <div class="metric"><small>LOAD / MAIN OUTPUT</small><strong id="load">—</strong></div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>CONSUMPTION HISTORY</h2>
+  <div class="analytics">
+   <div class="chartbox"><h3>Voltage & Current</h3><canvas id="viChart"></canvas></div>
+   <div class="chartbox"><h3>Active Power</h3><canvas id="powerChart"></canvas></div>
+  </div>
+  <p id="historyStatus" style="display:none" class="muted">Loading saved Firebase history…</p>
+ </div>
+ <div class="card">
+  <h2>KSEB TIME-OF-DAY TARIFF & BILL ESTIMATE</h2>
+  <div class="tariff-current">
+   <div><small>ACTIVE TARIFF ZONE</small><strong id="billZone">—</strong></div>
+   <div class="esp32-rate-card"><small>TARIFF RATE</small><strong id="billRate">—</strong></div>
+   <div><small>CURRENT IST TIME</small><strong id="tariffClock">—</strong></div>
+  </div>
+  <div class="tariff-schedule">
+   <div class="tariff-slot" id="slotNormal"><span>06:00 AM – 06:00 PM</span><b>Normal</b><strong>₹5.89/kWh</strong></div>
+   <div class="tariff-slot" id="slotHigher"><span>06:00 PM – 10:00 PM</span><b>Higher</b><strong>₹7.36/kWh</strong></div>
+   <div class="tariff-slot" id="slotLower"><span>10:00 PM – 06:00 AM</span><b>Lower</b><strong>₹5.30/kWh</strong></div>
+  </div>
+  <div class="billgrid">
+   <div class="metric"><small>ACCUMULATED ENERGY</small><strong id="billEnergy">—</strong></div>
+   <div class="metric"><small>ESTIMATED BILL</small><strong id="billEnergyCost">—</strong></div>
+   <div class="metric"><small>TODAY'S CONSUMPTION</small><strong id="todayEnergy">—</strong><small id="todayEnergyKwh" class="muted">Since 12:00 AM IST</small></div>
+   <div class="metric"><small>TODAY'S ESTIMATED BILL</small><strong id="todayCost">—</strong><small class="muted">Time-of-day rates applied by device</small></div>
+  </div>
+ </div>
+ <div class="card">
+  <div class="aihead"><h2 style="margin:0">POWER GUARD SMART ASSISTANT</h2></div>
+  <p class="muted">Ask naturally: “How much energy did I use today?”, “What is today’s bill?”, “How much since reset?”, or ask about live readings, tariff, sensors and alerts.</p>
+  <div class="ai-chat">
+   <div id="aiChatLog" class="ai-log"><div class="ai-msg bot">Hello! I am the Power Guard Smart Assistant. Ask about live readings, today’s energy and bill, accumulated usage and cost, tariff, sensors, alerts or relay status.</div></div>
+   <div class="ai-entry"><input id="aiQuestion" maxlength="1200" placeholder="Ask about your Power Guard system…" onkeydown="if(event.key==='Enter')sendAIQuestion()"><button id="aiSend" onclick="sendAIQuestion()">SEND</button></div>
+   
+  </div>
+ </div>
+ <div id="consumerRooms" class="card">
+  <div class="top"><h2 style="margin:0">ROOM RELAYS</h2></div>
+  <div id="roomControls" class="rooms" style="margin-top:13px"></div>
+   <div class="room" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div><b>GAS SENSOR RESET</b><small id="gasResetState">Acknowledge alert; output stays OFF until sensor is stable</small></div>
+    <button class="secondary" id="gasResetButton" type="button" onclick="requestGasReset()">RESET GAS</button>
+   </div>
+   <div class="room" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
+    <b>VOLTAGE DEMO</b>
+    <label class="switch"><input type="checkbox" id="physicalPotToggle" onchange="togglePhysicalPot()"><span class="track"></span></label>
+   </div>
+  <p id="relayMessage" class="muted" style="display:block;margin-top:10px"></p>
+ </div>
+ <div id="adminActions" class="card hidden">
+  <h2>KSEB ADMIN CONTROLS</h2>
+  <div class="room" style="margin-bottom:12px"><div><b>R1 · MAIN RELAY</b><small id="mainRelayState">Waiting for device…</small><small id="adminCutOwnerText" class="muted" style="display:block;margin-top:5px">Main relay control status loading…</small></div><label class="switch"><input type="checkbox" id="mainRelaySwitch" onchange="setMainRelay(this.checked)"><span class="track"></span></label></div>
+  <div class="room"><div><b>RESET ENERGY</b><small>Reset total energy and cost counters</small></div><label class="switch"><input type="checkbox" id="resetEnergySwitch" onchange="resetEnergyOnly(this.checked)"><span class="track"></span></label></div>
+<div class="room"><div><b>RESET COST</b><small>Keep total energy; calculate new cost from the current Wh reading</small></div><label class="switch"><input type="checkbox" id="resetCostSwitch" onchange="resetCostOnly(this.checked)"><span class="track"></span></label></div>
+  <p id="adminMessage" class="muted" style="display:block;margin-top:10px"></p>
+ </div>
+ <div class="card"><div class="actions"><button class="secondary" onclick="logout()">LOG OUT</button></div></div>
+</section>
+<div class="footer">POWER GUARD · by hassaneeeyy</div>
+ </main>
+<script>
+// Firebase web configuration and database paths from your supplied Power Guard details.
+const firebaseConfig={
+ apiKey:"AIzaSyDFWE5aJRr8xcsoP6T9O3xLOiBCAmxaQwY",
+ authDomain:"power-guard32.firebaseapp.com",
+ databaseURL:"https://power-guard32-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"power-guard32",
+ storageBucket:"power-guard32.firebasestorage.app",
+ messagingSenderId:"439894450296",
+ appId:"1:439894450296:web:2ca9ff01527071b1428d8d"
+};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), db=firebase.database();
+const LIVE="powerGuard/live", COMMANDS="powerGuard/commands";
+const names=["MAIN","Bedroom","Kitchen","Hall","Bathroom","Sit-out"];
+
+let role="consumer", liveRef=null, cutRef=null, historyRef=null, commandBusy=false, latest={}, ksebCutActive=false, mainCutOwner="none", ownerRef=null;
+let viChart=null, powerChart=null, historyRows=[], liveChartRows=[];
+const HISTORY_LIMIT=60, LIVE_CHART_LIMIT=120;
+let liveChartTimer=null;
+function chartTheme(){
+ const dark=document.body.classList.contains("dark-theme");
+ return dark
+  ? {text:"#c2d2e1",grid:"#38536b",tooltip:"#10243b",border:"#45627b"}
+  : {text:"#657789",grid:"#e4eaf0",tooltip:"#ffffff",border:"#d4dee7"};
+}
+function chartGradient(ctx,top,bottom){
+ const g=ctx.createLinearGradient(0,0,0,280);g.addColorStop(0,top);g.addColorStop(1,bottom);return g;
+}
+function initCharts(){
+ if(!window.Chart)return;
+ const c=chartTheme();
+ const common={responsive:true,maintainAspectRatio:false,animation:{duration:250},interaction:{mode:"index",intersect:false},
+  elements:{line:{tension:.42,borderWidth:2.4},point:{radius:0,hoverRadius:4,hitRadius:12}},
+  plugins:{legend:{position:"bottom",labels:{color:c.text,usePointStyle:true,pointStyle:"circle",padding:16,font:{size:11}}},
+   tooltip:{backgroundColor:c.tooltip,titleColor:c.text,bodyColor:c.text,borderColor:c.border,borderWidth:1,padding:11,displayColors:true}},
+  scales:{x:{ticks:{color:c.text,maxTicksLimit:3,autoSkip:true,maxRotation:0,minRotation:0,font:{size:10},padding:6,callback:function(value,index,ticks){return (index===0||index===Math.floor((ticks.length-1)/2)||index===ticks.length-1)?this.getLabelForValue(value):"";}},grid:{display:false},border:{color:c.border}},
+   y:{beginAtZero:true,ticks:{color:c.text},grid:{color:c.grid},border:{display:false}}}};
+ const vctx=$("viChart").getContext("2d"),pctx=$("powerChart").getContext("2d");
+ viChart=new Chart(vctx,{type:"line",data:{labels:[],datasets:[
+  {label:"Voltage (V)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(vctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true,yAxisID:"y",order:2},
+  {label:"Current (A)",data:[],borderColor:"#8ca4b7",backgroundColor:chartGradient(vctx,"rgba(140,164,183,.32)","rgba(140,164,183,.015)"),pointBackgroundColor:"#8ca4b7",borderDash:[5,4],fill:true,yAxisID:"y1",order:1}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,position:"left",title:{display:true,text:"Voltage (V)",color:c.text}},y1:{beginAtZero:true,max:2,position:"right",ticks:{color:c.text},grid:{drawOnChartArea:false},border:{display:false},title:{display:true,text:"Current (A)",color:c.text}}}}});
+ powerChart=new Chart(pctx,{type:"line",data:{labels:[],datasets:[
+  {label:"Active power (W)",data:[],borderColor:"#244c70",backgroundColor:chartGradient(pctx,"rgba(43,91,128,.62)","rgba(43,91,128,.035)"),pointBackgroundColor:"#244c70",fill:true}
+ ]},options:{...common,scales:{...common.scales,y:{...common.scales.y,max:200}}}});
+}
+function refreshChartTheme(){
+ if(!viChart||!powerChart)return;
+ const c=chartTheme();
+ [viChart,powerChart].forEach(ch=>{
+  ch.options.plugins.legend.labels.color=c.text;ch.options.plugins.tooltip.backgroundColor=c.tooltip;
+  ch.options.plugins.tooltip.titleColor=c.text;ch.options.plugins.tooltip.bodyColor=c.text;
+  Object.values(ch.options.scales).forEach(axis=>{if(axis.ticks)axis.ticks.color=c.text;if(axis.grid)axis.grid.color=c.grid;if(axis.border)axis.border.color=c.border;});
+  ch.update("none");
+ });
+}
+function historyTimestamp(d){
+ if(!d || typeof d!=="object") return null;
+ let raw=d.timestamp ?? d.time ?? d.updatedAt ?? d.updatedMillis ?? d.createdAt;
+ if(raw && typeof raw==="object") raw=raw[".sv"] ?? raw.timestamp ?? raw.value;
+ if(typeof raw==="string" && !/^\d+(\.\d+)?$/.test(raw)){
+  const parsed=Date.parse(raw); return Number.isFinite(parsed)?parsed:null;
+ }
+ const n=Number(raw);
+ if(!Number.isFinite(n)||n<=0)return null;
+ return n<1000000000000?n*1000:n;
+}
+function historyNumber(d,...keys){
+ for(const key of keys){const n=Number(d[key]);if(d[key]!==null&&d[key]!==undefined&&d[key]!==""&&Number.isFinite(n))return n;}
+ return null;
+}
+function renderHistory(){
+ if(!window.Chart){$("historyStatus").textContent="";return;}
+ if(!viChart)initCharts();
+ if(!viChart||!powerChart){$("historyStatus").textContent="";return;}
+ const rows=historyRows.slice(-HISTORY_LIMIT);
+ const labels=rows.map(r=>new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",hour12:true}).format(new Date(r.timestamp)));
+ viChart.data.labels=labels;
+ viChart.data.datasets[0].data=rows.map(r=>r.voltage);
+ viChart.data.datasets[1].data=rows.map(r=>r.current);
+ powerChart.data.labels=labels;
+ powerChart.data.datasets[0].data=rows.map(r=>r.power);
+ viChart.update();powerChart.update();
+ requestAnimationFrame(()=>{viChart.resize();powerChart.resize();});
+ $("historyStatus").textContent="";
+}
+function startHistory(){
+ if(historyRef)historyRef.off();
+ historyRows=[];
+ historyRef=db.ref("powerGuard/history").limitToLast(HISTORY_LIMIT);
+ $("historyStatus").textContent="";
+ historyRef.on("value",snap=>{
+  const data=snap.val()||{};
+  historyRows=Object.entries(data).map(([key,d])=>{
+   const timestamp=historyTimestamp(d||{});
+   return {_key:key,timestamp,voltage:historyNumber(d||{},"voltage","voltageV","v"),current:historyNumber(d||{},"current","currentA","amps","i"),power:historyNumber(d||{},"power","activePower","watts","p")};
+  }).filter(r=>Number.isFinite(r.timestamp)).sort((a,b)=>a.timestamp-b.timestamp);
+  requestAnimationFrame(()=>{renderHistory();});
+ },e=>{$("historyStatus").textContent="";});
+}
+function startLiveChartSampling(){
+ if(liveChartTimer)clearInterval(liveChartTimer);
+ liveChartRows=[];
+ liveChartTimer=setInterval(()=>{
+  if(!latest||!Object.keys(latest).length||!viChart||!powerChart)return;
+  const voltage=historyNumber(latest,"voltage","voltageV","v");
+  const current=historyNumber(latest,"current","currentA","amps","i");
+  const power=historyNumber(latest,"power","activePower","watts","p");
+  if(voltage===null&&current===null&&power===null)return;
+  const now=Date.now();
+  liveChartRows.push({timestamp:now,voltage,current,power});
+  if(liveChartRows.length>LIVE_CHART_LIMIT)liveChartRows.shift();
+  const labels=liveChartRows.map(r=>new Intl.DateTimeFormat("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(new Date(r.timestamp)));
+  viChart.data.labels=labels;viChart.data.datasets[0].data=liveChartRows.map(r=>r.voltage);viChart.data.datasets[1].data=liveChartRows.map(r=>r.current);
+  powerChart.data.labels=labels;powerChart.data.datasets[0].data=liveChartRows.map(r=>r.power);
+  viChart.update("none");powerChart.update("none");
+ },1000);
+}
+
+const KSEB_TOD_RATES={LOWER:5.30,HIGHER:7.36,NORMAL:5.89};
+function updateTariffClock(){
+ const now=new Date();
+ const parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(now);
+ const get=t=>Number(parts.find(p=>p.type===t)?.value||0);
+ const h=get("hour"),m=get("minute");
+ const zone=(h>=18&&h<22)?"HIGHER":(h>=22||h<6)?"LOWER":"NORMAL";
+ const rate=KSEB_TOD_RATES[zone];
+ $("tariffClock").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now)+" IST";
+ $("slotNormal").classList.toggle("active",zone==="NORMAL");
+ $("slotHigher").classList.toggle("active",zone==="HIGHER");
+ $("slotLower").classList.toggle("active",zone==="LOWER");
+ return {zone,rate};
+}
+function updateBill(d){
+ const current=updateTariffClock();
+ const zone=current.zone;
+ const rate=current.rate;
+ $("billZone").textContent=zone;
+ $("billRate").textContent=rate!==undefined?"₹"+rate.toFixed(2)+"/kWh":"—";
+ $("billEnergy").textContent=fmt(d.energyWh,3)+" Wh";
+ $("billEnergyCost").textContent="₹"+fmt(d.cost,2);
+ const dayWh=Number(d.dailyEnergyWh),dayCost=Number(d.dailyCost);
+ $("todayEnergy").textContent=Number.isFinite(dayWh)?fmt(dayWh,3)+" Wh":"—";
+ $("todayEnergyKwh").textContent=Number.isFinite(dayWh)?(dayWh/1000).toFixed(6)+" kWh · Since 12:00 AM IST":"Daily counter not received";
+ $("todayCost").textContent=Number.isFinite(dayCost)?"₹"+fmt(dayCost,2):"—";
+}
+
+const $=id=>document.getElementById(id);
+function show(id){["loginScreen","roleScreen","dashboard"].forEach(x=>$(x).classList.toggle("hidden",x!==id));}
+async function emailSignIn(){
+ const email=$("emailInput").value.trim(),password=$("emailPassword").value;
+ const button=$("emailLoginBtn");
+ $("emailError").textContent="";
+ if(!email||!password){$("emailError").textContent="Enter your email address and password.";return;}
+ button.disabled=true;button.textContent="SIGNING IN…";
+ try{await auth.signInWithEmailAndPassword(email,password);$("emailPassword").value="";show("roleScreen");}
+ catch(e){$("emailError").textContent=e.message||"Sign-in failed. Check your details and try again.";}
+ finally{button.disabled=false;button.textContent="SIGN IN";}
+}
+const fmt=(v,n=2)=>v===null||v===undefined||!Number.isFinite(Number(v))?"—":Number(v).toFixed(n);
+const bool=v=>v===true?"ON":v===false?"OFF":"—";
+function applyTheme(theme){
+ const dark=theme==="dark";
+ document.body.classList.toggle("dark-theme",dark);
+ document.querySelectorAll(".theme-toggle").forEach(button=>{
+  button.textContent=dark?"☀ Light":"☾ Dark";
+  button.setAttribute("aria-label",dark?"Switch to light theme":"Switch to dark theme");
+ });
+ try{localStorage.setItem("powerGuardTheme",dark?"dark":"light");}catch(e){}
+ refreshChartTheme();
+}
+function toggleTheme(){
+ applyTheme(document.body.classList.contains("dark-theme")?"light":"dark");
+}
+function chooseRole(r){role=r;$("passRoleTitle").textContent=r==="admin"?"KSEB ADMIN PASSWORD":"CONSUMER PASSWORD";$("rolePasswordArea").classList.remove("hidden");$("rolePassword").value="";$("passError").textContent="";$("rolePassword").type="password";$("rolePassword").focus();}
+function verifyRolePassword(){
+ const expected=role==="admin"?"KSEB123":"CONSUMER123";
+ if(!auth.currentUser){$("passError").textContent="Your email session has expired. Please sign in again.";show("loginScreen");return;}
+ if($("rolePassword").value!==expected){$("passError").textContent="Incorrect "+(role==="admin"?"KSEB ADMIN":"CONSUMER")+" password. Check the spelling and try again.";return;}
+ enterRole(role);
+}
+async function emailLogout(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(liveRef){liveRef.off();liveRef=null;}if(historyRef){historyRef.off();historyRef=null;}await auth.signOut();$("emailPassword").value="";$("emailError").textContent="";show("loginScreen");}
+
+
+// Free local assistant: all responses are generated in this browser from live Firebase readings.
+function addAIMessage(text, who){
+ const log=$("aiChatLog"), node=document.createElement("div");
+ node.className="ai-msg "+who; node.textContent=text; log.appendChild(node); log.scrollTop=log.scrollHeight;
+}
+function sendAIQuestion(){
+ const input=$("aiQuestion"), question=input.value.trim();
+ if(!question)return;
+ addAIMessage(question,"user"); input.value="";
+ const answer=answerPowerGuardQuestion(question,latest||{});
+ addAIMessage(answer,"bot");
+
+}
+function answerPowerGuardQuestion(question,d){
+ const q=question.toLowerCase();
+ const num=(v,n=2)=>v===null||v===undefined||v===""||!Number.isFinite(Number(v))?"not available":Number(v).toFixed(n);
+ const gas=d.gasDetected===true, overload=d.overload===true, ov=d.overVoltage===true, uv=d.underVoltage===true;
+ if(/hello|hi\b|hey|good morning/.test(q)) return "Hello! I can check your latest Power Guard readings, explain alerts and identify which dashboard controls do what. Try: What is the system status? How much energy is recorded? Is MAIN ON?";
+ if(/help|what can you do|commands|questions/.test(q)) return "Ask me about live voltage, current, active/apparent power, power factor, frequency, energy, estimated cost, tariff zone, gas sensor, overload, overvoltage, system status or relay states. I can also explain whether a reading is current or accumulated.";
+ if(/gas|mq.?6|leak/.test(q)) return "Gas sensor status: "+(gas?"ALERT reported":""+(d.gasDetected===false?"Normal according to the current sensor flag":"not available"))+". MQ-6 raw reading: "+(d.gasRaw??"not available")+". This MQ-6 prototype is not a certified gas alarm; do not use it as a substitute for a certified detector.";
+ if(/overload|over current|too much current/.test(q)) return "Overload flag: "+(d.overload===true?"ACTIVE":d.overload===false?"not active":"not available")+". Current reading: "+num(d.current)+" A. The dashboard's displayed 1.00 A threshold is informational; the actual firmware setting must be checked in your device firmware.";
+ if(/under.?voltage|low voltage/.test(q)) return "Undervoltage flag: "+(uv?"ACTIVE":d.underVoltage===false?"not active":"not available")+". Voltage: "+num(d.voltage,1)+" V.";
+ if(/over.?voltage|high voltage|voltage fault/.test(q)) return "Overvoltage flag: "+(ov?"ACTIVE":d.overVoltage===false?"not active":"not available")+". Measured voltage: "+num(d.voltage,1)+" V.";
+ if(/voltage|volt/.test(q)) return "Latest voltage reading: "+num(d.voltage,1)+" V.";
+ if(/current|amp|ampere/.test(q)) return "Latest current reading: "+num(d.current)+" A.";
+ if(/power factor|\bpf\b/.test(q)) return "Latest power factor: "+num(d.powerFactor,3)+".";
+ if(/frequency|hertz|hz/.test(q)) return "Latest frequency reading: "+num(d.frequency)+" Hz.";
+ if(/apparent power|\bva\b/.test(q)) return "Latest apparent power: "+num(d.apparentPower)+" VA.";
+ if(/watt|active power|\bpower\b/.test(q)) return "Latest active power: "+num(d.power)+" W.";
+ if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /bill|cost|rupee|₹|amount|charge|spend|spent|price|payment/.test(q)) { const wh=Number(d.dailyEnergyWh),cost=Number(d.dailyCost); if(!Number.isFinite(wh)||!Number.isFinite(cost))return "Today’s energy and bill counters have not arrived from the ESP32 yet. Check that the updated firmware is running and connected to Firebase."; return "Today’s estimated usage: "+wh.toFixed(3)+" Wh ("+(wh/1000).toFixed(6)+" kWh). Today-only estimated cost: ₹"+cost.toFixed(2)+" (not the lifetime or since-reset cost). The ESP32 accumulates this daily amount using the applicable time-of-day rate as energy is measured. This is an estimate, not an official KSEB bill."; }
+ if(/today|daily|all day|since morning|this morning|yesterday/.test(q) && /energy|consum|unit|kwh|use|used|usage/.test(q)) { const wh=Number(d.dailyEnergyWh); if(Number.isFinite(wh)) return "Energy used today: "+wh.toFixed(3)+" Wh ("+(wh/1000).toFixed(6)+" kWh). This daily counter resets at midnight IST."; return "Today’s consumption is not available yet because the ESP32 has not sent its dailyEnergyWh field. Update the firmware and reconnect it to Firebase."; }
+ if(/energy|consum|unit|kwh/.test(q)) return "Accumulated energy: "+num(d.energyWh,3)+" Wh ("+(Number.isFinite(Number(d.energyWh))?(Number(d.energyWh)/1000).toFixed(6):"not available")+" kWh). This is the device counter, usually since its last reset.";
+ if(/cost|bill|rupee|₹|tariff|rate/.test(q)){const liveTariff=updateTariffClock(),z=liveTariff.zone,r=liveTariff.rate;return "Calculated accumulated cost: ₹"+num(d.cost,2)+". Current IST tariff zone: "+z+". Current display tariff rate: ₹"+r.toFixed(2)+"/kWh. This is an estimate, not an official KSEB bill. The accumulated cost is calculated by the device firmware using the tariff active at each measurement.";}
+ if(/main relay|main switch|main output|room switch|which switch|relay|room|load|supply/.test(q)){
+  const main=(d.relay1On===true||d.relayOn===true)?"ON":(d.relay1On===false||d.relayOn===false)?"OFF":"not reported";
+  if(/kseb|admin|main switch|main relay|which switch/.test(q))return "In the KSEB ADMIN dashboard, the MAIN RELAY switch controls R1 (the master output). RESET ENERGY clears both counters; RESET COST keeps total Wh and starts a new cost calculation. Individual room switches are not shown in the KSEB dashboard.";
+  return "MAIN relay: "+main+". The consumer dashboard shows room relay states when the device publishes them. These are reported states, not independent proof of physical contact position.";
+ }
+ if(/status|condition|healthy|normal|problem|alert/.test(q)){
+  const issues=[]; if(gas)issues.push("gas alert"); if(ov)issues.push("overvoltage"); if(uv)issues.push("undervoltage"); if(overload)issues.push("overload");
+  return "Power Guard status: "+(issues.length?"Attention required — "+issues.join(", "):String(d.status||"not available"))+". Voltage: "+num(d.voltage,1)+" V; current: "+num(d.current)+" A; power: "+num(d.power)+" W. Missing sensor data may mean the device has not published that field.";
+ }
+ if(/thank|thanks/.test(q)) return "You're welcome. Power Guard is using its free local smart assistant; no external AI service is connected.";
+ return "I could not match that question to a live Power Guard value. Try asking more specifically, for example: What is the voltage now? How much energy since reset? Why is the system in alert? Is the MAIN relay ON? What does power factor mean?";
+}
+
+function enterRole(r){
+ role=r; $("rolePill").textContent=r==="admin"?"KSEB ADMIN":"CONSUMER";
+ $("adminActions").classList.toggle("hidden",r!=="admin");
+ $("consumerRooms").classList.toggle("hidden",r==="admin");
+ $("physicalPotToggle").checked=physicalPotEnabled;
+  $("consumerRooms").classList.toggle("hidden",r!=="consumer");
+ show("dashboard"); if(r==="consumer")renderRooms(); watchKsebCutState(); watchMainCutOwner(); initCharts(); startHistory(); startLive(); startLiveChartSampling(); notifInit();
+}
+function renderRooms(){
+ $("roomControls").innerHTML=names.map((name,i)=>`<div class="room" style="display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px"><div><b>R${i+1} · ${name}</b><small id="r${i+1}State">Waiting for device…</small>${i===0?'<small id="mainCutOwnerText" class="muted" style="display:block;margin-top:5px">Main relay control status loading…</small>':''}</div><label class="switch"><input type="checkbox" id="r${i+1}" data-pending="false" ${ksebCutActive?"disabled":""} onchange="setConsumerRelay(${i+1},this.checked)"><span class="track"></span></label><small class="muted" style="grid-column:1/-1;display:block;margin-top:6px">Before maintenance, isolate the circuit using its MCB/RCCB.</small></div>`).join("");
+ updateConsumerRelayLock();
+}
+function updateConsumerRelayLock(){
+ for(let i=1;i<=6;i++){const sw=$("r"+i);if(sw)sw.disabled=(role!=="consumer"||ksebCutActive||mainCutOwner==="kseb");}
+ const consumerText=mainCutOwner==="consumer"?"CONSUMER CUT OFF THE MAIN SUPPLY · KSEB switch is locked; only the consumer can restore.":mainCutOwner==="kseb"?"KSEB CUT OFF THE MAIN SUPPLY · Consumer switch is locked until KSEB restores.":"Main supply control is available.";
+ const adminText=mainCutOwner==="consumer"?"CONSUMER CUT OFF THE MAIN SUPPLY · KSEB main switch is LOCKED.":mainCutOwner==="kseb"?"KSEB CUT OFF THE MAIN SUPPLY · KSEB control owns this cut-off.":"No manual cut-off is active.";
+ const t=$("mainCutOwnerText"); if(t)t.textContent=consumerText;
+ const at=$("adminCutOwnerText"); if(at)at.textContent=adminText;
+ const a=$("mainRelaySwitch"); if(a)a.disabled=(role!=="admin"||mainCutOwner==="consumer"||latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true);
+ const m=$("adminMessage"); if(m)m.textContent=mainCutOwner==="consumer"?"Consumer cut off the main supply. KSEB cannot restore it; the consumer switch is the only control allowed to restore it.":mainCutOwner==="kseb"?"KSEB cut off the main supply. The consumer dashboard switch is locked until KSEB restores it.":"KSEB main relay control is available.";
+ const rm=$("relayMessage"); if(rm)rm.textContent=mainCutOwner==="kseb"?"KSEB CUT OFF THE MAIN SUPPLY · Consumer main switch is LOCKED until KSEB restores.":mainCutOwner==="consumer"?"CONSUMER CUT OFF THE MAIN SUPPLY · KSEB main switch is LOCKED; use the consumer switch to restore.":"Consumer relay controls are available.";
+}
+function watchMainCutOwner(){if(ownerRef)ownerRef.off();ownerRef=db.ref("powerGuard/controlState/mainCutOwner");ownerRef.on("value",snap=>{mainCutOwner=snap.val()||"none";updateConsumerRelayLock();});}
+function watchKsebCutState(){
+ if(cutRef)cutRef.off();
+ cutRef=db.ref(COMMANDS+"/ksebCutActive");
+ cutRef.on("value",snap=>{ksebCutActive=snap.val()===true;updateConsumerRelayLock();});
+}
+async function setConsumerRelay(channel,on){
+ if(role!=="consumer"||ksebCutActive||mainCutOwner==="kseb"||channel<1||channel>6)return;
+ if(channel===1&&on&&mainCutOwner==="kseb")return;
+ const sw=$("r"+channel);
+ if(!sw||sw.dataset.pending==="true")return;
+ sw.dataset.pending="true";
+ sw.disabled=true;
+ const key="relay"+channel;
+ const payload={};
+ payload[key+"On"]=on;
+ payload[key+"Off"]=!on;
+ const ok=await sendCommand(payload,names[channel-1]+" relay "+(on?"ON":"OFF"));
+ if(ok&&channel===1){try{await db.ref("powerGuard/controlState/mainCutOwner").set(on?"none":"consumer");}catch(e){$("relayMessage").textContent="Relay command sent, but cut-owner status could not be saved: "+e.message;}}
+ sw.dataset.pending="false";
+ if(!ok)sw.checked=!on;
+ sw.disabled=(role!=="consumer"||ksebCutActive||mainCutOwner==="kseb");
+}
+function startLive(){
+ // Keep one continuous Firebase live listener for both dashboard roles.
+ // Re-entering a role must not detach and recreate the sensor-data stream.
+ if(liveRef)return;
+ liveRef=db.ref(LIVE);
+ liveRef.on("value",snap=>{
+  const d=snap.val(); if(!d){$("connection").textContent="No data at "+LIVE+". Check the device Firebase connection.";$("systemStatus").textContent="SYSTEM STATUS · WAITING FOR DEVICE DATA";return;}
+  latest=d; $("connection").textContent="LIVE · Firebase data received"; $("connection").className="muted ok";
+  updateLatestUpdateTime();
+  update(d);
+ },e=>{$("connection").textContent="Firebase read error: "+e.message;$("connection").className="status bad";});
+}
+function updateLatestUpdateTime(){
+ const now=new Date();
+ const formatted=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now);
+ $("latestUpdateTime").textContent=formatted+" IST (last received)";
+}
+function setCheck(id,label,state){
+ const el=$(id); if(!el)return; el.textContent=label;
+ el.className=state==="ok"?"check-ok":state==="bad"?"check-bad":"check-warn";
+}
+function updateSystemChecks(d){
+ setCheck("checkFirebase","CONNECTED","ok");
+ const voltageOk=d.voltageSensorOk===true;
+ const currentOk=d.acsOk===true;
+ const relayReported=typeof d.relayOn==="boolean"||typeof d.relay1On==="boolean";
+ const relayOn=typeof d.relay1On==="boolean"?d.relay1On:d.relayOn;
+ setCheck("checkVoltage",voltageOk?"DATA OK":(d.voltageSensorOk===false?"SENSOR FAULT":"NO DATA"),voltageOk?"ok":(d.voltageSensorOk===false?"bad":"warn"));
+ setCheck("checkCurrent",currentOk?"DATA OK":(d.acsOk===false?"SENSOR FAULT":"NO DATA"),currentOk?"ok":(d.acsOk===false?"bad":"warn"));
+ setCheck("checkRelay",relayReported?(relayOn?"MAIN RELAY ON":"MAIN RELAY OFF"):"NO STATE DATA",relayReported?"ok":"warn");
+ const gasActive=d.gasDetected===true||d.gasAcknowledged===true;
+ const gasHasData=Number.isFinite(Number(d.gasRaw));
+ setCheck("checkGas",gasActive?"GAS ALERT":(gasHasData?"DATA RECEIVED":"NO DATA"),gasActive?"bad":(gasHasData?"ok":"warn"));
+ const faults=[];
+ if(gasActive)faults.push("GAS");
+ if(d.overVoltage===true)faults.push("OVER VOLTAGE");
+ if(d.underVoltage===true)faults.push("UNDER VOLTAGE");
+ if(d.overload===true)faults.push("OVERLOAD");
+ setCheck("checkProtection",faults.length?faults.join(" · "):"NO ACTIVE FLAGS",faults.length?"bad":"ok");
+ const missing=!voltageOk||!currentOk||!gasHasData||!relayReported;
+ const overall=$("systemCheckOverall");
+ if(faults.length){overall.textContent="ATTENTION REQUIRED";overall.className="check-bad";}
+ else if(missing){overall.textContent="CHECKING · INCOMPLETE DATA";overall.className="check-warn";}
+ else{overall.textContent="CHECK DATA RECEIVED";overall.className="check-ok";}
+}
+function update(d){
+ updateBill(d);
+ updateSystemChecks(d);
+ if(role==="consumer" && typeof d.knobOn==="boolean" && !document.activeElement?.isSameNode($("physicalPotToggle"))){
+  physicalPotEnabled=d.knobOn;
+  $("physicalPotToggle").checked=d.knobOn;
+ }
+ $("voltage").textContent=fmt(d.voltage,1)+" V"; $("current").textContent=fmt(d.current,2)+" A";
+ $("power").textContent=fmt(d.power,1)+" W"; $("apparent").textContent=fmt(d.apparentPower,1)+" VA";
+ $("pf").textContent=fmt(d.powerFactor,2); $("frequency").textContent=fmt(d.frequency,2)+" Hz";
+ $("energy").textContent=fmt(d.energyWh,3)+" Wh"; $("cost").textContent="₹"+fmt(d.cost,2);
+ $("costBaseline").textContent="Cost baseline: "+fmt(Number(d.costBaselineWh)||0,3)+" Wh";
+ $("load").textContent=bool(d.loadOn ?? d.relayOn ?? d.supplyOn);
+ const currentTariff=updateTariffClock();
+ const zone=currentTariff.zone, rate=currentTariff.rate;
+ $("tariff").textContent=(zone==="LOWER"?"LOWER TARIFF":zone==="HIGHER"?"HIGHER TARIFF":zone==="NORMAL"?"NORMAL TARIFF":"TARIFF: NO CLOCK")+
+  (rate!==undefined?" · ₹"+rate.toFixed(2)+"/kWh":" · Tariff zone unavailable");
+ let status=String(d.status||"SYSTEM ONLINE").toUpperCase();
+ if(d.gasDetected===true || d.gasAcknowledged===true)status="GAS ALERT · CHECK SYSTEM";
+ else if(d.overVoltage===true)status="OVERVOLTAGE ALERT";
+ else if(d.underVoltage===true)status="UNDERVOLTAGE ALERT";
+ else if(d.overload===true)status="OVERLOAD ALERT";
+ else if(d.status===undefined)status="SYSTEM ONLINE · SENSOR FLAGS RECEIVED";
+ $("systemStatus").textContent="SYSTEM STATUS · "+status;
+ $("systemStatus").style.borderLeftColor=(d.gasDetected===true||d.gasAcknowledged===true||d.overVoltage===true||d.underVoltage===true||d.overload===true)?"var(--red)":"var(--green)";
+ const gasBtn=$("gasResetButton"); if(gasBtn){gasBtn.disabled=!(d.gasDetected===true);gasBtn.textContent=d.gasAcknowledged===true?"WAIT CLEAR":(d.gasDetected===true?"RESET GAS":"GAS CLEAR");}
+ const gasState=$("gasResetState"); if(gasState)gasState.textContent=d.gasDetected===true?"Gas alert active · acknowledge to begin stable-clear check":(d.gasAcknowledged===true?"Acknowledged · waiting for stable sensor clear":"No active gas alert");
+ const mainOn=(d.relayOn===true);
+ if($("mainRelaySwitch")){ $("mainRelaySwitch").checked=mainOn; $("mainRelaySwitch").disabled=role!=="admin"||mainCutOwner==="consumer"||d.gasDetected===true||d.gasAcknowledged===true||d.overload===true||d.overVoltage===true||d.underVoltage===true; }
+ updateConsumerRelayLock();
+ if($("mainRelayState"))$("mainRelayState").textContent=mainOn?"ON":"OFF";
+ if(role==="consumer"){for(let i=1;i<=6;i++){
+  const val=d["relay"+i+"On"]===true || (i===1 && d.relayOn===true);
+  const sw=$("r"+i), label=$("r"+i+"State"); if(sw){if(sw.dataset.pending!=="true")sw.checked=val;sw.disabled=ksebCutActive||mainCutOwner==="kseb"||sw.dataset.pending==="true";} if(label)label.textContent=val?"ON":"OFF";
+ }}
+}
+async function setMainRelay(on){
+ if(role!=="admin")return;
+ const sw=$("mainRelaySwitch");
+ if(on&&mainCutOwner==="consumer"){sw.checked=false;$("adminMessage").textContent="Consumer cut off the power. KSEB cannot restore it; the consumer must restore.";return;}
+ if(sw.dataset.pending==="true")return;
+ if(on&&(latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true)){
+  sw.checked=false;
+  $("adminMessage").textContent="Power restoration blocked while a protection alert is active.";
+  return;
+ }
+ if(!on&&!confirm("Turn the MAIN relay OFF?")){sw.checked=true;return;}
+ sw.dataset.pending="true";
+ sw.disabled=true;
+ const ok=await sendCommand({restorePower:on,cutPower:!on,ksebCutActive:!on},"MAIN relay "+(on?"ON":"OFF"));
+ if(ok){try{await db.ref("powerGuard/controlState/mainCutOwner").set(on?"none":"kseb");}catch(e){$("adminMessage").textContent="Relay command sent, but cut-owner status could not be saved: "+e.message;}}
+ sw.dataset.pending="false";
+ if(!ok)sw.checked=!on;
+ sw.disabled=mainCutOwner==="consumer"||latest.gasDetected===true||latest.gasAcknowledged===true||latest.overload===true||latest.overVoltage===true||latest.underVoltage===true;
+}
+async function resetEnergyOnly(on){
+ if(!on)return;
+ if(!confirm("Reset energy and cost counters to zero?")){$("resetEnergySwitch").checked=false;return;}
+ await sendCommand({resetEnergy:true},"Energy reset");
+ setTimeout(()=>{$("resetEnergySwitch").checked=false;},700);
+}
+async function resetCostOnly(on){
+ if(!on)return;
+ if(!confirm("Reset cost to ₹0 while keeping the energy reading unchanged? New cost is calculated only from energy used after this reset.")){$("resetCostSwitch").checked=false;return;}
+ await sendCommand({resetCost:true},"Cost reset");
+ setTimeout(()=>{$("resetCostSwitch").checked=false;},700);
+}
+async function requestGasReset(){
+ if(role!=="consumer")return;
+ const b=$("gasResetButton"); if(!b || b.disabled)return;
+ if(!confirm("Acknowledge the gas alert? The MAIN output will remain OFF until the sensor reports a stable clear condition."))return;
+ b.disabled=true; b.textContent="SENDING…";
+ const ok=await sendCommand({gasReset:true},"Gas sensor reset");
+ if(!ok){b.disabled=false;b.textContent="RESET GAS";}
+}
+async function sendCommand(payload,label){
+ const commandKeys=Object.keys(payload).filter(key=>payload[key]===true && key!=="ksebCutActive");
+ try{
+  await db.ref(COMMANDS).update(payload);
+  if(commandKeys.length===0)return true;
+  // ESP32 acknowledges by clearing each handled command key to false.
+  const deadline=Date.now()+5000;
+  while(Date.now()<deadline){
+   await new Promise(resolve=>setTimeout(resolve,250));
+   const snap=await db.ref(COMMANDS).once("value");
+   const state=snap.val()||{};
+   if(commandKeys.every(key=>state[key]!==true))return true;
+  }
+  const message=(label||"Command")+" was saved to Firebase, but the ESP32 did not acknowledge it within 5 seconds. Check the device Wi-Fi/Firebase connection.";
+  if($("relayMessage"))$("relayMessage").textContent=message;
+  if($("adminMessage"))$("adminMessage").textContent=message;
+  return false;
+ }catch(e){
+  if($("relayMessage"))$("relayMessage").textContent="Command failed: "+e.message;
+  if($("adminMessage"))$("adminMessage").textContent="Command failed: "+e.message;
+  return false;
+ }
+}
+async function returnToRoles(){if(liveChartTimer){clearInterval(liveChartTimer);liveChartTimer=null;}if(cutRef){cutRef.off();cutRef=null;}if(historyRef){historyRef.off();historyRef=null;}$("rolePassword").value="";$("rolePasswordArea").classList.add("hidden");$("passError").textContent="";show(auth.currentUser?"roleScreen":"loginScreen");}
+async function logout(){await returnToRoles();}
+function toggleEye(inputId, button){
+  const field=document.getElementById(inputId);
+  if(!field) return;
+  const show=field.type==='password';
+  field.type=show?'text':'password';
+  if(button){
+    button.setAttribute('aria-label',show?'Hide password':'Show password');
+    button.setAttribute('aria-pressed',show?'true':'false');
+  }
+}
+auth.onAuthStateChanged(user=>{if(!user&&liveRef){liveRef.off();liveRef=null;}});
+
+// Consumer switch enables the physical ESP32 potentiometer; no digital setpoint remains.
+let physicalPotEnabled=false;
+async function togglePhysicalPot(){
+ if(role!=="consumer")return;
+ const button=$("physicalPotToggle"), next=button.checked;
+ button.disabled=true;
+ try{
+  await db.ref(COMMANDS).update(next?{knobOn:true}:{knobOff:true});
+  physicalPotEnabled=next;
+ }catch(e){button.checked=!next;}
+ finally{button.disabled=false;}
+}
+
+// ================= PUSH NOTIFICATIONS (added) =================
+// Public VAPID key (safe to publish). No private keys or server secrets exist in this file.
+const VAPID_PUBLIC_KEY="BEY8eAQiFOWIJdDlTynV3QD6sDjhF4tBhfuRYtbhbfTQ5c1YoEfC5v6NYtQaIJmw1DJ5layMCThh9nyzOVkDE9M";
+const NOTIF_TOKENS="powerGuard/fcmTokens", NOTIF_TEST="powerGuard/notificationTest";
+let notifMessaging=null, notifSwReg=null, notifFgBound=false, notifTokenSaved=false, notifBusy=false;
+function notifIsIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);}
+function notifIsStandalone(){return window.navigator.standalone===true||(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches);}
+function notifSupported(){
+ try{return ("Notification" in window)&&("serviceWorker" in navigator)&&("PushManager" in window)&&firebase.messaging.isSupported();}catch(e){return false;}
+}
+async function notifSha256(text){
+ const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(text));
+ return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function notifUI(msg){
+ const st=$("notifState"),btn=$("notifEnableBtn"),test=$("notifTestBtn"),help=$("notifHelp");
+ if(!st)return;
+ let state="",help_="",showBtn=true,showTest=false;
+ if(!notifSupported()){
+  showBtn=false;
+  if(notifIsIOS()&&!notifIsStandalone()){state="ADD TO HOME SCREEN FIRST";help_="iPhone/iPad: tap the Share button, choose Add to Home Screen, then open Power Guard from the new Home Screen icon and tap ENABLE ALERTS. (Needs iOS 16.4 or newer.)";}
+  else{state="NOT SUPPORTED";help_="This browser does not support push notifications. Use Chrome on Android, or the Home Screen app on iOS 16.4+.";}
+ }else if(Notification.permission==="denied"){
+  showBtn=false;state="BLOCKED";help_="Notifications are blocked for this site. Allow them in your browser or phone settings, then reload this page.";
+ }else if(Notification.permission==="granted"){
+  state=notifTokenSaved?"ON FOR THIS DEVICE":"PERMISSION GRANTED · REGISTERING…";showBtn=!notifTokenSaved;showTest=notifTokenSaved;
+ }else{state="OFF";help_=notifIsIOS()?"Tap ENABLE ALERTS and allow notifications when asked.":"Tap ENABLE ALERTS to receive gas, overload, voltage and power alerts even when this page is closed.";}
+ st.textContent=msg||state;
+ if(btn)btn.classList.toggle("hidden",!showBtn);
+ if(test)test.classList.toggle("hidden",!showTest);
+ if(help)help.textContent=help_;
+}
+async function notifRegisterToken(){
+ if(!auth.currentUser)throw new Error("Sign in first.");
+ notifSwReg=await navigator.serviceWorker.register("firebase-messaging-sw.js");
+ await navigator.serviceWorker.ready;
+ notifMessaging=notifMessaging||firebase.messaging();
+ const token=await notifMessaging.getToken({vapidKey:VAPID_PUBLIC_KEY,serviceWorkerRegistration:notifSwReg});
+ if(!token)throw new Error("No notification token was returned.");
+ const id=await notifSha256(token);
+ await db.ref(NOTIF_TOKENS+"/"+id).set({
+  token:token,role:role,uid:auth.currentUser.uid,
+  platform:notifIsIOS()?"ios":(/Android/.test(navigator.userAgent)?"android":"other"),
+  updatedAt:firebase.database.ServerValue.TIMESTAMP
+ });
+ notifTokenSaved=true;
+ if(!notifFgBound){
+  notifFgBound=true;
+  // Dashboard open and in front: FCM does not auto-display, so show it here (data-only messages).
+  notifMessaging.onMessage(payload=>{
+   const d=payload.data||{};
+   if(notifSwReg&&Notification.permission==="granted"){
+    notifSwReg.showNotification(d.title||"POWER GUARD",{body:d.body||"",tag:d.tag||d.type||"power-guard",renotify:true,icon:"icon-192.png",data:{url:d.url||notifSwReg.scope,type:d.type||""}});
+   }
+  });
+ }
+}
+async function enableNotifications(){
+ if(notifBusy||!notifSupported())return;
+ notifBusy=true;$("notifEnableBtn").disabled=true;
+ try{
+  const perm=await Notification.requestPermission();   // must run from this tap
+  if(perm!=="granted"){notifUI();return;}
+  notifUI("REGISTERING…");
+  await notifRegisterToken();
+  notifUI();
+ }catch(e){notifUI("ERROR · "+(e&&e.message?e.message:e));}
+ finally{notifBusy=false;const b=$("notifEnableBtn");if(b)b.disabled=false;}
+}
+async function sendTestNotification(){
+ const b=$("notifTestBtn");if(!b||!auth.currentUser)return;
+ b.disabled=true;
+ try{
+  await db.ref(NOTIF_TEST).set({requestedAt:firebase.database.ServerValue.TIMESTAMP,by:auth.currentUser.email||auth.currentUser.uid,role:role});
+  $("notifHelp").textContent="Test requested. It should arrive within about a minute if the Cloudflare Worker is running.";
+ }catch(e){$("notifHelp").textContent="Could not request a test: "+e.message;}
+ setTimeout(()=>{b.disabled=false;},30000);
+}
+async function notifInit(){
+ // Called after a role is entered. Never allowed to break the dashboard.
+ try{
+  notifTokenSaved=false;notifUI();
+  if(notifSupported()&&Notification.permission==="granted"){await notifRegisterToken();}
+  notifUI();
+ }catch(e){notifUI("ERROR · "+(e&&e.message?e.message:e));}
+}
+
+let savedTheme="light";
+try{savedTheme=localStorage.getItem("powerGuardTheme")==="dark"?"dark":"light";}catch(e){}
+applyTheme(savedTheme);
+updateTariffClock();setInterval(updateTariffClock,1000);
+</script>
+</body></html>
